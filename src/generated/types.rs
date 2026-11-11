@@ -7,41 +7,67 @@
 //! Optional fields are `Option`s that are omitted from the JSON when `None`, letting the
 //! server apply its defaults. String enums carry an `Other(String)` variant for values added
 //! to the API after this SDK version was generated.
+//!
+//! Response types decode leniently: a missing field or a `null` becomes the field's default
+//! and unknown fields are ignored, so a response that drifts from the schema still decodes.
 
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ActivatedHousePlanet {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub abs_pos: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub house: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub retrograde: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct AlphabetDefinition {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub system: AlphabetDefinitionSystem,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub used_by_systems: Option<Vec<UsedBySystems>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub profile_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub script: Script,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub direction: AlphabetDefinitionDirection,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: AlphabetDefinitionKind,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub algorithm: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub values: std::collections::BTreeMap<String, i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub expansion_value_alphabet_id: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub normalization: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub final_form_policy: FinalFormPolicy,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub final_forms: std::collections::BTreeMap<String, String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub expansions: std::collections::BTreeMap<String, String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub notes: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_profile_version: String,
 }
 
@@ -261,39 +287,57 @@ impl std::fmt::Display for AngleMarkerStyle {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct AnglePayload {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub longitude_deg: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub longitude_text: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: SignInfo,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub position_in_sign_deg: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct AngularProximityItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sr_body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub angle: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct AnkJyotishCore {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub moolank: AnkJyotishNumberResult,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub bhagyank: AnkJyotishNumberResult,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub namank: AnkJyotishNumberResult,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct AnkJyotishData {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: AnkJyotishDataKind,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub core: AnkJyotishCore,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum AnkJyotishDataKind {
     #[default]
     #[serde(rename = "ank_jyotish")]
     AnkJyotish,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl AnkJyotishDataKind {
@@ -301,6 +345,7 @@ impl AnkJyotishDataKind {
     pub fn as_str(&self) -> &str {
         match self {
             Self::AnkJyotish => "ank_jyotish",
+            Self::Other(value) => value,
         }
     }
 }
@@ -356,11 +401,14 @@ impl std::fmt::Display for AnkJyotishMethodRequestCompoundPolicy {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum AnkJyotishMethodRequestMasterPolicy {
     #[default]
     #[serde(rename = "reduce_all")]
     ReduceAll,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl AnkJyotishMethodRequestMasterPolicy {
@@ -368,6 +416,7 @@ impl AnkJyotishMethodRequestMasterPolicy {
     pub fn as_str(&self) -> &str {
         match self {
             Self::ReduceAll => "reduce_all",
+            Self::Other(value) => value,
         }
     }
 }
@@ -409,11 +458,14 @@ impl std::fmt::Display for AnkJyotishMethodRequestProfile {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum AnkJyotishMethodRequestSystem {
     #[default]
     #[serde(rename = "ank_jyotish")]
     AnkJyotish,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl AnkJyotishMethodRequestSystem {
@@ -421,6 +473,7 @@ impl AnkJyotishMethodRequestSystem {
     pub fn as_str(&self) -> &str {
         match self {
             Self::AnkJyotish => "ank_jyotish",
+            Self::Other(value) => value,
         }
     }
 }
@@ -432,48 +485,69 @@ impl std::fmt::Display for AnkJyotishMethodRequestSystem {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct AnkJyotishNumberResult {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation: Calculation,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub value: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub raw_total: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub compound: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub root: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub value_display: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub master_number: Option<()>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aliases: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub method_variance: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub warnings: Vec<NumberWarning>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub karmic_debts: Vec<serde_json::Value>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub interpretation_key: Option<()>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub interpretation_ref: Option<InterpretationRef>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub reduction_path: Option<Vec<i64>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub steps: Option<Vec<serde_json::Map<String, serde_json::Value>>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub details: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ruling_graha: RulingGraha,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct AnnualProfectionMetaCalculation {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub zodiac_type: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sidereal_ayanamsa: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub profection_method: ProfectionMethod,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb_policy: ProfectionAspectOrbPolicy,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub includes: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct AnnualProfectionMetaDetails {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub target_year: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub age_at_start: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub period: ProfectionTimeWindow,
 }
 
@@ -508,24 +582,34 @@ pub struct AnnualProfectionRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct AnnualProfectionResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: AnnualProfectionResponseMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub subject: ProfectionSubject,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub profection: ProfectionBody,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct AnnualProfectionResponseMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub report_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub engine: Option<ProfectionEngineMeta>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation: AnnualProfectionMetaCalculation,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub annual_profection: AnnualProfectionMetaDetails,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_reference: ProfectionNatalReference,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub warnings: Option<Vec<ProfectionWarning>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub resolved_time: Option<serde_json::Map<String, serde_json::Value>>,
 }
 
@@ -570,20 +654,23 @@ impl std::fmt::Display for AnnualProfectionSettingsZodiacType {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct AnnualProfectionSummary {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub age: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub activated_house: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub activated_sign_name: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub activated_sign_id: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub time_lord_name: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub time_lord_id: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub period: ProfectionTimeWindow,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub notes: Option<Vec<String>>,
 }
 
@@ -595,31 +682,54 @@ pub struct AnnualProfectionTarget {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ArchetypeDriver {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ref_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub weight: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ArchetypeInterpretation {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub availability: ArchetypeInterpretationAvailability,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub personal_interpretation: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub content_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub content_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub content_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub locale: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub claims_mode: ClaimsMode,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_refs: Vec<ContentSourceRef>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub provenance_note: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub disclaimer: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: ArchetypeInterpretationKind,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub coverage: ArchetypeInterpretationCoverage,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strengths: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub cautions: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub guidance: String,
 }
 
@@ -652,11 +762,14 @@ impl std::fmt::Display for ArchetypeInterpretationAvailability {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ArchetypeInterpretationCoverage {
     #[default]
     #[serde(rename = "exact")]
     Exact,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ArchetypeInterpretationCoverage {
@@ -664,6 +777,7 @@ impl ArchetypeInterpretationCoverage {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Exact => "exact",
+            Self::Other(value) => value,
         }
     }
 }
@@ -674,11 +788,14 @@ impl std::fmt::Display for ArchetypeInterpretationCoverage {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ArchetypeInterpretationKind {
     #[default]
     #[serde(rename = "archetype_interpretation")]
     ArchetypeInterpretation,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ArchetypeInterpretationKind {
@@ -686,6 +803,7 @@ impl ArchetypeInterpretationKind {
     pub fn as_str(&self) -> &str {
         match self {
             Self::ArchetypeInterpretation => "archetype_interpretation",
+            Self::Other(value) => value,
         }
     }
 }
@@ -697,11 +815,16 @@ impl std::fmt::Display for ArchetypeInterpretationKind {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct AshtakavargaV2Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sarvashtakavarga: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub bhinnashtakavarga: std::collections::BTreeMap<String, Vec<i64>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub prastharashtakavarga:
         std::collections::BTreeMap<String, std::collections::BTreeMap<String, Vec<i64>>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub total_points: i64,
 }
 
@@ -744,8 +867,11 @@ impl std::fmt::Display for Aspect {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct AspectDescriptor {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub angle_deg: f64,
 }
 
@@ -775,16 +901,23 @@ pub struct AspectOrbSettings {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct AspectSearchEvent {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub relation: AspectSearchEventRelation,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub point_1: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub point_2: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect: AspectDescriptor,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub target_datetime_utc: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub basis: Option<serde_json::Map<String, serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_key: String,
 }
 
@@ -818,23 +951,312 @@ impl std::fmt::Display for AspectSearchEventRelation {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct AspectWeightBreakdown {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb_weight: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub body_weight: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub body_weight_a: Option<f64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub body_weight_b: Option<f64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_weight: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub apply_bonus: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub formula: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct AspectsPayload {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub progressed_to_natal: Vec<ProgressedToNatalAspect>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub progressed_to_progressed: Vec<ProgressedToProgressedAspect>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyCityCheckCity {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub country: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub state: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lat: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lng: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub population: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyCityCheckCityVisualExplanation {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub primary_lines: Vec<AstrocartographyCityCheckCityVisualExplanationPrimaryLine>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nearest_lines: Vec<AstrocartographyCityCheckCityVisualExplanationPrimaryLine>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub primary_parans: Vec<AstrocartographyCityCheckCityVisualExplanationPrimaryParan>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub relevant_crossings: Vec<AstrocartographyCityCheckCityVisualExplanationRelevantCrossing>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub map_line_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub explanation_mode: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyCityCheckCityVisualExplanationPrimaryLine {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angle: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub distance_km: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub line_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_close: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub visual_strength: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub source_focuses: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyCityCheckCityVisualExplanationPrimaryParan {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body_a: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub event_a: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body_b: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub event_b: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub distance_km: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_close: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub visual_strength: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub source_focuses: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyCityCheckCityVisualExplanationRelevantCrossing {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub lat: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub lng: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub distance_km: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub lines: Option<Vec<AstrocartographyLinesCrossingLine>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyCityCheckFocusScores {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub career: AstrocartographyCityCheckFocusScoresCareer,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub romance: AstrocartographyCityCheckFocusScoresCareer,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub home: AstrocartographyCityCheckFocusScoresCareer,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub health: AstrocartographyCityCheckFocusScoresCareer,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub spiritual: AstrocartographyCityCheckFocusScoresCareer,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyCityCheckFocusScoresCareer {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub summary: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub top_factors: Vec<AstrocartographyCityCheckFocusScoresCareerTopFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nearest_favorable_distance_km: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nearest_challenging_distance_km: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nearest_favorable_line: AstrocartographyCityCheckFocusScoresCareerNearestFavorableLine,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nearest_challenging_line: AstrocartographyCityCheckFocusScoresCareerNearestFavorableLine,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub line_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub paran_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub relocation_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub top_parans: Vec<AstrocartographyCityCheckFocusScoresCareerTopParan>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub nearest_favorable_paran:
+        Option<AstrocartographyCityCheckFocusScoresCareerNearestFavorableParan>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub nearest_challenging_paran:
+        Option<AstrocartographyCityCheckFocusScoresCareerNearestFavorableParan>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyCityCheckFocusScoresCareerNearestFavorableLine {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angle: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub distance_km: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyCityCheckFocusScoresCareerNearestFavorableParan {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body_a: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub event_a: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body_b: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub event_b: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub latitude: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub distance_km: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyCityCheckFocusScoresCareerTopFactor {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angle: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub distance_km: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub weight: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyCityCheckFocusScoresCareerTopParan {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body_a: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub event_a: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body_b: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub event_b: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub latitude: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub distance_km: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyCityCheckMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub mode: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub bodies: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angles: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyCityCheckRelocationSummary {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub resolved_timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angles: AstrocartographyCityCheckRelocationSummaryAngles,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angles_details: std::collections::BTreeMap<
+        String,
+        AstrocartographyCityCheckRelocationSummaryAnglesDetailsEntry,
+    >,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angular_planets: Vec<AstrocartographyCityCheckRelocationSummaryAngularPlanet>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dominant_themes: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub summary_short: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub summary_caution: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyCityCheckRelocationSummaryAngles {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub asc: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub mc: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub ic: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dc: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyCityCheckRelocationSummaryAnglesDetailsEntry {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub abs_pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyCityCheckRelocationSummaryAngularPlanet {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angle: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
@@ -907,6 +1329,296 @@ impl std::fmt::Display for AstrocartographyCityCheckRequestMode {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyCityCheckResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub meta: AstrocartographyCityCheckMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub warnings: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub city: AstrocartographyCityCheckCity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub overall_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub focus_scores: AstrocartographyCityCheckFocusScores,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub city_visual_explanation: AstrocartographyCityCheckCityVisualExplanation,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub relocation_summary: Option<AstrocartographyCityCheckRelocationSummary>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub map: Option<AstrocartographyLinesResponse>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyLinesChartFamily {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub kind: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angles: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub member_line_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub geometry: AstrocartographyLinesLineGeometry,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub line_family: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub geometry_scope: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub endpoint_behavior: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub complete_geometry: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub world_wrapped: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub segment_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lat_range: AstrocartographyLinesLineLatRange,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lng_range: AstrocartographyLinesLineLatRange,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyLinesCrossing {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lat: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lng: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lines: Vec<AstrocartographyLinesCrossingLine>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub geometry: AstrocartographyLinesCrossingGeometry,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nearest_city: AstrocartographyLinesCrossingNearestCity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub quality: AstrocartographyLinesCrossingQuality,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub strongest_focus: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub secondary_focus: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub polarity: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub interpretation_short: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub interpretation_caution: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub benefit_keywords: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub risk_keywords: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyLinesCrossingGeometry {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub coordinates: Vec<f64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyLinesCrossingLine {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angle: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyLinesCrossingNearestCity {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub country: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub state: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lat: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lng: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub population: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub distance_km: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyLinesCrossingQuality {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub overall_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub strongest_focus: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub strongest_focus_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub secondary_focus: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub secondary_focus_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub polarity: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub match_tier: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub focus_scores: AstrocartographyLinesCrossingQualityFocusScores,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyLinesCrossingQualityFocusScores {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub career: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub health: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub home: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub romance: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub spiritual: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyLinesLine {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angle: String,
+    #[serde(rename = "_kind", deserialize_with = "crate::de::null_as_default")]
+    pub kind: String,
+    #[serde(rename = "_segments", skip_serializing_if = "Option::is_none")]
+    pub segments: Option<Vec<Vec<AstrocartographyLinesLineSegmentItem>>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub geometry: AstrocartographyLinesLineGeometry,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub chart_family_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub paired_line_id: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub line_family: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub geometry_scope: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub endpoint_behavior: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub complete_geometry: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub world_wrapped: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub segment_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lat_range: AstrocartographyLinesLineLatRange,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lng_range: AstrocartographyLinesLineLatRange,
+    #[serde(rename = "_longitude", skip_serializing_if = "Option::is_none")]
+    pub longitude: Option<f64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyLinesLineGeometry {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub coordinates: Vec<Vec<AstrocartographyLinesLineGeometryCoordinatesItemItem>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum AstrocartographyLinesLineGeometryCoordinatesItemItem {
+    NumberList(Vec<f64>),
+    Number(f64),
+}
+
+impl<'de> Deserialize<'de> for AstrocartographyLinesLineGeometryCoordinatesItemItem {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "AstrocartographyLinesLineGeometryCoordinatesItemItem",
+            &[
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::NumberList),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Number),
+                },
+            ],
+        )
+    }
+}
+
+impl Default for AstrocartographyLinesLineGeometryCoordinatesItemItem {
+    fn default() -> Self {
+        Self::NumberList(Default::default())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyLinesLineLatRange {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub min: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub max: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyLinesLineSegmentItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lat: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lng: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyLinesMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub mode: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub bodies: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angles: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub geometry_format: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub coordinate_reference_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub coordinate_order: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sample_step_degrees: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub line_sample_step_degrees: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub crossing_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub chart_family_count: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct AstrocartographyLinesRequest {
     pub natal: NatalChartRequest,
     /// Server default: `"in_mundo"`.
@@ -954,6 +1666,94 @@ impl std::fmt::Display for AstrocartographyLinesRequestMode {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyLinesResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub meta: AstrocartographyLinesMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub warnings: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lines: Vec<AstrocartographyLinesLine>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub chart_families: Vec<AstrocartographyLinesChartFamily>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub crossings: Vec<AstrocartographyLinesCrossing>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyParansMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub mode: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub bodies: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub events: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub paran_orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub paran_tail_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub count: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyParansParan {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body_a: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub event_a: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body_b: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub event_b: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub latitude: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub kind: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub geometry: AstrocartographyParansParanGeometry,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nearest_cities: Vec<AstrocartographyLinesCrossingNearestCity>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub strength: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub strongest_focus: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub secondary_focus: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub polarity: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub interpretation_short: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub interpretation_caution: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub benefit_keywords: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub risk_keywords: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyParansParanGeometry {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub center_lat: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub north_lat: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub south_lat: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub segments: Vec<Vec<AstrocartographyLinesLineSegmentItem>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct AstrocartographyParansRequest {
     pub natal: NatalChartRequest,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -978,6 +1778,52 @@ pub struct AstrocartographyParansRequest {
     /// Server default: `true`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub include_nearby_cities: Option<bool>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyParansResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub meta: AstrocartographyParansMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub warnings: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub parans: Vec<AstrocartographyParansParan>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyRecommendationsMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub focus: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub mode: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub country_scope: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub city_size: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub population_min: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub population_max: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub bodies: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angles: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub candidate_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scored_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub signal_strength: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub confidence: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub match_tier: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub no_strong_matches: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
@@ -1065,6 +1911,296 @@ impl std::fmt::Display for AstrocartographyRecommendationsRequestMode {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyRecommendationsResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub meta: AstrocartographyRecommendationsMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub warnings: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub results: Vec<AstrocartographyRecommendationsResult>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub map: Option<AstrocartographyLinesResponse>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyRecommendationsResult {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub city: AstrocartographyRecommendationsResultCity,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub distance_from_natal_km: Option<f64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub summary: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub top_factors: Vec<AstrocartographyCityCheckFocusScoresCareerTopFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nearest_favorable_distance_km: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nearest_challenging_distance_km: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nearest_favorable_line: AstrocartographyCityCheckFocusScoresCareerNearestFavorableLine,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nearest_challenging_line: AstrocartographyCityCheckFocusScoresCareerNearestFavorableLine,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub line_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub paran_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub relocation_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub top_parans: Vec<AstrocartographyCityCheckFocusScoresCareerTopParan>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub nearest_favorable_paran:
+        Option<AstrocartographyCityCheckFocusScoresCareerNearestFavorableParan>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub nearest_challenging_paran:
+        Option<AstrocartographyCityCheckFocusScoresCareerNearestFavorableParan>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub rank: i64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub relocation_summary: Option<AstrocartographyCityCheckRelocationSummary>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub city_visual_explanation: AstrocartographyCityCheckCityVisualExplanation,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub signal_strength: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub match_tier: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyRecommendationsResultCity {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub country: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub state: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lat: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lng: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub population: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyRelocationChart {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub subject: AstrocartographyRelocationChartSubject,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub planets: Vec<AstrocartographyRelocationChartPlanet>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub aspects: Vec<AstrocartographyRelocationChartAspect>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub aspects_summary: AstrocartographyRelocationChartAspectsSummary,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub confidence: AstrocartographyRelocationChartConfidence,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub houses: Vec<AstrocartographyRelocationChartHouse>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angles: AstrocartographyRelocationChartAngles,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angles_details: std::collections::BTreeMap<
+        String,
+        AstrocartographyCityCheckRelocationSummaryAnglesDetailsEntry,
+    >,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyRelocationChartAngles {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub asc: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub mc: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub ic: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dc: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub vertex: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyRelocationChartAspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p1: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p2: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub orb: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_major: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_applying: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyRelocationChartAspectsSummary {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub total: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub major: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub minor: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub by_type: AstrocartographyRelocationChartAspectsSummaryByType,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyRelocationChartAspectsSummaryByType {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub square: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub trine: i64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub opposition: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sextile: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub conjunction: i64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub semi_square: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub quintile: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub quincunx: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub semi_sextile: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sesquiquadrate: Option<i64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyRelocationChartConfidence {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub houses: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angles: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub overall: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyRelocationChartHouse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub abs_pos: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyRelocationChartPlanet {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub abs_pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub retrograde: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub declination_deg: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dignity: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub speed: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_stationary: Option<bool>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyRelocationChartSubject {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub location: AstrocartographyRelocationChartSubjectLocation,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub settings: AstrocartographyRelocationChartSubjectSettings,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyRelocationChartSubjectLocation {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub city: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lat: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lng: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyRelocationChartSubjectSettings {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub julian_day: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub julian_day_tt: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub delta_t_days: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub delta_t_seconds: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zodiac_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub time_known: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyRelocationMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub mode: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house_system: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct AstrocartographyRelocationRequest {
     pub natal: NatalChartRequest,
     pub city: String,
@@ -1074,6 +2210,225 @@ pub struct AstrocartographyRelocationRequest {
     pub lat: Option<f64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lng: Option<f64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AstrocartographyRelocationResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub meta: AstrocartographyRelocationMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub warnings: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub city: AstrocartographyCityCheckCity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub relocation_summary: AstrocartographyCityCheckRelocationSummary,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub chart: AstrocartographyRelocationChart,
+}
+
+/// Interpretation blocks for the chart's placements and aspects, grouped by theme.
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AtomicInterpretation {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub metadata: AtomicInterpretationMetadata,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sections: AtomicInterpretationSections,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub index: AtomicInterpretationIndex,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AtomicInterpretationAspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p1: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p2: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub key: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub content: Option<AtomicInterpretationAspectContent>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum AtomicInterpretationAspectContent {
+    String(String),
+    Map(serde_json::Map<String, serde_json::Value>),
+}
+
+impl<'de> Deserialize<'de> for AtomicInterpretationAspectContent {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "AtomicInterpretationAspectContent",
+            &[
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::String),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Map),
+                },
+            ],
+        )
+    }
+}
+
+impl Default for AtomicInterpretationAspectContent {
+    fn default() -> Self {
+        Self::String(Default::default())
+    }
+}
+
+/// An interpretation text block (a row of the interpretation library).
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AtomicInterpretationBlock {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub key: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub category: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub body: Option<AtomicInterpretationBlockBody>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tone: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tags: Option<Vec<String>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum AtomicInterpretationBlockBody {
+    String(String),
+    Map(serde_json::Map<String, serde_json::Value>),
+}
+
+impl<'de> Deserialize<'de> for AtomicInterpretationBlockBody {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "AtomicInterpretationBlockBody",
+            &[
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::String),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Map),
+                },
+            ],
+        )
+    }
+}
+
+impl Default for AtomicInterpretationBlockBody {
+    fn default() -> Self {
+        Self::String(Default::default())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AtomicInterpretationIndex {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub placements: Vec<AtomicInterpretationPlacement>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub aspects: Vec<AtomicInterpretationAspect>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AtomicInterpretationMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub key_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub found_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub missing_keys: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AtomicInterpretationPlacement {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub planet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub content: Option<AtomicInterpretationPlacementContent>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum AtomicInterpretationPlacementContent {
+    String(String),
+    Map(serde_json::Map<String, serde_json::Value>),
+}
+
+impl<'de> Deserialize<'de> for AtomicInterpretationPlacementContent {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "AtomicInterpretationPlacementContent",
+            &[
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::String),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Map),
+                },
+            ],
+        )
+    }
+}
+
+impl Default for AtomicInterpretationPlacementContent {
+    fn default() -> Self {
+        Self::String(Default::default())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AtomicInterpretationSections {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub core_self: Vec<AtomicInterpretationBlock>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub mind: Vec<AtomicInterpretationBlock>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub love_relating: Vec<AtomicInterpretationBlock>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub work_path: Vec<AtomicInterpretationBlock>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub social_collective: Vec<AtomicInterpretationBlock>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub karmic_healing: Vec<AtomicInterpretationBlock>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
@@ -1097,6 +2452,20 @@ pub struct AtomicReportRequest {
     /// Server default: `"natal_full"`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub template: Option<String>,
+}
+
+/// Interpretation report for a natal chart.
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AtomicReportResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub metadata: AtomicInterpretationMetadata,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sections: AtomicInterpretationSections,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub index: AtomicInterpretationIndex,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub resolved_time: Option<ResolvedTime>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
@@ -1237,6 +2606,536 @@ pub struct BaseChartRequestV2 {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartAstroDebug {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub input_local_time: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub input_calendar: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub input_gregorian_equivalent: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub effective_solar_time_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub effective_solar_time_absolute: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub effective_solar_time_absolute_reference: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub resolved_timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub time_standard: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub equation_of_time_minutes: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub solar_terms: std::collections::BTreeMap<String, String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartCurrentYearTriggers {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub year: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub gan_zhi: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub interactions: Vec<BaziChartCurrentYearTriggersInteraction>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub stars: Vec<BaziChartCurrentYearTriggersStar>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartCurrentYearTriggersInteraction {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scope: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pillars: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stems: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub can_transform: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transform_level: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transform_score: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transform_to: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub branches: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub missing_branch: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_formed: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub note: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub interpretation: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartCurrentYearTriggersStar {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pillar: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zhi: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub xun_audit: Option<BaziChartStarXunAudit>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartDayMaster {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub stem: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub info: BaziChartDayMasterInfo,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pinyin: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartDayMasterInfo {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pinyin: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub element: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub polarity: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartElements {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scoring_model: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub weights: BaziChartElementsWeights,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub points: BaziChartElementsPoints,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub percentages: BaziChartElementsPercentages,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dominant: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartElementsPercentages {
+    #[serde(rename = "Wood", deserialize_with = "crate::de::null_as_default")]
+    pub wood: f64,
+    #[serde(rename = "Fire", deserialize_with = "crate::de::null_as_default")]
+    pub fire: f64,
+    #[serde(rename = "Earth", deserialize_with = "crate::de::null_as_default")]
+    pub earth: f64,
+    #[serde(rename = "Metal", deserialize_with = "crate::de::null_as_default")]
+    pub metal: f64,
+    #[serde(rename = "Water", deserialize_with = "crate::de::null_as_default")]
+    pub water: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartElementsPoints {
+    #[serde(rename = "Wood", deserialize_with = "crate::de::null_as_default")]
+    pub wood: i64,
+    #[serde(rename = "Fire", deserialize_with = "crate::de::null_as_default")]
+    pub fire: i64,
+    #[serde(rename = "Earth", deserialize_with = "crate::de::null_as_default")]
+    pub earth: i64,
+    #[serde(rename = "Metal", deserialize_with = "crate::de::null_as_default")]
+    pub metal: i64,
+    #[serde(rename = "Water", deserialize_with = "crate::de::null_as_default")]
+    pub water: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartElementsWeights {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub stem: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub branch: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub hidden_stem: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartInteraction {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scope: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pillars: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stems: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub can_transform: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transform_level: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transform_score: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transform_to: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transform_evidence: Option<BaziChartInteractionTransformEvidence>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub conditions: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub interpretation: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub branches: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_formed: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub note: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub missing_branch: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mitigated_by_branches: Option<Vec<String>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartInteractionTransformEvidence {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub month_branch: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub supporting_elements: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub opposing_elements: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub season_support_score: Option<f64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub final_decision: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub season_support: Option<bool>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartLuckCycle {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub start_age_years: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_forward: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pillars: Vec<BaziChartLuckCyclePillar>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartLuckCyclePillar {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub start_age: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub start_year: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub end_year: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub gan_zhi: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub gan: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zhi: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub gan_pinyin: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub zhi_pinyin: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub engine_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub ruleset: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub solar_term_source: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub life_stage_method: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartPillar {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub gan: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zhi: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub gan_info: BaziChartDayMasterInfo,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zhi_info: BaziChartPillarZhiInfo,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nayin: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub life_stage: BaziChartPillarLifeStage,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub gan_pinyin: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub zhi_pinyin: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ten_gods: Option<BaziChartPillarTenGods>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub interpretation: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartPillarLifeStage {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub chinese: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartPillarTenGods {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub stem: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub hidden: Vec<BaziChartPillarTenGodsHiddenItem>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartPillarTenGodsHiddenItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub gan: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub info: BaziChartDayMasterInfo,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub ten_god: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pinyin: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartPillarZhiInfo {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pinyin: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub element: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub polarity: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zodiac: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub hidden: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartProfessional {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dm_strength: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub structure: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub yong_shen_candidates: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub favorable_elements: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub unfavorable_elements: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub professional_debug: Option<BaziChartProfessionalProfessionalDebug>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub interpretation: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartProfessionalProfessionalDebug {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dm_strength_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub seasonal_factor: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub season_reason: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub balance_ratio: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub yong_shen_rationale: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub structure_rationale: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub xi_ji_method: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub day_master: BaziChartDayMaster,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pillars: Vec<BaziChartPillar>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub luck_cycle: BaziChartLuckCycle,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub elements: BaziChartElements,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub summary: BaziChartSummary,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stars: Option<Vec<BaziChartStar>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub interactions: Option<Vec<BaziChartInteraction>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub professional: Option<BaziChartProfessional>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub xun_kong: Option<BaziChartStarXunAudit>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stars_ruleset: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub interpretation_ruleset: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub metadata: BaziChartMetadata,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub astro_debug: Option<BaziChartAstroDebug>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub current_year_triggers: Option<BaziChartCurrentYearTriggers>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartStar {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pillar: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zhi: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub desc: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub trigger_rule: BaziChartStarTriggerRule2,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub trigger_text: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub xun_audit: Option<BaziChartStarXunAudit>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartStarTriggerRule {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dm: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub target: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub star: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ref_branch: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub day_pillar: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub xun: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub void_branches: Option<Vec<String>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum BaziChartStarTriggerRule2 {
+    BaziChartStarTriggerRule(BaziChartStarTriggerRule),
+    String(String),
+}
+
+impl<'de> Deserialize<'de> for BaziChartStarTriggerRule2 {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "BaziChartStarTriggerRule2",
+            &[
+                crate::de::Variant {
+                    required: &["type"],
+                    consts: &[],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::BaziChartStarTriggerRule)
+                    },
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::String),
+                },
+            ],
+        )
+    }
+}
+
+impl Default for BaziChartStarTriggerRule2 {
+    fn default() -> Self {
+        Self::BaziChartStarTriggerRule(Default::default())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartStarXunAudit {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub void_branches: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub xun_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub xun_index: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub day_pillar: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziChartSummary {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lunar_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zodiac: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub solar_term: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziDictionaryEntry {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stems: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub branches: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub element: Option<String>,
+}
+
+/// Dictionary of BaZi interaction and star codes, keyed by numeric code (as a string).
+pub type BaziDictionaryResponse = std::collections::BTreeMap<String, BaziDictionaryEntry>;
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct BaziFlowRequest {
     pub year: i64,
     pub month: i64,
@@ -1284,12 +3183,33 @@ pub struct BaziFlowRequest {
     pub lang: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum BaziFlowRequestExclude {
     String(String),
     StringList(Vec<String>),
+}
+
+impl<'de> Deserialize<'de> for BaziFlowRequestExclude {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "BaziFlowRequestExclude",
+            &[
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::String),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::StringList),
+                },
+            ],
+        )
+    }
 }
 
 impl Default for BaziFlowRequestExclude {
@@ -1298,12 +3218,33 @@ impl Default for BaziFlowRequestExclude {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum BaziFlowRequestInclude {
     String(String),
     StringList(Vec<String>),
+}
+
+impl<'de> Deserialize<'de> for BaziFlowRequestInclude {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "BaziFlowRequestInclude",
+            &[
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::String),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::StringList),
+                },
+            ],
+        )
+    }
 }
 
 impl Default for BaziFlowRequestInclude {
@@ -1345,6 +3286,575 @@ impl std::fmt::Display for BaziFlowRequestMode {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziFlowResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub years: Vec<BaziFlowYear>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub x_dict: Option<std::collections::BTreeMap<String, BaziDictionaryEntry>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziFlowYear {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub year: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub gan_zhi: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub gan: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zhi: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub age: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub months: Vec<BaziFlowYearMonth>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub gan_pinyin: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub zhi_pinyin: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub active_luck: Option<BaziFlowYearActiveLuck>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub interactions: Vec<BaziFlowYearInteractionsItem>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stars: Option<Vec<BaziFlowYearStarsItem>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub baseline_interactions: Option<Vec<BaziFlowYearBaselineInteractionsItem>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziFlowYearActiveLuck {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub gan_zhi: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub start_year: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub end_year: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziFlowYearBaselineInteraction {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scope: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pillars: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stems: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub can_transform: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transform_level: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transform_score: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transform_to: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transform_evidence: Option<BaziChartInteractionTransformEvidence>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub conditions: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub interpretation: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub branches: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_formed: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub note: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum BaziFlowYearBaselineInteractionsItem {
+    BaziFlowYearBaselineInteraction(BaziFlowYearBaselineInteraction),
+    Integer(i64),
+}
+
+impl<'de> Deserialize<'de> for BaziFlowYearBaselineInteractionsItem {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "BaziFlowYearBaselineInteractionsItem",
+            &[
+                crate::de::Variant {
+                    required: &["id", "type", "scope", "pillars", "interpretation"],
+                    consts: &[],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::BaziFlowYearBaselineInteraction)
+                    },
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Integer),
+                },
+            ],
+        )
+    }
+}
+
+impl Default for BaziFlowYearBaselineInteractionsItem {
+    fn default() -> Self {
+        Self::BaziFlowYearBaselineInteraction(Default::default())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum BaziFlowYearInteractionsItem {
+    BaziFlowYearMonthInteraction(BaziFlowYearMonthInteraction),
+    Integer(i64),
+}
+
+impl<'de> Deserialize<'de> for BaziFlowYearInteractionsItem {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "BaziFlowYearInteractionsItem",
+            &[
+                crate::de::Variant {
+                    required: &["id", "type", "scope", "pillars"],
+                    consts: &[],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::BaziFlowYearMonthInteraction)
+                    },
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Integer),
+                },
+            ],
+        )
+    }
+}
+
+impl Default for BaziFlowYearInteractionsItem {
+    fn default() -> Self {
+        Self::BaziFlowYearMonthInteraction(Default::default())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziFlowYearMonth {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub index: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub gan_zhi: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub gan: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zhi: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub gan_pinyin: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub zhi_pinyin: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub interactions: Vec<BaziFlowYearMonthInteractionsItem>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stars: Option<Vec<BaziFlowYearMonthStarsItem>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziFlowYearMonthInteraction {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scope: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pillars: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stems: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub can_transform: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transform_level: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transform_score: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transform_to: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub branches: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub missing_branch: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_formed: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mitigated_by_branches: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub note: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub interpretation: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transform_evidence: Option<BaziChartInteractionTransformEvidence>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub conditions: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum BaziFlowYearMonthInteractionsItem {
+    BaziFlowYearMonthInteraction(BaziFlowYearMonthInteraction),
+    Integer(i64),
+}
+
+impl<'de> Deserialize<'de> for BaziFlowYearMonthInteractionsItem {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "BaziFlowYearMonthInteractionsItem",
+            &[
+                crate::de::Variant {
+                    required: &["id", "type", "scope", "pillars"],
+                    consts: &[],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::BaziFlowYearMonthInteraction)
+                    },
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Integer),
+                },
+            ],
+        )
+    }
+}
+
+impl Default for BaziFlowYearMonthInteractionsItem {
+    fn default() -> Self {
+        Self::BaziFlowYearMonthInteraction(Default::default())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziFlowYearMonthStar {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pillar: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zhi: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub xun_audit: Option<BaziChartStarXunAudit>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub desc: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub trigger_rule: Option<BaziFlowYearMonthStarTriggerRule>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub trigger_text: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum BaziFlowYearMonthStarTriggerRule {
+    BaziChartStarTriggerRule(BaziChartStarTriggerRule),
+    String(String),
+}
+
+impl<'de> Deserialize<'de> for BaziFlowYearMonthStarTriggerRule {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "BaziFlowYearMonthStarTriggerRule",
+            &[
+                crate::de::Variant {
+                    required: &["type"],
+                    consts: &[],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::BaziChartStarTriggerRule)
+                    },
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::String),
+                },
+            ],
+        )
+    }
+}
+
+impl Default for BaziFlowYearMonthStarTriggerRule {
+    fn default() -> Self {
+        Self::BaziChartStarTriggerRule(Default::default())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum BaziFlowYearMonthStarsItem {
+    BaziFlowYearMonthStar(BaziFlowYearMonthStar),
+    Integer(i64),
+}
+
+impl<'de> Deserialize<'de> for BaziFlowYearMonthStarsItem {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "BaziFlowYearMonthStarsItem",
+            &[
+                crate::de::Variant {
+                    required: &["name", "pillar", "zhi"],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::BaziFlowYearMonthStar),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Integer),
+                },
+            ],
+        )
+    }
+}
+
+impl Default for BaziFlowYearMonthStarsItem {
+    fn default() -> Self {
+        Self::BaziFlowYearMonthStar(Default::default())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum BaziFlowYearStarsItem {
+    BaziFlowYearMonthStar(BaziFlowYearMonthStar),
+    Integer(i64),
+}
+
+impl<'de> Deserialize<'de> for BaziFlowYearStarsItem {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "BaziFlowYearStarsItem",
+            &[
+                crate::de::Variant {
+                    required: &["name", "pillar", "zhi"],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::BaziFlowYearMonthStar),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Integer),
+                },
+            ],
+        )
+    }
+}
+
+impl Default for BaziFlowYearStarsItem {
+    fn default() -> Self {
+        Self::BaziFlowYearMonthStar(Default::default())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthBaziContext {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub day_master: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub day_master_element: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub day_master_strength: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub favorable_elements: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub unfavorable_elements: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub rationale: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub balance_strategy: BaziHealthBaziContextBalanceStrategy,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthBaziContextBalanceStrategy {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub priority_elements: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub reason: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthConstitution {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub temperature: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub temperature_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub temperature_scale: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub temperature_components: BaziChartElementsPercentages,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub temperature_confidence: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub moisture: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub moisture_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub moisture_scale: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub moisture_components: BaziChartElementsPercentages,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub moisture_confidence: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub yin_yang_skew: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub yang_ratio: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthDataQuality {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub rooting_model: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub hidden_stems_weighting: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transformations: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthElementBalance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub raw_absolute: BaziChartElementsPercentages,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub raw_total: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub raw_distribution: BaziChartElementsPercentages,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub effective_pre_normalized: BaziChartElementsPercentages,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub effective_distribution: BaziChartElementsPercentages,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub effective_method: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub seasonal_adjustments: BaziHealthElementBalanceSeasonalAdjustments,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub rooting_scores: BaziChartElementsPercentages,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub rooting_raw: BaziChartElementsPercentages,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dominant_elements: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub weak_elements: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthElementBalanceSeasonalAdjustments {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub month_branch: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub multipliers: BaziChartElementsPercentages,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthInstabilityMarkers {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub markers: BaziHealthInstabilityMarkersMarkers,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub total_clashes: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub total_punishments: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub total_harms: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub instability_index: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub level: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthInstabilityMarkersMarkers {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub clashes: Vec<BaziHealthInstabilityMarkersMarkersClash>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub punishments: Vec<BaziHealthInstabilityMarkersMarkersPunishment>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub harms: Vec<BaziHealthInstabilityMarkersMarkersPunishment>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub self_punishments: Vec<BaziHealthInstabilityMarkersMarkersSelfPunishment>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthInstabilityMarkersMarkersClash {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pillars: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub elements: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub impact: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthInstabilityMarkersMarkersPunishment {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pillars: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub branches: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub impact: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthInstabilityMarkersMarkersSelfPunishment {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pillars: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub branch: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub impact: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub framework: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub day_master: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub month_branch: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub birth_year: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct BaziHealthRequest {
     pub year: i64,
     pub month: i64,
@@ -1382,6 +3892,253 @@ pub struct BaziHealthRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub bazi_context: BaziHealthBaziContext,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub constitution: BaziHealthConstitution,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub element_balance: BaziHealthElementBalance,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub susceptibility_themes: Vec<BaziHealthSusceptibilityTheme>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub stress_patterns: BaziHealthStressPatterns,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub tcm_correspondences: Vec<BaziHealthTcmCorrespondence>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub instability_markers: BaziHealthInstabilityMarkers,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub timing: Option<BaziHealthTiming>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub metadata: BaziHealthMetadata,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub data_quality: BaziHealthDataQuality,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub disclaimer: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthStressPatterns {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub patterns: BaziHealthStressPatternsPatterns,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub ten_god_distribution: BaziHealthStressPatternsTenGodDistribution,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dm_strength_context: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub overall_stress_index: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthStressPatternsPatterns {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub depletion_risk: BaziHealthStressPatternsPatternsDepletionRisk,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub overwork_risk: BaziHealthStressPatternsPatternsDepletionRisk,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pressure_load: BaziHealthStressPatternsPatternsDepletionRisk,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub recovery_capacity: BaziHealthStressPatternsPatternsDepletionRisk,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthStressPatternsPatternsDepletionRisk {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub level: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub drivers: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub description: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthStressPatternsTenGodDistribution {
+    #[serde(rename = "Friend", deserialize_with = "crate::de::null_as_default")]
+    pub friend: f64,
+    #[serde(rename = "Rob Wealth", deserialize_with = "crate::de::null_as_default")]
+    pub rob_wealth: f64,
+    #[serde(rename = "Eating God", deserialize_with = "crate::de::null_as_default")]
+    pub eating_god: f64,
+    #[serde(
+        rename = "Hurting Officer",
+        deserialize_with = "crate::de::null_as_default"
+    )]
+    pub hurting_officer: f64,
+    #[serde(
+        rename = "Indirect Wealth",
+        deserialize_with = "crate::de::null_as_default"
+    )]
+    pub indirect_wealth: f64,
+    #[serde(
+        rename = "Direct Wealth",
+        deserialize_with = "crate::de::null_as_default"
+    )]
+    pub direct_wealth: f64,
+    #[serde(rename = "7 Killings", deserialize_with = "crate::de::null_as_default")]
+    pub n7_killings: f64,
+    #[serde(
+        rename = "Direct Officer",
+        deserialize_with = "crate::de::null_as_default"
+    )]
+    pub direct_officer: f64,
+    #[serde(
+        rename = "Indirect Resource",
+        deserialize_with = "crate::de::null_as_default"
+    )]
+    pub indirect_resource: f64,
+    #[serde(
+        rename = "Direct Resource",
+        deserialize_with = "crate::de::null_as_default"
+    )]
+    pub direct_resource: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthSusceptibilityTheme {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub theme: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub drivers: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub confidence: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthTcmCorrespondence {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub element: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub tendency: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub themes: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub drivers: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub confidence: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthTiming {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub decade_peaks: Vec<BaziHealthTimingDecadePeak>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub year_peaks: Vec<BaziHealthTimingYearPeak>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub analysis_range: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub note: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthTimingDecadePeak {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub period: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub gan_zhi: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub strain_index: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub strain_breakdown: BaziHealthTimingDecadePeakStrainBreakdown,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub strain_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub drivers: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub level: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthTimingDecadePeakStrainBreakdown {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub unfavorable_elements: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub clash_activation: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziHealthTimingYearPeak {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub year: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub gan_zhi: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub strain_index: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub strain_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub drivers: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub level: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziLifespanCurveItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub age: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub year: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub j0: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub j_final: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub jing_prenatal: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub jing_postnatal: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub qi: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub qi_pre_heaven: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub qi_post_heaven: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub prenatal_integrity: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub shen: f64,
+    #[serde(rename = "S", deserialize_with = "crate::de::null_as_default")]
+    pub s: f64,
+    #[serde(rename = "D", deserialize_with = "crate::de::null_as_default")]
+    pub d: f64,
+    #[serde(rename = "V", deserialize_with = "crate::de::null_as_default")]
+    pub v: f64,
+    #[serde(rename = "H", deserialize_with = "crate::de::null_as_default")]
+    pub h: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub explain: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziLifespanMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub max_age: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sex: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub cultivation_level: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub algorithm: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct BaziLifespanRequest {
     pub year: i64,
     pub month: i64,
@@ -1416,6 +4173,15 @@ pub struct BaziLifespanRequest {
     /// Server default: `"en"`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lang: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziLifespanResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub metadata: BaziLifespanMetadata,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub curve: Vec<BaziLifespanCurveItem>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
@@ -1503,12 +4269,158 @@ impl std::fmt::Display for BaziRequestCalendar {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziSynastryConflictScan {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub clashes: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub harms: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub punishments: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub destructions: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziSynastryDayMasterAnalysis {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dm_a: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dm_b: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub relation: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub description: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dynamic: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziSynastryElementAnalysis {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub details: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub a_needs: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub b_needs: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziSynastryHiddenInteractions {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub connections: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub count: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziSynastryPillarInteraction {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pillar: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub weight: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub branch_interaction: BaziSynastryPillarInteractionBranchInteraction,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub stem_interaction: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub net_score: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziSynastryPillarInteractionBranchInteraction {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score_modifier: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct BaziSynastryRequest {
     pub person_a: BaziRequest,
     pub person_b: BaziRequest,
     /// Server default: `"en"`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lang: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziSynastryResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score_breakdown: BaziSynastryScoreBreakdown,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub overall_compatibility: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub day_master_analysis: BaziSynastryDayMasterAnalysis,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub spouse_palace_analysis: BaziSynastrySpousePalaceAnalysis,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub element_analysis: BaziSynastryElementAnalysis,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pillar_interactions: Vec<BaziSynastryPillarInteraction>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub hidden_interactions: BaziSynastryHiddenInteractions,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub conflict_scan: BaziSynastryConflictScan,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub conflict_summary: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziSynastryScoreBreakdown {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub day_master: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub spouse_palace: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pillars: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub elements: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub hidden_bonus: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziSynastrySpousePalaceAnalysis {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub branch_a: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub branch_b: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub interaction: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub description: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziTimeCorrectionModalities {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub civil: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub true_solar: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub true_solar_absolute: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
@@ -1537,54 +4449,114 @@ pub struct BaziTimeCorrectionRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BaziTimeCorrectionResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub civil_time: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lmt: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub true_solar_relative: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub true_solar_absolute: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub equation_of_time_minutes: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub longitude_correction_minutes: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub standard_meridian: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub resolved_timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dst_offset_hours: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub modalities: BaziTimeCorrectionModalities,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct BhavaChalitAscendant {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house: i64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct BhavaChalitChart {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub chart_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calibrated: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_basis: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ascendant: BhavaChalitAscendant,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planets: Vec<BhavaChalitPlanet>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub houses: Vec<BhavaChalitHouse>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub row_house_ids: std::collections::BTreeMap<String, i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub row_sign_ids: std::collections::BTreeMap<String, i64>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct BhavaChalitHouse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub degree_cusp: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub boundary_start: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub boundary_end: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct BhavaChalitPlanet {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub absolute_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub degree_in_sign: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rashi_house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub chalit_house: i64,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum BirthDateBoundary {
     #[default]
     #[serde(rename = "civil_midnight")]
     CivilMidnight,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl BirthDateBoundary {
@@ -1592,6 +4564,7 @@ impl BirthDateBoundary {
     pub fn as_str(&self) -> &str {
         match self {
             Self::CivilMidnight => "civil_midnight",
+            Self::Other(value) => value,
         }
     }
 }
@@ -1748,11 +4721,14 @@ impl std::fmt::Display for BoundsSystem {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum Buyer {
     #[default]
     #[serde(rename = "buyer")]
     Buyer,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl Buyer {
@@ -1760,6 +4736,7 @@ impl Buyer {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Buyer => "buyer",
+            Self::Other(value) => value,
         }
     }
 }
@@ -1872,25 +4849,30 @@ pub struct CalculateRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CalculateV2Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ayanamsha: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone_used: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub chart: ChartV2Response,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub vargas: Option<VargasV2Response>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub bhava_chalit: Option<BhavaChalitChart>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub vimshottari_dasha: Option<DashaV2Response>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub yogas: Option<YogasV2Response>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub panchang: Option<PanchangV2Response>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub shadbala:
         Option<std::collections::BTreeMap<String, std::collections::BTreeMap<String, f64>>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ashtakavarga: Option<AshtakavargaV2Response>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub metadata: serde_json::Map<String, serde_json::Value>,
 }
 
@@ -1926,11 +4908,14 @@ impl std::fmt::Display for Calculation {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum CalculationMethod {
     #[default]
     #[serde(rename = "secondary_progressions_day_for_year")]
     SecondaryProgressionsDayForYear,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl CalculationMethod {
@@ -1938,6 +4923,7 @@ impl CalculationMethod {
     pub fn as_str(&self) -> &str {
         match self {
             Self::SecondaryProgressionsDayForYear => "secondary_progressions_day_for_year",
+            Self::Other(value) => value,
         }
     }
 }
@@ -1978,27 +4964,34 @@ impl std::fmt::Display for CalculationMode {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CalculationPolicy {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub preserved_master_numbers: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name_normalization: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub y_policy: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub alphabet_table_id: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub birth_date_boundary: Option<BirthDateBoundary>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub calendar: Option<CalculationPolicyCalendar>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub date_digit_order: Option<DateDigitOrder>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub profile_type: Option<ProfileType>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum CalculationPolicyCalendar {
     #[default]
     #[serde(rename = "gregory")]
     Gregory,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl CalculationPolicyCalendar {
@@ -2006,6 +4999,7 @@ impl CalculationPolicyCalendar {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Gregory => "gregory",
+            Self::Other(value) => value,
         }
     }
 }
@@ -2016,11 +5010,14 @@ impl std::fmt::Display for CalculationPolicyCalendar {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum CalendarLibrary {
     #[default]
     #[serde(rename = "lunar-python")]
     LunarPython,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl CalendarLibrary {
@@ -2028,6 +5025,7 @@ impl CalendarLibrary {
     pub fn as_str(&self) -> &str {
         match self {
             Self::LunarPython => "lunar-python",
+            Self::Other(value) => value,
         }
     }
 }
@@ -2038,11 +5036,14 @@ impl std::fmt::Display for CalendarLibrary {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum Candidate {
     #[default]
     #[serde(rename = "candidate")]
     Candidate,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl Candidate {
@@ -2050,6 +5051,7 @@ impl Candidate {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Candidate => "candidate",
+            Self::Other(value) => value,
         }
     }
 }
@@ -2061,85 +5063,127 @@ impl std::fmt::Display for Candidate {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CardsArchetype {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub one_liner: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CardsAspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength_label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub polarity: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub polarity_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub abs_polarity: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub domains: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub default_block: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub display_policy: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub blocks: CardsBlocks,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CardsBands {
     /// Server default: `"synastry_bands_v1"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub rules_version: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub bond_tone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub core_dynamic: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub watch_for: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CardsBlock {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub one_liner: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub insight: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CardsBlocks {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub supportive: Option<CardsBlock>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub challenging: Option<CardsBlock>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CardsCalculationMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub zodiac: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sidereal_ayanamsa: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_system: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CardsMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub report_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation: CardsCalculationMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CardsSummary {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub archetype: CardsArchetype,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scores: std::collections::BTreeMap<String, i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub score_meta: Option<serde_json::Map<String, serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strengths: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub challenges: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub drivers_by_domain: std::collections::BTreeMap<String, Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspects_returned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspects_total: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub narrative: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub bands: Option<CardsBands>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub domain_states: Option<std::collections::BTreeMap<String, String>>,
 }
 
@@ -2202,26 +5246,37 @@ impl std::fmt::Display for CellFormat {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChaldeanCompoundContext {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub compound: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub traditional_frame: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub same_as: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_locator: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChaldeanData {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: ChaldeanDataKind,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub chaldean_name_analysis: ChaldeanNameAnalysis,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ChaldeanDataKind {
     #[default]
     #[serde(rename = "chaldean")]
     Chaldean,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ChaldeanDataKind {
@@ -2229,6 +5284,7 @@ impl ChaldeanDataKind {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Chaldean => "chaldean",
+            Self::Other(value) => value,
         }
     }
 }
@@ -2281,11 +5337,14 @@ impl std::fmt::Display for ChaldeanMethodRequestCompoundPolicy {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ChaldeanMethodRequestMasterPolicy {
     #[default]
     #[serde(rename = "reduce_all")]
     ReduceAll,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ChaldeanMethodRequestMasterPolicy {
@@ -2293,6 +5352,7 @@ impl ChaldeanMethodRequestMasterPolicy {
     pub fn as_str(&self) -> &str {
         match self {
             Self::ReduceAll => "reduce_all",
+            Self::Other(value) => value,
         }
     }
 }
@@ -2338,11 +5398,14 @@ impl std::fmt::Display for ChaldeanMethodRequestProfile {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ChaldeanMethodRequestSystem {
     #[default]
     #[serde(rename = "chaldean")]
     Chaldean,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ChaldeanMethodRequestSystem {
@@ -2350,6 +5413,7 @@ impl ChaldeanMethodRequestSystem {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Chaldean => "chaldean",
+            Self::Other(value) => value,
         }
     }
 }
@@ -2361,10 +5425,15 @@ impl std::fmt::Display for ChaldeanMethodRequestSystem {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChaldeanNameAnalysis {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_name: ChaldeanNameAnalysisSourceName,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_reason: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub alphabet_table_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name_number: NumberResult,
 }
 
@@ -2398,27 +5467,47 @@ impl std::fmt::Display for ChaldeanNameAnalysisSourceName {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChaldeanNameInterpretation {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub availability: ChaldeanNameInterpretationAvailability,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub personal_interpretation: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub content_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub content_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub content_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub locale: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub claims_mode: ClaimsMode,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_refs: Vec<ContentSourceRef>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub provenance_note: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub disclaimer: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: ChaldeanNameInterpretationKind,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub coverage: ChaldeanNameInterpretationCoverage,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub constructive_reading: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub cautionary_reading: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub guidance: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub root_context: ChaldeanRootContext,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub compound_context: Option<ChaldeanCompoundContext>,
 }
 
@@ -2480,11 +5569,14 @@ impl std::fmt::Display for ChaldeanNameInterpretationCoverage {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ChaldeanNameInterpretationKind {
     #[default]
     #[serde(rename = "chaldean_name_interpretation")]
     ChaldeanNameInterpretation,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ChaldeanNameInterpretationKind {
@@ -2492,6 +5584,7 @@ impl ChaldeanNameInterpretationKind {
     pub fn as_str(&self) -> &str {
         match self {
             Self::ChaldeanNameInterpretation => "chaldean_name_interpretation",
+            Self::Other(value) => value,
         }
     }
 }
@@ -2503,35 +5596,56 @@ impl std::fmt::Display for ChaldeanNameInterpretationKind {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChaldeanRootContext {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub root: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChartAscendant {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub nakshatra: NakshatraInfo,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChartHouse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub degree_cusp: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChartMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ruleset_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ayanamsha: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub node_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone_used: String,
 }
 
@@ -2566,32 +5680,46 @@ impl std::fmt::Display for ChartMode {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChartPayload {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub points: std::collections::BTreeMap<String, PointPayload>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub angles: Option<std::collections::BTreeMap<String, AnglePayload>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub houses: Option<Vec<HousePayload>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub stelliums: Option<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub dominants: Option<serde_json::Map<String, serde_json::Value>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChartPlanet {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub absolute_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub degree_in_sign: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub is_retrograde: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub nakshatra: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub nakshatra_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pada: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub nakshatra_lord: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub avastha: Option<serde_json::Map<String, serde_json::Value>>,
 }
 
@@ -2659,130 +5787,162 @@ pub struct ChartRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChartSimilarityBreakdown {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub placement_score: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_score: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub angle_score: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub personal_placement_score: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub social_placement_score: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub generational_placement_score: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub personal_aspect_score: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub social_aspect_score: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub generational_aspect_score: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub placement_weight: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_weight: f64,
     /// Server default: `0.0`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub angle_weight: Option<f64>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChartSimilarityConfidence {
     /// Server default: `"known"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub birth_time: Option<BirthTime>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub location_resolved: Option<bool>,
     /// Server default: `false`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub houses_and_angles_used: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChartSimilarityCounts {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub compared_positions: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub same_sign_positions: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub close_positions: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub shared_major_aspects: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub shared_close_aspects: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub compared_angles: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub same_sign_angles: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub close_angles: Option<i64>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChartSimilarityDatasetMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub dataset: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub dataset_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub dataset_size: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub generated_at: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rules_version: String,
     /// Server default: `"tropical"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub zodiac: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub house_system: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub notes: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChartSimilarityMatch {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub person: FamousPersonSummary,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: ChartSimilaritySummary,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub breakdown: ChartSimilarityBreakdown,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub counts: ChartSimilarityCounts,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub shared_positions: Option<Vec<SharedPosition>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub shared_angles: Option<Vec<SharedPosition>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub shared_aspects: Option<Vec<SharedAspect>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub confidence: ChartSimilarityConfidence,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChartSimilarityResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: ChartSimilarityDatasetMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub run: ChartSimilarityRunMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub matches: Vec<ChartSimilarityMatch>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChartSimilarityRunMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub settings: ChartSimilaritySettings,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub compared_count: i64,
     /// Server default: `0`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub skipped_count: Option<i64>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChartSimilaritySettings {
     /// Server default: `20`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub top_n: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub bodies: Option<Vec<String>>,
     /// Server default: `"major"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub aspect_set: Option<ChartSimilaritySettingsAspectSet>,
     /// Server default: `true`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub include_angles: Option<bool>,
     /// Server default: `5.0`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub close_position_orb_deg: Option<f64>,
     /// Server default: `5.0`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub close_angle_orb_deg: Option<f64>,
     /// Server default: `2.0`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub close_aspect_orb_deg: Option<f64>,
     /// Server default: `25`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub max_detail_items: Option<i64>,
 }
 
@@ -2819,26 +5979,29 @@ impl std::fmt::Display for ChartSimilaritySettingsAspectSet {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChartSimilaritySummary {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub headline: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub match_strength: MatchStrength,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub explanation: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub why_this_match: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub same_sign_positions: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub close_positions: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub personal_planet_matches: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub social_planet_matches: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub generational_matches: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub shared_aspects: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub shared_angles: Option<Vec<String>>,
 }
 
@@ -2876,13 +6039,19 @@ impl std::fmt::Display for ChartStyle {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChartV2Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ascendant: ChartAscendant,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planets: Vec<ChartPlanet>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub houses: Vec<ChartHouse>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sade_sati: serde_json::Map<String, serde_json::Value>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub bhava_chalit: Option<BhavaChalitChart>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub metadata: ChartMetadata,
 }
 
@@ -2892,15 +6061,25 @@ pub struct ChineseCalendarAuthErrorResponse {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChineseCalendarCycle {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub gan_zhi: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub gan: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub zhi: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub gan_pinyin: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub zhi_pinyin: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub stem_element: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub branch_element: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub stem_polarity: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub branch_polarity: String,
 }
 
@@ -2920,77 +6099,131 @@ pub struct ChineseCalendarErrorResponse {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChineseCalendarFestivals {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub solar: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lunar: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub other_solar: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub other_lunar: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub other_observances_historically_filtered: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChineseCalendarGregorianDate {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub year: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub month: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub day: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub weekday: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub weekday_zh: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChineseCalendarLunarDate {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub year: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub month: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub day: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub is_leap_month: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub year_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub month_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub day_name: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChineseCalendarMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub engine_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calendar: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub date_only: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calendar_library: CalendarLibrary,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calendar_library_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation_standard: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub reference_timezone: ReferenceTimezone,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub reference_instant: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pillar_precision: PillarPrecision,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub day_rollover_convention: DayRolloverConvention,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub solar_term_times: SolarTermTimes,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub validated_date_range: ChineseCalendarValidatedRange,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub within_validated_date_range: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub festival_observance_policy: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChineseCalendarResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub gregorian: ChineseCalendarGregorianDate,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lunar: ChineseCalendarLunarDate,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub year_profiles: ChineseCalendarYearProfiles,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sexagenary: ChineseCalendarSexagenary,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub solar_terms: ChineseCalendarSolarTerms,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub festivals: ChineseCalendarFestivals,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub metadata: ChineseCalendarMetadata,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChineseCalendarSexagenary {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub month: ChineseCalendarCycle,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub day: ChineseCalendarCycle,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChineseCalendarSolarTerm {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone: Timezone,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: ChineseCalendarSolarTermKind,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub changes_bazi_month: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub changes_bazi_year: bool,
 }
 
@@ -3024,60 +6257,156 @@ impl std::fmt::Display for ChineseCalendarSolarTermKind {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChineseCalendarSolarTerms {
-    #[serde(default)]
     pub current: Option<ChineseCalendarSolarTerm>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub previous: ChineseCalendarSolarTerm,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub next: ChineseCalendarSolarTerm,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChineseCalendarValidatedRange {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub authority: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChineseCalendarYearProfile {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub gan_zhi: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub gan: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub zhi: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub gan_pinyin: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub zhi_pinyin: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub stem_element: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub branch_element: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub stem_polarity: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub branch_polarity: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub zodiac: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub zodiac_zh: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ChineseCalendarYearProfiles {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lunar_new_year: ChineseCalendarYearProfile,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub li_chun: ChineseCalendarYearProfile,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct ChineseTodayPillar {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub gan: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zhi: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub info: ChineseTodayPillarInfo,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub gan_pinyin: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zhi_pinyin: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct ChineseTodayPillarInfo {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub stem: ChineseTodayPillarInfoStem,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub branch: ChineseTodayPillarInfoBranch,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct ChineseTodayPillarInfoBranch {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pinyin: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub element: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub polarity: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zodiac: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub hidden: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct ChineseTodayPillarInfoStem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pinyin: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub element: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub polarity: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct ChineseTodayResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timestamp: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pillars: Vec<ChineseTodayPillar>,
 }
 
 /// A city search result
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CityResult {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub country: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub state: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub district: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lat: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lng: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub population: i64,
 }
 
 /// Response model for city search
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CitySearchResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub results: Vec<CityResult>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub count: i64,
 }
 
@@ -3116,11 +6445,14 @@ impl std::fmt::Display for CitySize {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ClaimsMode {
     #[default]
     #[serde(rename = "symbolic_reflective")]
     SymbolicReflective,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ClaimsMode {
@@ -3128,6 +6460,7 @@ impl ClaimsMode {
     pub fn as_str(&self) -> &str {
         match self {
             Self::SymbolicReflective => "symbolic_reflective",
+            Self::Other(value) => value,
         }
     }
 }
@@ -3145,81 +6478,120 @@ pub struct ClientContext {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CompatibilityAshtakoota {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub max_score: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub percentage: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub recommendation: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub recommendation_label: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kootas: Vec<CompatibilityKoota>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CompatibilityDosha {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub active: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub max_score: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub message: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CompatibilityDoshas {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub manglik: CompatibilityManglik,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub nadi: CompatibilityDosha,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub bhakoot: CompatibilityDosha,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CompatibilityEvidence {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub kind_label: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub message: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CompatibilityKoota {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub max_score: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub status: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub status_label: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub evidence: Vec<CompatibilityEvidence>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CompatibilityManglik {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub person1: CompatibilityManglikSubject,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub person2: CompatibilityManglikSubject,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub compatibility: serde_json::Map<String, serde_json::Value>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CompatibilityManglikSubject {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub available: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub active: Option<bool>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub severity: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub severity_label: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub severity_score: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub reference_frames: Vec<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub cancellations: Option<Vec<std::collections::BTreeMap<String, String>>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub message: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CompatibilityMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ruleset_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation_basis: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub person1_input_mode: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub person2_input_mode: String,
 }
 
@@ -3243,31 +6615,43 @@ pub struct CompatibilityMoonInput {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CompatibilityMoonSign {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub degree: Option<f64>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CompatibilityPerson {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub label_display: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub input_mode: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub input_mode_label: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub moon_sign: CompatibilityMoonSign,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub moon_nakshatra: CompatibilityPersonNakshatra,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CompatibilityPersonNakshatra {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub pada: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lord: String,
 }
 
@@ -3290,15 +6674,21 @@ pub struct CompatibilityRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CompatibilitySummary {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub total_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub max_score: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub minimum_traditional_threshold: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub passes_minimum_threshold: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub risk_flags: Vec<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub risk_flag_labels: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub threshold_label: Option<String>,
 }
 
@@ -3342,11 +6732,17 @@ pub struct CompatibilityV2Request {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CompatibilityV2Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub persons: Vec<CompatibilityPerson>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ashtakoota: CompatibilityAshtakoota,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub doshas: CompatibilityDoshas,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: CompatibilitySummary,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub metadata: CompatibilityMetadata,
 }
 
@@ -3412,14 +6808,19 @@ impl std::fmt::Display for ConfidenceLevel {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ContentSourceRef {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub role: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub locator: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supports: Vec<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub applies_to_profiles: Option<Vec<String>>,
 }
 
@@ -3449,16 +6850,24 @@ pub struct ConverseSecondaryProgressionsRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CoreNumbers {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub life_path: NumberResult,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub birthday: NumberResult,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub attitude: NumberResult,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CountBucket {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub total: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub active: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub inactive: i64,
 }
 
@@ -3495,68 +6904,99 @@ impl std::fmt::Display for CountryScope {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CouplesHoroscopeAspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength_label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub polarity: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub polarity_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub abs_polarity: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub domains: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub default_block: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub display_policy: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub blocks: CouplesHoroscopeBlocks,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub timing: Option<CouplesHoroscopeTiming>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CouplesHoroscopeBands {
     /// Server default: `"daily_couples_bands_v1"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub rules_version: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub theme: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub core: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub shadow: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CouplesHoroscopeBlocks {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub supportive: Option<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub challenging: Option<serde_json::Map<String, serde_json::Value>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CouplesHoroscopeDayContext {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub active_windows: Vec<CouplesHoroscopeDayContextItem>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_hits: Vec<CouplesHoroscopeDayContextItem>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub next_shift: Option<CouplesHoroscopeNextShift>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub dominant_topics: Vec<CouplesHoroscopeDominantTopic>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supportive_vs_challenging: std::collections::BTreeMap<String, i64>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CouplesHoroscopeDayContextItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub polarity: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub domains: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub phase: Option<CouplesHoroscopeDayContextItemPhase>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub start_datetime: Option<String>,
     /// Server default: `\[\]`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub exact_datetimes: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub end_datetime: Option<String>,
 }
 
@@ -3593,31 +7033,44 @@ impl std::fmt::Display for CouplesHoroscopeDayContextItemPhase {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CouplesHoroscopeDominantTopic {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
     /// Server default: `\[\]`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub drivers: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CouplesHoroscopeInsightsMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timing_summary_enabled: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_timing_enabled: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_blocks_enabled: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CouplesHoroscopeNextShift {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timestamp: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub r#type: CouplesHoroscopeNextShiftType,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub aspect_id: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub key: Option<String>,
 }
 
@@ -3668,52 +7121,83 @@ pub struct CouplesHoroscopeRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CouplesHoroscopeResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: CouplesHoroscopeSummary,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspects: Vec<CouplesHoroscopeAspect>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ritual: Option<CouplesHoroscopeRitual>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CouplesHoroscopeRitual {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_seconds: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub steps: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub domains: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub bond_xp_reward: i64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CouplesHoroscopeSummary {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scores: std::collections::BTreeMap<String, i64>,
     /// Server default: `{"tension_higher_is_more": true}`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub score_meta: Option<std::collections::BTreeMap<String, bool>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strengths: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub challenges: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub drivers_by_domain: std::collections::BTreeMap<String, Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspects_returned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspects_total: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub narrative: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub bands: CouplesHoroscopeBands,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub domain_states: std::collections::BTreeMap<String, String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CouplesHoroscopeTiming {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub is_active_on_date: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub phase: CouplesHoroscopeTimingPhase,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_datetimes: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_hours: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_days: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub continues_before_date: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub continues_after_date: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub precision: Option<Precision>,
 }
 
@@ -3750,24 +7234,35 @@ impl std::fmt::Display for CouplesHoroscopeTimingPhase {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CouplesHoroscopeV2Aspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength_label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub polarity: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub polarity_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub abs_polarity: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub domains: Vec<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub default_block: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub display_policy: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub blocks: Option<CouplesHoroscopeBlocks>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub timing: Option<CouplesHoroscopeTiming>,
 }
 
@@ -3789,23 +7284,36 @@ pub struct CouplesHoroscopeV2Request {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CouplesHoroscopeV2Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: CouplesHoroscopeSummary,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspects: Vec<CouplesHoroscopeV2Aspect>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ritual: Option<CouplesHoroscopeRitual>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub day_context: CouplesHoroscopeDayContext,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub insights_meta: CouplesHoroscopeInsightsMeta,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CrossAspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sr_body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub is_major: bool,
 }
 
@@ -3855,87 +7363,126 @@ impl std::fmt::Display for D4Profile {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct DailyNarrative {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub opportunity: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub best_use: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct DailyRashifalBulkResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: RashifalMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub data: std::collections::BTreeMap<String, RashifalData>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct DailyRashifalSignResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: RashifalMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub data: RashifalData,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct DailyRemedy {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub focus: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub simple_action: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub reflection: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub avoid: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub basis: serde_json::Map<String, serde_json::Value>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct DailyScoreDetail {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub band: Band,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub confidence: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub drivers: Vec<DailyScoreEvidenceRef>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub cautions: Vec<DailyScoreEvidenceRef>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub explanation: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct DailyScoreEvidenceRef {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub evidence_id: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub fact_id: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub evidence_ref: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub polarity: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub category: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub kind: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub transit_planet: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub impact: Option<f64>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct DailySection {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub band: Band,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub confidence: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub explanation: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub advice: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub drivers: Vec<DailyScoreEvidenceRef>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub cautions: Vec<DailyScoreEvidenceRef>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct DailyTheme {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub headline: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub primary_influence: Option<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub dominant_dasha: Option<serde_json::Map<String, serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub panchang_mood: String,
 }
 
@@ -4011,62 +7558,107 @@ pub struct DailyVedicHoroscopeRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct DailyVedicHoroscopeV2Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub profile: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub theme: DailyTheme,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scores: std::collections::BTreeMap<String, DailyScoreDetail>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub narrative: DailyNarrative,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sections: Vec<DailySection>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timing: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub panchang: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub influences:
         std::collections::BTreeMap<String, Vec<serde_json::Map<String, serde_json::Value>>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub dasha: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub remedy: DailyRemedy,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub evidence: Option<serde_json::Map<String, serde_json::Value>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct DashaActivePeriod {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub level: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub elapsed_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub remaining_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub progress_fraction: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub elapsed_days: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub remaining_days: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub path: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct DashaBalance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub actual_start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub birth_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub full_duration_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub elapsed_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub remaining_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub elapsed_fraction: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub remaining_fraction: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct DashaMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ruleset_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ayanamsha: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub node_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone_used: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub levels_requested: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub reference_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub dasha_mode: DashaMode,
 }
 
@@ -4220,11 +7812,17 @@ pub struct DashaRequestV2 {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct DashaV2Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub moon_nakshatra: NakshatraInfo,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub birth_balance: DashaBalance,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub active_periods: Vec<DashaActivePeriod>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timeline: Vec<serde_json::Map<String, serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub metadata: DashaMetadata,
 }
 
@@ -4257,11 +7855,14 @@ impl std::fmt::Display for Data2HouseWheelPlacement {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum DateDigitOrder {
     #[default]
     #[serde(rename = "DDMMYYYY")]
     Ddmmyyyy,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl DateDigitOrder {
@@ -4269,6 +7870,7 @@ impl DateDigitOrder {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Ddmmyyyy => "DDMMYYYY",
+            Self::Other(value) => value,
         }
     }
 }
@@ -4279,11 +7881,14 @@ impl std::fmt::Display for DateDigitOrder {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum DayRolloverConvention {
     #[default]
     #[serde(rename = "civil_midnight")]
     CivilMidnight,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl DayRolloverConvention {
@@ -4291,6 +7896,7 @@ impl DayRolloverConvention {
     pub fn as_str(&self) -> &str {
         match self {
             Self::CivilMidnight => "civil_midnight",
+            Self::Other(value) => value,
         }
     }
 }
@@ -4433,56 +8039,127 @@ impl std::fmt::Display for DstPolicy {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct EclipseData {
     /// Server default: `false`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub is_eclipse: Option<bool>,
     /// Server default: `false`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub is_blood_moon: Option<bool>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub kind: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub r#type: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub kind: Option<EclipseDataKind>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub r#type: Option<EclipseDataType>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub date: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub starts_at: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ends_at: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub central_phase_starts_at: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub central_phase_ends_at: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub visibility: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub visible_at_location: Option<bool>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub type_at_location: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub type_at_location: Option<TypeAtLocation>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub days_from_query: Option<f64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub magnitude: Option<f64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub obscuration: Option<f64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub maximum_location: Option<EclipseMaximumLocationData>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub local_starts_at: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub local_maximum_at: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub local_ends_at: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub magnitude_at_location: Option<f64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub obscuration_at_location: Option<f64>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+pub enum EclipseDataKind {
+    #[default]
+    #[serde(rename = "solar")]
+    Solar,
+    #[serde(rename = "lunar")]
+    Lunar,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
+}
+
+impl EclipseDataKind {
+    /// The wire value of this variant.
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Solar => "solar",
+            Self::Lunar => "lunar",
+            Self::Other(value) => value,
+        }
+    }
+}
+
+impl std::fmt::Display for EclipseDataKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+pub enum EclipseDataType {
+    #[default]
+    #[serde(rename = "total")]
+    Total,
+    #[serde(rename = "annular")]
+    Annular,
+    #[serde(rename = "hybrid")]
+    Hybrid,
+    #[serde(rename = "partial")]
+    Partial,
+    #[serde(rename = "penumbral")]
+    Penumbral,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
+}
+
+impl EclipseDataType {
+    /// The wire value of this variant.
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Total => "total",
+            Self::Annular => "annular",
+            Self::Hybrid => "hybrid",
+            Self::Partial => "partial",
+            Self::Penumbral => "penumbral",
+            Self::Other(value) => value,
+        }
+    }
+}
+
+impl std::fmt::Display for EclipseDataType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct EclipseMaximumLocationData {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lat: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lon: f64,
 }
 
@@ -4516,11 +8193,14 @@ impl std::fmt::Display for ElementColorScheme {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum EndpointVersion {
     #[default]
     #[serde(rename = "v2")]
     V2,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl EndpointVersion {
@@ -4528,6 +8208,7 @@ impl EndpointVersion {
     pub fn as_str(&self) -> &str {
         match self {
             Self::V2 => "v2",
+            Self::Other(value) => value,
         }
     }
 }
@@ -4539,13 +8220,339 @@ impl std::fmt::Display for EndpointVersion {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct EngineMeta {
     /// Server default: `"SolarReturnEngine"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     /// Server default: `"1.0.0"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDataAngles {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub asc: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub mc: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub ic: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dc: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub vertex: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDataAnglesDetailsEntry {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_abbr: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub abs_pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDataAspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p1: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p2: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub orb: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_major: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_applying: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDataAstrology {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub retrograde_bodies: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub stations: Vec<EphemerisDataAstrologyStation>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub ingresses: Vec<EphemerisDataAstrologyIngress>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angular_bodies: Vec<EphemerisDataAstrologyAngularBody>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub notable_conditions: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub moon_phase: EphemerisDataAstrologyMoonPhase,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub moon_void_of_course: Option<EphemerisDataAstrologyMoonVoidOfCourse>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDataAstrologyAngularBody {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDataAstrologyIngress {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub degree_in_sign: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub direction: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDataAstrologyMoonPhase {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub phase_angle_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_waxing: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDataAstrologyMoonVoidOfCourse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_void: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub definition: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub current_sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub next_sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_ingress_at: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub next_applying_aspect: Option<EphemerisDataAstrologyMoonVoidOfCourseNextApplyingAspect>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDataAstrologyMoonVoidOfCourseNextApplyingAspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub aspect: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub exact_at: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDataAstrologyStation {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub motion_state: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub speed: Option<f64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDataBodiesEntry {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub abs_pos: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub retrograde: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub speed: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_stationary: Option<bool>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub latitude_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub distance_au: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_abbr: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub position_text: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub degree_in_sign: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub longitude_deg: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub declination_deg: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub motion_state: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub house: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dignity: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDataFixedStarError {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub error: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDataFixedStarsEntry {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub requested_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub swiss_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_abbr: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub abs_pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub longitude_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub latitude_deg: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub distance_au: Option<f64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub position_text: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub degree_in_sign: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub right_ascension_deg: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub declination_deg: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub speed: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub motion_state: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDataHouse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_abbr: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub abs_pos: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDataSubject {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub location: EphemerisDataSubjectLocation,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub settings: EphemerisDataSubjectSettings,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDataSubjectLocation {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub city: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lat: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lng: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDataSubjectSettings {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub julian_day: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub julian_day_tt: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub delta_t_days: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub delta_t_seconds: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zodiac_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house_system: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sidereal_ayanamsa: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDisplay {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_style: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub position_text_suffixes: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub body_order: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cell_format: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub motion_markers: Option<EphemerisDisplayMotionMarkers>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub columns: Option<Vec<String>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisDisplayMotionMarkers {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub retrograde: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub stationary: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
@@ -4665,6 +8672,66 @@ impl std::fmt::Display for EphemerisGetZodiacType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+pub struct EphemerisGridCell {
+    pub text: String,
+    pub degree_text: String,
+    pub sign: String,
+    pub sign_abbr: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub motion_marker: Option<String>,
+    pub entered_sign: bool,
+    pub station: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub start: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub end: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub step: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub rows: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub bodies: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub format: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zodiac_type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sidereal_ayanamsa: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fixed_stars: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub resolved_time: Option<ResolvedTime>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub table_style: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisRawRow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timestamp: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub bodies: std::collections::BTreeMap<String, EphemerisDataBodiesEntry>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub astrology: EphemerisDataAstrology,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub angles: Option<EphemerisDataAngles>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub houses: Option<Vec<EphemerisDataHouse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fixed_stars: Option<std::collections::BTreeMap<String, EphemerisDataFixedStarsEntry>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fixed_star_errors: Option<Vec<EphemerisDataFixedStarError>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
@@ -4872,6 +8939,235 @@ impl std::fmt::Display for EphemerisRequestZodiacType {
     }
 }
 
+/// Ephemeris for one instant (``data`` is an object) or a range (``data`` is a list, or a table).
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub meta: EphemerisMeta,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub data: Option<EphemerisResponseData>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub display: Option<EphemerisDisplay>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub columns: Option<EphemerisResponseColumns>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rows: Option<Vec<EphemerisRow>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub raw_rows: Option<Vec<EphemerisRawRow>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub index: Option<Vec<String>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum EphemerisResponseColumns {
+    StringList(Vec<String>),
+    Map(std::collections::BTreeMap<String, Vec<String>>),
+}
+
+impl<'de> Deserialize<'de> for EphemerisResponseColumns {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "EphemerisResponseColumns",
+            &[
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::StringList),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Map),
+                },
+            ],
+        )
+    }
+}
+
+impl Default for EphemerisResponseColumns {
+    fn default() -> Self {
+        Self::StringList(Default::default())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum EphemerisResponseData {
+    EphemerisSnapshot(EphemerisSnapshot),
+    EphemerisSnapshotList(Vec<EphemerisSnapshot>),
+}
+
+impl<'de> Deserialize<'de> for EphemerisResponseData {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "EphemerisResponseData",
+            &[
+                crate::de::Variant {
+                    required: &[
+                        "timestamp",
+                        "local_timestamp",
+                        "subject",
+                        "bodies",
+                        "astrology",
+                    ],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::EphemerisSnapshot),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::EphemerisSnapshotList),
+                },
+            ],
+        )
+    }
+}
+
+impl Default for EphemerisResponseData {
+    fn default() -> Self {
+        Self::EphemerisSnapshot(Default::default())
+    }
+}
+
+/// One table row. Besides the fields below, each requested body is a column keyed by its
+/// display name (``Sun``, ``North Node``, ...): position text in ``rows``/``columns`` tables,
+/// a cell object in ``grid`` tables.
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisRow {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub timestamp: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub date: Option<EphemerisRowDate>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub weekday: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sidereal_time: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub chart: Option<EphemerisRowChart>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisRowChart {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timestamp: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub date: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisRowDate {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub iso: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub day: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EphemerisSnapshot {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timestamp: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub local_timestamp: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub subject: EphemerisDataSubject,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub bodies: std::collections::BTreeMap<String, EphemerisDataBodiesEntry>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub astrology: EphemerisDataAstrology,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub angles: Option<EphemerisDataAngles>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub angles_details: Option<std::collections::BTreeMap<String, EphemerisDataAnglesDetailsEntry>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub houses: Option<Vec<EphemerisDataHouse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub aspects: Option<Vec<EphemerisDataAspect>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fixed_stars: Option<std::collections::BTreeMap<String, EphemerisDataFixedStarsEntry>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub resolved_time: Option<ResolvedTime>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fixed_star_errors: Option<Vec<EphemerisDataFixedStarError>>,
+}
+
+/// Error body.
+///
+/// Route errors carry ``detail``: a message, or an object with a stable ``error`` code, a
+/// ``message`` and context fields. Gateway errors (authentication, quota, rate limits,
+/// idempotency, capacity) carry a top-level ``error`` code and usually a ``detail`` message;
+/// rate-limit errors add ``retry_after_ms`` or ``limit_info``. Request validation errors (422)
+/// can also use the ``HTTPValidationError`` shape.
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+pub struct ErrorResponse {
+    /// Error message, or an object with an `error` code and a `message`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub detail: Option<ErrorResponseDetail>,
+    /// Stable error code, for gateway errors.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<String>,
+    /// Documentation link.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub docs: Option<String>,
+    /// Suggested wait before retrying, in milliseconds.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub retry_after_ms: Option<i64>,
+    /// Plan allowance details, for quota errors.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub limit_info: Option<serde_json::Map<String, serde_json::Value>>,
+}
+
+/// Error message, or an object with an `error` code and a `message`.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum ErrorResponseDetail {
+    String(String),
+    List(Vec<serde_json::Value>),
+    Map(serde_json::Map<String, serde_json::Value>),
+}
+
+impl<'de> Deserialize<'de> for ErrorResponseDetail {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "ErrorResponseDetail",
+            &[
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::String),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::List),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Map),
+                },
+            ],
+        )
+    }
+}
+
+impl Default for ErrorResponseDetail {
+    fn default() -> Self {
+        Self::String(Default::default())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum EventTypes {
     #[default]
@@ -4971,9 +9267,13 @@ impl std::fmt::Display for ExactAspectSearchRequestRelation {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ExactAspectSearchResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: ProgressionSearchMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub window: SearchWindow,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub events: Vec<AspectSearchEvent>,
 }
 
@@ -5031,9 +9331,13 @@ impl std::fmt::Display for ExactIngressSearchRequestIngressType {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ExactIngressSearchResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: ProgressionSearchMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub window: SearchWindow,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub events: Vec<IngressSearchEvent>,
 }
 
@@ -5747,12 +10051,33 @@ pub struct ExperimentalChartConfigSettings {
 }
 
 /// Per-sign glyph color overrides. Accepts a 12-item Aries-to-Pisces list or a map keyed by sign id, e.g. aries, taurus.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum ExperimentalChartConfigSettingsCustomSignGlyphColors {
     StringList(Vec<String>),
     Map(std::collections::BTreeMap<String, String>),
+}
+
+impl<'de> Deserialize<'de> for ExperimentalChartConfigSettingsCustomSignGlyphColors {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "ExperimentalChartConfigSettingsCustomSignGlyphColors",
+            &[
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::StringList),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Map),
+                },
+            ],
+        )
+    }
 }
 
 impl Default for ExperimentalChartConfigSettingsCustomSignGlyphColors {
@@ -5761,12 +10086,33 @@ impl Default for ExperimentalChartConfigSettingsCustomSignGlyphColors {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum ExperimentalChartConfigSettingsSignBackgroundInnerBorderColors {
     StringList(Vec<String>),
     Map(std::collections::BTreeMap<String, String>),
+}
+
+impl<'de> Deserialize<'de> for ExperimentalChartConfigSettingsSignBackgroundInnerBorderColors {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "ExperimentalChartConfigSettingsSignBackgroundInnerBorderColors",
+            &[
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::StringList),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Map),
+                },
+            ],
+        )
+    }
 }
 
 impl Default for ExperimentalChartConfigSettingsSignBackgroundInnerBorderColors {
@@ -5775,12 +10121,33 @@ impl Default for ExperimentalChartConfigSettingsSignBackgroundInnerBorderColors 
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum ExperimentalChartConfigSettingsSignBackgroundInnerBorderWidths {
     NumberList(Vec<f64>),
     Map(std::collections::BTreeMap<String, f64>),
+}
+
+impl<'de> Deserialize<'de> for ExperimentalChartConfigSettingsSignBackgroundInnerBorderWidths {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "ExperimentalChartConfigSettingsSignBackgroundInnerBorderWidths",
+            &[
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::NumberList),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Map),
+                },
+            ],
+        )
+    }
 }
 
 impl Default for ExperimentalChartConfigSettingsSignBackgroundInnerBorderWidths {
@@ -6136,11 +10503,14 @@ pub struct ExperimentalNatalChartRequest {
     pub table_style: Option<ExperimentalNatalChartRequestTableStyle>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ExperimentalNatalChartRequestTableStyle {
     #[default]
     #[serde(rename = "classic")]
     Classic,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ExperimentalNatalChartRequestTableStyle {
@@ -6148,6 +10518,7 @@ impl ExperimentalNatalChartRequestTableStyle {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Classic => "classic",
+            Self::Other(value) => value,
         }
     }
 }
@@ -6545,18 +10916,23 @@ pub struct FamousPeopleChartSimilarityRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct FamousPersonSummary {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub occupations: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub country: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub country_code: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub gender: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub birth_time: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub location: String,
 }
 
@@ -6669,29 +11045,48 @@ impl std::fmt::Display for Focus {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct GematriaMethodExplanation {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub availability: GematriaMethodExplanationAvailability,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub personal_interpretation: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub content_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub content_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub content_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub locale: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub claims_mode: ClaimsMode,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_refs: Vec<ContentSourceRef>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub provenance_note: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub disclaimer: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: GematriaMethodExplanationKind,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation_notes: Vec<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum GematriaMethodExplanationAvailability {
     #[default]
     #[serde(rename = "available")]
     Available,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl GematriaMethodExplanationAvailability {
@@ -6699,6 +11094,7 @@ impl GematriaMethodExplanationAvailability {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Available => "available",
+            Self::Other(value) => value,
         }
     }
 }
@@ -6709,11 +11105,14 @@ impl std::fmt::Display for GematriaMethodExplanationAvailability {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum GematriaMethodExplanationKind {
     #[default]
     #[serde(rename = "method_explanation")]
     MethodExplanation,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl GematriaMethodExplanationKind {
@@ -6721,6 +11120,7 @@ impl GematriaMethodExplanationKind {
     pub fn as_str(&self) -> &str {
         match self {
             Self::MethodExplanation => "method_explanation",
+            Self::Other(value) => value,
         }
     }
 }
@@ -6732,25 +11132,39 @@ impl std::fmt::Display for GematriaMethodExplanationKind {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct GenericAngularityItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub return_body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub angle: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct GenericCrossAspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub return_body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub is_major: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct GenericHouseOverlayItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub return_body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_house: i64,
 }
 
@@ -6833,34 +11247,57 @@ pub struct GocharTimelineRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct GocharTimelineV2Meta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ruleset_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_window_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub day_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ayanamsha: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub node_type: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct GocharTimelineV2Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: GocharTimelineV2Meta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub input: VedicGocharTimelineInput,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub windows: Vec<VedicGocharTimelineWindow>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct GrahaMapping {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub romanization_scheme: RomanizationScheme,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hindi_script: HindiScript,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub localization_source_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub roots: Vec<RulingGraha>,
 }
 
@@ -6871,9 +11308,13 @@ pub struct HTTPValidationError {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Highlight {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: HighlightKind,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ref_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub reason_codes: Vec<String>,
 }
 
@@ -6910,13 +11351,21 @@ impl std::fmt::Display for HighlightKind {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct HighlightPayload {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub r#type: HighlightPayloadType,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub severity: HighlightPayloadSeverity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub reason_codes: Vec<String>,
 }
 
@@ -6987,11 +11436,14 @@ impl std::fmt::Display for HighlightPayloadType {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum HindiScript {
     #[default]
     #[serde(rename = "Deva")]
     Deva,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl HindiScript {
@@ -6999,6 +11451,7 @@ impl HindiScript {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Deva => "Deva",
+            Self::Other(value) => value,
         }
     }
 }
@@ -7007,6 +11460,761 @@ impl std::fmt::Display for HindiScript {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyBulkDataEntry {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scores: HoroscopeDailyBulkDataEntryScores,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score_factors: Vec<HoroscopeDailyBulkDataEntryScoreFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lucky: HoroscopeDailyBulkDataEntryLucky,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub content: HoroscopeDailyBulkDataEntryContent,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub astro: HoroscopeDailyBulkDataEntryAstro,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_label: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyBulkDataEntryAstro {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub moon_sign: HoroscopeDailyBulkDataEntryLuckyColor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub moon_phase: HoroscopeDailyBulkDataEntryLuckyColor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub highlights: Vec<HoroscopeDailyBulkDataEntryAstroHighlight>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyBulkDataEntryAstroHighlight {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub label: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyBulkDataEntryContent {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub text: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub theme: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub keywords: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub supporting_insights: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyBulkDataEntryLucky {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub color: HoroscopeDailyBulkDataEntryLuckyColor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub number: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub time_window: HoroscopeDailyBulkDataEntryLuckyTimeWindow,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyBulkDataEntryLuckyColor {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub label: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyBulkDataEntryLuckyTimeWindow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub display: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub tz: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyBulkDataEntryScoreFactor {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dimension: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub reason: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyBulkDataEntryScores {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub overall: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub love: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub career: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub money: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub health: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyBulkMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub request_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub generated_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub settings: HoroscopeDailyBulkMetaSettings,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub cache: HoroscopeDailyBulkMetaCache,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub engine: HoroscopeDailyBulkMetaEngine,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyBulkMetaCache {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub hit: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub ttl_seconds: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyBulkMetaEngine {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub version: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyBulkMetaSettings {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub locale: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub date_resolved: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub orb_policy: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyBulkResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub meta: HoroscopeDailyBulkMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub data: std::collections::BTreeMap<String, HoroscopeDailyBulkDataEntry>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalData {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scores: HoroscopeDailyBulkDataEntryScores,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score_factors: Vec<HoroscopeDailyBulkDataEntryScoreFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lucky: HoroscopeDailyBulkDataEntryLucky,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub content: HoroscopeDailyBulkDataEntryContent,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub astro: HoroscopeDailyBulkDataEntryAstro,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub personal: HoroscopeDailyPersonalDataPersonal,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalDataPersonal {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transits_top: Vec<HoroscopeDailyPersonalDataPersonalTransitsTopItem>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub focus_areas: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub confidence_score: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalDataPersonalTransitsTopItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transit_planet: HoroscopeDailyBulkDataEntryLuckyColor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub natal_planet: HoroscopeDailyBulkDataEntryLuckyColor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub aspect: HoroscopeDailyBulkDataEntryLuckyColor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_applying: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub exact_at: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub meta: HoroscopeDailyBulkMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub data: HoroscopeDailyPersonalData,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV2Data {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scores: HoroscopeDailyBulkDataEntryScores,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score_factors: Vec<HoroscopeDailySignV2DataScoreFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lucky: HoroscopeDailyBulkDataEntryLucky,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub content: HoroscopeDailyBulkDataEntryContent,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub astro: HoroscopeDailyBulkDataEntryAstro,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub personal: HoroscopeDailyPersonalV2DataPersonal,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scores_meta: HoroscopeDailyPersonalV2DataScoresMeta,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV2DataPersonal {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transits_top: Vec<HoroscopeDailyPersonalV2DataPersonalTransitsTopItem>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub focus_areas: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub confidence_score: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV2DataPersonalTransitsTopItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transit_planet: HoroscopeDailyBulkDataEntryLuckyColor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub natal_planet: HoroscopeDailyBulkDataEntryLuckyColor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub aspect: HoroscopeDailyBulkDataEntryLuckyColor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_applying: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV2DataScoresMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub overall_method: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub weights: HoroscopeDailyPersonalV2DataScoresMetaWeights,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub rounding: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV2DataScoresMetaWeights {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub love: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub career: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub money: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub health: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV2Meta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub request_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub generated_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub settings: HoroscopeDailyPersonalV2MetaSettings,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub engine: HoroscopeDailyBulkMetaEngine,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV2MetaSettings {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub date_resolved: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub version: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV2Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub meta: HoroscopeDailyPersonalV2Meta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub data: HoroscopeDailyPersonalV2Data,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV3Data {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scores: HoroscopeDailyBulkDataEntryScores,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score_factors: Vec<HoroscopeDailySignV2DataScoreFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lucky: HoroscopeDailyBulkDataEntryLucky,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub content: HoroscopeDailyPersonalV3DataContent,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub astro: HoroscopeDailyBulkDataEntryAstro,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub personal: HoroscopeDailyPersonalV3DataPersonal,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scores_meta: HoroscopeDailyPersonalV2DataScoresMeta,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV3DataContent {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub theme: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub keywords: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV3DataPersonal {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transits_top: Vec<HoroscopeDailyPersonalV3DataPersonalTransitsTopItem>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub focus_areas: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub confidence_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub day_context: HoroscopeDailyPersonalV3DataPersonalDayContext,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub active_windows: Vec<HoroscopeDailyPersonalV3DataPersonalDayContextActiveWindow>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub exact_hits: Vec<HoroscopeDailyPersonalV3DataPersonalDayContextExactHit>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub next_shift: HoroscopeDailyPersonalV3DataPersonalDayContextNextShift,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dominant_topics: Vec<HoroscopeDailyPersonalV3DataPersonalDayContextDominantTopic>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub supportive_vs_challenging:
+        HoroscopeDailyPersonalV3DataPersonalDayContextSupportiveVsChallenging,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub insights_meta: HoroscopeDailyPersonalV3DataPersonalInsightsMeta,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV3DataPersonalDayContext {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub active_windows: Vec<HoroscopeDailyPersonalV3DataPersonalDayContextActiveWindow>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub exact_hits: Vec<HoroscopeDailyPersonalV3DataPersonalDayContextExactHit>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub next_shift: HoroscopeDailyPersonalV3DataPersonalDayContextNextShift,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dominant_topics: Vec<HoroscopeDailyPersonalV3DataPersonalDayContextDominantTopic>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub supportive_vs_challenging:
+        HoroscopeDailyPersonalV3DataPersonalDayContextSupportiveVsChallenging,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV3DataPersonalDayContextActiveWindow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transit_planet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub natal_point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub aspect_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pass_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub exact_hits: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lookup_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub has_interpretation_block: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV3DataPersonalDayContextDominantTopic {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub focus_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub peak_datetime: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV3DataPersonalDayContextExactHit {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timestamp: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub aspect_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transit_planet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub natal_point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lookup_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub has_interpretation_block: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV3DataPersonalDayContextNextShift {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timestamp: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV3DataPersonalDayContextSupportiveVsChallenging {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub supportive: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub challenging: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV3DataPersonalInsightsMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub source: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timeline_enabled: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub insights_enabled: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub interpretation_blocks_enabled: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timeline_pass_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub generated_fact_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub range_start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub range_end: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV3DataPersonalTransitsTopItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transit_planet: HoroscopeDailyBulkDataEntryLuckyColor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub natal_planet: HoroscopeDailyBulkDataEntryLuckyColor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub aspect: HoroscopeDailyBulkDataEntryLuckyColor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub exact_at: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV3Meta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub request_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub generated_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub settings: HoroscopeDailyPersonalV3MetaSettings,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub engine: HoroscopeDailyBulkMetaEngine,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV3MetaSettings {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub date_resolved: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub include_interpretation_blocks: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailyPersonalV3Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub meta: HoroscopeDailyPersonalV3Meta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub data: HoroscopeDailyPersonalV3Data,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailySignMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub request_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub generated_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub settings: HoroscopeDailySignMetaSettings,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub cache: HoroscopeDailyBulkMetaCache,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub engine: HoroscopeDailyBulkMetaEngine,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailySignMetaSettings {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lang: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub locale: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub date_resolved: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub orb_policy: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailySignResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub meta: HoroscopeDailySignMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub data: HoroscopeDailyBulkDataEntry,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailySignV2Data {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scores: HoroscopeDailyBulkDataEntryScores,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score_factors: Vec<HoroscopeDailySignV2DataScoreFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lucky: HoroscopeDailyBulkDataEntryLucky,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub content: HoroscopeDailyBulkDataEntryContent,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub astro: HoroscopeDailyBulkDataEntryAstro,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_label: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailySignV2DataScoreFactor {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dimension: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub reason: HoroscopeDailySignV2DataScoreFactorReason,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub drivers: Vec<HoroscopeDailySignV2DataScoreFactorDriver>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailySignV2DataScoreFactorDriver {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub key: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub value: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub weight: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub intensity: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub orb_deg: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub house: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub condition_score: Option<f64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailySignV2DataScoreFactorReason {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub main: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub secondary: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailySignV2Meta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub request_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub generated_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub settings: HoroscopeDailySignV2MetaSettings,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub engine: HoroscopeDailyBulkMetaEngine,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailySignV2MetaSettings {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub date_resolved: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lang: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub locale: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailySignV2Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub meta: HoroscopeDailySignV2Meta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub data: HoroscopeDailySignV2Data,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailySignV3Meta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub request_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub generated_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub settings: HoroscopeDailySignV3MetaSettings,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub engine: HoroscopeDailyBulkMetaEngine,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailySignV3MetaSettings {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub date_resolved: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lang: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub locale: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub style: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub compatibility_source: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeDailySignV3Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub meta: HoroscopeDailySignV3Meta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub data: HoroscopeDailySignV2Data,
 }
 
 /// Visual intensity for the horoscope shape overlay.
@@ -7040,24 +12248,295 @@ impl std::fmt::Display for HoroscopeShapeStyle {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeWeeklyPersonalV3Data {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scores: HoroscopeDailyBulkDataEntryScores,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score_factors: Vec<HoroscopeDailySignV2DataScoreFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lucky: HoroscopeDailyBulkDataEntryLucky,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub content: HoroscopeWeeklyPersonalV3DataContent,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub astro: HoroscopeDailyBulkDataEntryAstro,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub personal: HoroscopeWeeklyPersonalV3DataPersonal,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scores_meta: HoroscopeWeeklyPersonalV3DataScoresMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub period: HoroscopeWeeklyPersonalV3DataPeriod,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeWeeklyPersonalV3DataContent {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub text: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub theme: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub keywords: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub supporting_insights: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub weekly_summary: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeWeeklyPersonalV3DataPeriod {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub days: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeWeeklyPersonalV3DataPersonal {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transits_top: Vec<HoroscopeWeeklyPersonalV3DataPersonalTransitsTopItem>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub focus_areas: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub confidence_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub days: Vec<HoroscopeWeeklyPersonalV3DataPersonalDay>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub week_context: HoroscopeWeeklyPersonalV3DataPersonalDayDayContext,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub active_windows: Vec<HoroscopeWeeklyPersonalV3DataPersonalDayDayContextActiveWindow>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub exact_hits: Vec<HoroscopeWeeklyPersonalV3DataPersonalDayDayContextExactHit>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub next_shift: HoroscopeDailyPersonalV3DataPersonalDayContextNextShift,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dominant_topics: Vec<HoroscopeDailyPersonalV3DataPersonalDayContextDominantTopic>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub supportive_vs_challenging:
+        HoroscopeDailyPersonalV3DataPersonalDayContextSupportiveVsChallenging,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub insights_meta: HoroscopeWeeklyPersonalV3DataPersonalInsightsMeta,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeWeeklyPersonalV3DataPersonalDay {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub weekday: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scores: HoroscopeDailyBulkDataEntryScores,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub focus_areas: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transits_top: Vec<HoroscopeWeeklyPersonalV3DataPersonalTransitsTopItem>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub day_context: HoroscopeWeeklyPersonalV3DataPersonalDayDayContext,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeWeeklyPersonalV3DataPersonalDayDayContext {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub range_start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub range_end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub active_windows: Vec<HoroscopeWeeklyPersonalV3DataPersonalDayDayContextActiveWindow>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub exact_hits: Vec<HoroscopeWeeklyPersonalV3DataPersonalDayDayContextExactHit>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub next_shift: HoroscopeDailyPersonalV3DataPersonalDayContextNextShift,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dominant_topics: Vec<HoroscopeDailyPersonalV3DataPersonalDayContextDominantTopic>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub supportive_vs_challenging:
+        HoroscopeDailyPersonalV3DataPersonalDayContextSupportiveVsChallenging,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeWeeklyPersonalV3DataPersonalDayDayContextActiveWindow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transit_planet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub natal_point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub aspect_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pass_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub exact_hits: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeWeeklyPersonalV3DataPersonalDayDayContextExactHit {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timestamp: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub aspect_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transit_planet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub natal_point: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeWeeklyPersonalV3DataPersonalInsightsMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub source: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timeline_enabled: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub insights_enabled: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub interpretation_blocks_enabled: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub period: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timeline_segment_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timeline_pass_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub generated_fact_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub range_start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub range_end: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeWeeklyPersonalV3DataPersonalTransitsTopItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transit_planet: HoroscopeDailyBulkDataEntryLuckyColor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub natal_planet: HoroscopeDailyBulkDataEntryLuckyColor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub aspect: HoroscopeDailyBulkDataEntryLuckyColor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub event_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub active_start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub active_end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub exact_hits: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub exact_at: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeWeeklyPersonalV3DataScoresMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub overall_method: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub weights: HoroscopeDailyPersonalV2DataScoresMetaWeights,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub daily_sample_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub rounding: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeWeeklyPersonalV3Meta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub request_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub generated_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub settings: HoroscopeWeeklyPersonalV3MetaSettings,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub engine: HoroscopeDailyBulkMetaEngine,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeWeeklyPersonalV3MetaSettings {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub week_start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub week_end: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub date_anchor: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub start_week_on: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub include_interpretation_blocks: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HoroscopeWeeklyPersonalV3Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub meta: HoroscopeWeeklyPersonalV3Meta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub data: HoroscopeWeeklyPersonalV3Data,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct HouseOverlayItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sr_body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_house: i64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct HouseOverlays {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub a_planets_in_b_houses: Vec<PlanetOverlay>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub b_planets_in_a_houses: Vec<PlanetOverlay>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct HousePayload {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub longitude_deg: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub longitude_text: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: SignInfo,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub position_in_sign_deg: f64,
 }
 
@@ -7193,31 +12672,42 @@ pub struct IncludeSettings {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct IngressEvent {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub from_sign: SignInfo,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub to_sign: SignInfo,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_key: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct IngressSearchEvent {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ingress_type: IngressSearchEventIngressType,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub from_sign: Option<SignInfo>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub to_sign: Option<SignInfo>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub from_house: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub to_house: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub target_datetime_utc: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub basis: Option<serde_json::Map<String, serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_key: String,
 }
 
@@ -7251,13 +12741,17 @@ impl std::fmt::Display for IngressSearchEventIngressType {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct InterpretationRef {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub key: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub status: InterpretationRefStatus,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub locale_requested: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub locale_resolved: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub content_version: String,
 }
 
@@ -7294,14 +12788,21 @@ impl std::fmt::Display for InterpretationRefStatus {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct InterpretationResolutionMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub requested: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub default_included: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub locale_requested: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub locale_resolved: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub content_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub personal_interpretation: PersonalInterpretation,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub content_kinds: Vec<String>,
 }
 
@@ -7321,13 +12822,28 @@ pub struct InterpretationSettings {
     pub style: Option<String>,
 }
 
+/// Returned in place of the interpretation when the library could not be read.
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct InterpretationUnavailable {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub error: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub details: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct InvestMoneyElectionFactor {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub code: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detail: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub severity: Option<InvestMoneyElectionFactorSeverity>,
 }
 
@@ -7364,10 +12880,15 @@ impl std::fmt::Display for InvestMoneyElectionFactorSeverity {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct InvestMoneyElectionInvestorResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub investor: Investor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<InvestMoneyElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<InvestMoneyElectionFactor>,
 }
 
@@ -7413,30 +12934,50 @@ pub struct InvestMoneyElectionNatalRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct InvestMoneyElectionNatalResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub investors: Vec<InvestMoneyElectionInvestorResonance>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct InvestMoneyElectionResult {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_utc: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score_total: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub confidence_level: ConfidenceLevel,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub quality_band: QualityBand,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub status: InvestMoneyElectionResultStatus,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_verdict: StrictTraditionalVerdict,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_severity: StrictTraditionalSeverity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_percentile: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub best_available_in_window: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub review_flags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hard_stops: Vec<InvestMoneyElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<InvestMoneyElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<InvestMoneyElectionFactor>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_resonance: Option<InvestMoneyElectionNatalResonance>,
 }
 
@@ -7476,24 +13017,39 @@ impl std::fmt::Display for InvestMoneyElectionResultStatus {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct InvestMoneyElectionSearchMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scoring_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calibration_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_mode: SearchMode,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub window_strategy: WindowStrategy,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ranking_basis: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub resolved_timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scanned_candidates: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub coarse_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub refined_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub returned_candidates: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub advisories: Option<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_start_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_end_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub step_minutes: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub coarse_step_minutes: Option<i64>,
 }
 
@@ -7521,8 +13077,11 @@ pub struct InvestMoneyElectionSearchRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct InvestMoneyElectionSearchResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: InvestMoneyElectionSearchMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub results: Vec<InvestMoneyElectionResult>,
 }
 
@@ -7573,11 +13132,14 @@ pub struct InvestMoneyElectionSearchWindowRequest {
     pub step_minutes: Option<i64>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum Investor {
     #[default]
     #[serde(rename = "investor")]
     Investor,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl Investor {
@@ -7585,6 +13147,7 @@ impl Investor {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Investor => "investor",
+            Self::Other(value) => value,
         }
     }
 }
@@ -7596,20 +13159,30 @@ impl std::fmt::Display for Investor {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct JobAuditionElectionCandidateResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub candidate: Candidate,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<JobAuditionElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<JobAuditionElectionFactor>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct JobAuditionElectionFactor {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub code: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detail: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub severity: Option<JobAuditionElectionFactorSeverity>,
 }
 
@@ -7687,30 +13260,50 @@ pub struct JobAuditionElectionNatalRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct JobAuditionElectionNatalResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub candidates: Vec<JobAuditionElectionCandidateResonance>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct JobAuditionElectionResult {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_utc: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score_total: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub confidence_level: ConfidenceLevel,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub quality_band: QualityBand,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub status: JobAuditionElectionResultStatus,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_verdict: StrictTraditionalVerdict,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_severity: StrictTraditionalSeverity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_percentile: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub best_available_in_window: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub review_flags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hard_stops: Vec<JobAuditionElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<JobAuditionElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<JobAuditionElectionFactor>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_resonance: Option<JobAuditionElectionNatalResonance>,
 }
 
@@ -7750,24 +13343,39 @@ impl std::fmt::Display for JobAuditionElectionResultStatus {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct JobAuditionElectionSearchMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scoring_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calibration_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_mode: SearchMode,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub window_strategy: WindowStrategy,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ranking_basis: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub resolved_timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scanned_candidates: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub coarse_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub refined_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub returned_candidates: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub advisories: Option<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_start_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_end_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub step_minutes: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub coarse_step_minutes: Option<i64>,
 }
 
@@ -7795,8 +13403,11 @@ pub struct JobAuditionElectionSearchRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct JobAuditionElectionSearchResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: JobAuditionElectionSearchMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub results: Vec<JobAuditionElectionResult>,
 }
 
@@ -7848,40 +13459,66 @@ pub struct JobAuditionElectionSearchWindowRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPAngles {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ascendant: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub midheaven: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub armc: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub vertex: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPAscendant {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub absolute_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub degree_in_sign: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub nakshatra: KPNakshatra,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub star_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sub_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sub_sub_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub subdivision: KPSubdivision,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house: i64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPAyanamsha {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub value_degrees: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPBirthContext {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub local_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone_used: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lat: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lng: f64,
 }
 
@@ -7972,11 +13609,14 @@ pub struct KPChartRenderRequest {
 }
 
 /// KP endpoint invariant. Uses the Krishnamurti (KP) ayanamsha.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum KPChartRenderRequestAyanamsha {
     #[default]
     #[serde(rename = "kp")]
     Kp,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl KPChartRenderRequestAyanamsha {
@@ -7984,6 +13624,7 @@ impl KPChartRenderRequestAyanamsha {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Kp => "kp",
+            Self::Other(value) => value,
         }
     }
 }
@@ -8025,11 +13666,14 @@ impl std::fmt::Display for KPChartRenderRequestFormat {
 }
 
 /// KP endpoint invariant. Uses sidereal Placidus house cusps.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum KPChartRenderRequestHouseSystem {
     #[default]
     #[serde(rename = "placidus")]
     Placidus,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl KPChartRenderRequestHouseSystem {
@@ -8037,6 +13681,7 @@ impl KPChartRenderRequestHouseSystem {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Placidus => "placidus",
+            Self::Other(value) => value,
         }
     }
 }
@@ -8142,11 +13787,14 @@ pub struct KPChartRequest {
 }
 
 /// KP endpoint invariant. Uses the Krishnamurti (KP) ayanamsha.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum KPChartRequestAyanamsha {
     #[default]
     #[serde(rename = "kp")]
     Kp,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl KPChartRequestAyanamsha {
@@ -8154,6 +13802,7 @@ impl KPChartRequestAyanamsha {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Kp => "kp",
+            Self::Other(value) => value,
         }
     }
 }
@@ -8165,11 +13814,14 @@ impl std::fmt::Display for KPChartRequestAyanamsha {
 }
 
 /// KP endpoint invariant. Uses sidereal Placidus house cusps.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum KPChartRequestHouseSystem {
     #[default]
     #[serde(rename = "placidus")]
     Placidus,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl KPChartRequestHouseSystem {
@@ -8177,6 +13829,7 @@ impl KPChartRequestHouseSystem {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Placidus => "placidus",
+            Self::Other(value) => value,
         }
     }
 }
@@ -8188,316 +13841,535 @@ impl std::fmt::Display for KPChartRequestHouseSystem {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPChartResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub system: KPSystem,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub birth: KPBirthContext,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ayanamsha: KPAyanamsha,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub angles: KPAngles,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ascendant: KPAscendant,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planets: Vec<KPPlanet>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub cusps: Vec<KPCusp>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub cuspal_sub_lord_table: Vec<KPCuspalSubLordRow>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planet_significators: Vec<KPPlanetSignificator>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_significators: Vec<KPHouseSignificator>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ruling_planets: KPRulingPlanets,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub dasha: KPDashaResponse,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub metadata: KPMetadata,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPCusp {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub absolute_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub degree_in_sign: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub nakshatra: KPNakshatra,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub star_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sub_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sub_sub_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub subdivision: KPSubdivision,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub cusp_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub next_cusp_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub span_degrees: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub occupants: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPCuspalSubLordRow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub cusp_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub star_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sub_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sub_sub_lord: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPDashaActiveContext {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub level: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub elapsed_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub remaining_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub progress_fraction: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub elapsed_days: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub remaining_days: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub path: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub significator_houses: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub significator_levels: KPSignificatorLevels,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPDashaActivePeriod {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub level: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub elapsed_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub remaining_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub progress_fraction: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub elapsed_days: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub remaining_days: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub path: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPDashaBirthBalance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub actual_start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub birth_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub full_duration_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub elapsed_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub remaining_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub elapsed_fraction: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub remaining_fraction: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPDashaContext {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub active_periods: Vec<KPDashaActiveContext>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lord_significators: std::collections::BTreeMap<String, KPDashaLordContext>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation_basis: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPDashaLordContext {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub houses: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub levels: KPSignificatorLevels,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPDashaMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ruleset_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub levels_requested: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub reference_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ayanamsha: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub node_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone_used: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub moon_degree_policy: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPDashaMoonNakshatra {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pada: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lord: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPDashaResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub moon_nakshatra: KPDashaMoonNakshatra,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub birth_balance: KPDashaBirthBalance,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub active_periods: Vec<KPDashaActivePeriod>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timeline: Vec<KPDashaTimelinePeriod>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub metadata: KPDashaMetadata,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kp_context: KPDashaContext,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPDashaTimelinePeriod {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub level: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_years: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sub_periods: Option<Vec<KPDashaTimelinePeriod>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPHouseSignificator {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub levels: KPHouseSignificatorLevels,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub significators: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPHouseSignificatorLevels {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub level_1_star_lord_occupancy: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub level_2_planet_occupancy: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub level_3_star_lord_ownership: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub level_4_planet_ownership: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ruleset_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation_engine: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planet_position_policy: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ayanamsha: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_code: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub node_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone_used: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub julian_day_ut: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub subdivision_basis: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub subdivision_boundary_policy: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub significator_policy: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub node_policy: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPNakshatra {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pada: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub progress: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPNodeProxy {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_lord: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sign_lord_occupied_house: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_lord_owned_houses: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub policy: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPPlanet {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub absolute_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub degree_in_sign: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub nakshatra: KPNakshatra,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub star_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sub_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sub_sub_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub subdivision: KPSubdivision,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub is_retrograde: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub speed_longitude: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPPlanetSignificator {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub star_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sub_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub levels: KPSignificatorLevels,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub significator_houses: Vec<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub node_proxy: Option<KPNodeProxy>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPRulingComponent {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub role: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planet: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPRulingPlanets {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub moment: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub moment_basis: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone_used: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub day_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ascendant: KPRulingPoint,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub moon: KPRulingPoint,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub components: Vec<KPRulingComponent>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ordered_unique: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ranked_by_repetition: Vec<KPRulingRank>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub selection_order: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub day_lord_policy: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPRulingPoint {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub absolute_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub star_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sub_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sub_sub_lord: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPRulingRank {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub occurrences: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub roles: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPSignificatorLevels {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub level_1_star_lord_occupancy: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub level_2_planet_occupancy: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub level_3_star_lord_ownership: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub level_4_planet_ownership: Vec<i64>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPSubdivision {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sub: KPSubdivisionSegment,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sub_sub: KPSubdivisionSegment,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub boundary_policy: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPSubdivisionSegment {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sequence_index: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub span_degrees: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub progress: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub offset_degrees: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KPSystem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ruleset_version: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KabbalahData {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: KabbalahDataKind,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kabbalah_name_analysis: KabbalahNameAnalysis,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum KabbalahDataKind {
     #[default]
     #[serde(rename = "kabbalah")]
     Kabbalah,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl KabbalahDataKind {
@@ -8505,6 +14377,7 @@ impl KabbalahDataKind {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Kabbalah => "kabbalah",
+            Self::Other(value) => value,
         }
     }
 }
@@ -8560,11 +14433,14 @@ impl std::fmt::Display for KabbalahMethodRequestCompoundPolicy {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum KabbalahMethodRequestMasterPolicy {
     #[default]
     #[serde(rename = "not_applicable")]
     NotApplicable,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl KabbalahMethodRequestMasterPolicy {
@@ -8572,6 +14448,7 @@ impl KabbalahMethodRequestMasterPolicy {
     pub fn as_str(&self) -> &str {
         match self {
             Self::NotApplicable => "not_applicable",
+            Self::Other(value) => value,
         }
     }
 }
@@ -8656,11 +14533,14 @@ impl std::fmt::Display for KabbalahMethodRequestProfile {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum KabbalahMethodRequestSystem {
     #[default]
     #[serde(rename = "kabbalah")]
     Kabbalah,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl KabbalahMethodRequestSystem {
@@ -8668,6 +14548,7 @@ impl KabbalahMethodRequestSystem {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Kabbalah => "kabbalah",
+            Self::Other(value) => value,
         }
     }
 }
@@ -8679,11 +14560,17 @@ impl std::fmt::Display for KabbalahMethodRequestSystem {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KabbalahNameAnalysis {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_name: KabbalahNameAnalysisSourceName,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_reason: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub alphabet_table_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub profile_mode: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name_value: NumberResult,
 }
 
@@ -8717,17 +14604,23 @@ impl std::fmt::Display for KabbalahNameAnalysisSourceName {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct KarmicDebt {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub number: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub root: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub value_display: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub origin: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub interpretation_key: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub interpretation_ref: Option<InterpretationRef>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub content: Option<ArchetypeInterpretation>,
 }
 
@@ -8860,12 +14753,17 @@ impl std::fmt::Display for Layout {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct LegalProceedingsElectionFactor {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub code: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detail: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub severity: Option<LegalProceedingsElectionFactorSeverity>,
 }
 
@@ -8943,38 +14841,63 @@ pub struct LegalProceedingsElectionNatalRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct LegalProceedingsElectionNatalResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub plaintiffs: Vec<LegalProceedingsElectionPlaintiffResonance>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct LegalProceedingsElectionPlaintiffResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub plaintiff: Plaintiff,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<LegalProceedingsElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<LegalProceedingsElectionFactor>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct LegalProceedingsElectionResult {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_utc: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score_total: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub confidence_level: ConfidenceLevel,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub quality_band: QualityBand,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub status: LegalProceedingsElectionResultStatus,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_verdict: StrictTraditionalVerdict,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_severity: StrictTraditionalSeverity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_percentile: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub best_available_in_window: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub review_flags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hard_stops: Vec<LegalProceedingsElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<LegalProceedingsElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<LegalProceedingsElectionFactor>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_resonance: Option<LegalProceedingsElectionNatalResonance>,
 }
 
@@ -9014,24 +14937,39 @@ impl std::fmt::Display for LegalProceedingsElectionResultStatus {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct LegalProceedingsElectionSearchMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scoring_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calibration_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_mode: SearchMode,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub window_strategy: WindowStrategy,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ranking_basis: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub resolved_timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scanned_candidates: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub coarse_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub refined_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub returned_candidates: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub advisories: Option<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_start_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_end_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub step_minutes: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub coarse_step_minutes: Option<i64>,
 }
 
@@ -9059,8 +14997,11 @@ pub struct LegalProceedingsElectionSearchRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct LegalProceedingsElectionSearchResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: LegalProceedingsElectionSearchMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub results: Vec<LegalProceedingsElectionResult>,
 }
 
@@ -9112,15 +15053,22 @@ pub struct LegalProceedingsElectionSearchWindowRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct LifeCycles {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub period_cycles: Vec<TimedNumberResult>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pinnacles: Vec<TimedNumberResult>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub challenges: Vec<NumberResult>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct LifecyclePayload {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub progressed_moon: ProgressedMoonLifecycle,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub progressed_sun: ProgressedSunLifecycle,
 }
 
@@ -9137,12 +15085,17 @@ pub struct Location {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MakingContractsElectionFactor {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub code: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detail: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub severity: Option<MakingContractsElectionFactorSeverity>,
 }
 
@@ -9220,38 +15173,63 @@ pub struct MakingContractsElectionNatalRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MakingContractsElectionNatalResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub principals: Vec<MakingContractsElectionPrincipalResonance>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MakingContractsElectionPrincipalResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub principal: Principal,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<MakingContractsElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<MakingContractsElectionFactor>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MakingContractsElectionResult {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_utc: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score_total: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub confidence_level: ConfidenceLevel,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub quality_band: QualityBand,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub status: MakingContractsElectionResultStatus,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_verdict: StrictTraditionalVerdict,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_severity: StrictTraditionalSeverity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_percentile: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub best_available_in_window: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub review_flags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hard_stops: Vec<MakingContractsElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<MakingContractsElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<MakingContractsElectionFactor>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_resonance: Option<MakingContractsElectionNatalResonance>,
 }
 
@@ -9291,24 +15269,39 @@ impl std::fmt::Display for MakingContractsElectionResultStatus {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MakingContractsElectionSearchMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scoring_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calibration_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_mode: SearchMode,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub window_strategy: WindowStrategy,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ranking_basis: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub resolved_timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scanned_candidates: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub coarse_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub refined_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub returned_candidates: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub advisories: Option<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_start_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_end_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub step_minutes: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub coarse_step_minutes: Option<i64>,
 }
 
@@ -9336,8 +15329,11 @@ pub struct MakingContractsElectionSearchRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MakingContractsElectionSearchResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: MakingContractsElectionSearchMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub results: Vec<MakingContractsElectionResult>,
 }
 
@@ -9500,25 +15496,33 @@ impl std::fmt::Display for Memory {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MetaEngine {
     /// Server default: `"FreeAstroApi Synastry"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     /// Server default: `"1.0.0"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MetaEphemeris {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub provider: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub version: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MetaWarning {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub code: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub message: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub severity: MetaWarningSeverity,
 }
 
@@ -9602,48 +15606,72 @@ impl std::fmt::Display for Method {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MethodDefinition {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub system: MethodDefinitionSystem,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub display_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub status: MethodDefinitionStatus,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub profile_aliases: std::collections::BTreeMap<String, String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub defaults: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub default_request: serde_json::Map<String, serde_json::Value>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub profile_type: Option<ProfileType>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub alphabet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub alphabet_ids: Vec<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub alphabet_table: Option<std::collections::BTreeMap<String, Vec<String>>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub profiles: Vec<MethodProfile>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub master_policies: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub compound_policies: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub master_numbers: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub karmic_debt_numbers: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub y_policy: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aliases: std::collections::BTreeMap<String, Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub component_sources: Option<std::collections::BTreeMap<String, Vec<String>>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculations: Vec<serde_json::Map<String, serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supported_name_scripts: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transliteration: serde_json::Map<String, serde_json::Value>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub interpretations: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_support: serde_json::Map<String, serde_json::Value>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub graha_mapping: Option<GrahaMapping>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub method_warnings: Option<Vec<NumberWarning>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub source_ids: Option<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_profile_version: String,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum MethodDefinitionStatus {
     #[default]
     #[serde(rename = "supported")]
     Supported,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl MethodDefinitionStatus {
@@ -9651,6 +15679,7 @@ impl MethodDefinitionStatus {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Supported => "supported",
+            Self::Other(value) => value,
         }
     }
 }
@@ -9697,42 +15726,54 @@ impl std::fmt::Display for MethodDefinitionSystem {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MethodProfile {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub is_default: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub description: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub profile_type: Option<ProfileType>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub name_source: Option<NameSource>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub alphabet_table_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub required_fields: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation_slugs: Vec<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub name_source_policy: Option<NameSourcePolicy>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub name_source_basis: Option<NameSourceBasis>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub infers_most_used_name: Option<bool>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub birth_date_boundary: Option<BirthDateBoundary>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub calendar: Option<MethodProfileCalendar>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub date_digit_order: Option<DateDigitOrder>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub source_ids: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub oracle_corpus_id: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub policy_combinations: Vec<std::collections::BTreeMap<String, String>>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum MethodProfileCalendar {
     #[default]
     #[serde(rename = "gregory")]
     Gregory,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl MethodProfileCalendar {
@@ -9740,6 +15781,7 @@ impl MethodProfileCalendar {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Gregory => "gregory",
+            Self::Other(value) => value,
         }
     }
 }
@@ -9783,156 +15825,242 @@ impl std::fmt::Display for MonthType {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MonthlyProfectionItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub month_index: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub activated_house: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub activated_sign_name: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub activated_sign_id: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub time_lord_name: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub time_lord_id: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub period: ProfectionTimeWindow,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MoonInterpretationData {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub body: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub tone: Option<String>,
     /// Server default: `\[\]`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub tags: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MoonMonthDayResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timestamp: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub phase: MoonPhaseData,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub zodiac: Option<ZodiacData>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub rise_set: Option<RiseSetData>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub moon_visual: Option<MoonVisualData>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub special_moon: Option<SpecialMoonData>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub eclipse: Option<EclipseData>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub forecast: Option<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub interpretation: Option<MoonInterpretationData>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub traditional_moon: Option<TraditionalMoonData>,
-    pub next_phases: std::collections::BTreeMap<String, String>,
+    /// UTC instants (ISO 8601) of the next new moon, first quarter, full moon and last quarter.
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub next_phases: MoonMonthDayResponseNextPhases,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calendar_date: String,
 }
 
+/// UTC instants (ISO 8601) of the next new moon, first quarter, full moon and last quarter.
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct MoonMonthDayResponseNextPhases {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub new_moon: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub first_quarter: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub full_moon: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub last_quarter: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MoonMonthResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub year: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub month: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub month_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub days_in_month: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calendar_basis: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calendar_timezone: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sign_timeline: Option<Vec<MoonSignTimelineSegmentData>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ingresses: Option<Vec<MoonSignIngressData>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub days: Vec<MoonMonthDayResponse>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MoonPhaseData {
-    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: Name,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub phase_angle_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub illumination: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub age_days: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub distance_km: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub is_waxing: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MoonPhaseResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timestamp: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub phase: MoonPhaseData,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub zodiac: Option<ZodiacData>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub rise_set: Option<RiseSetData>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub moon_visual: Option<MoonVisualData>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub special_moon: Option<SpecialMoonData>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub eclipse: Option<EclipseData>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub forecast: Option<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub interpretation: Option<MoonInterpretationData>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub traditional_moon: Option<TraditionalMoonData>,
-    pub next_phases: std::collections::BTreeMap<String, String>,
+    /// UTC instants (ISO 8601) of the next new moon, first quarter, full moon and last quarter.
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub next_phases: MoonPhaseResponseNextPhases,
+}
+
+/// UTC instants (ISO 8601) of the next new moon, first quarter, full moon and last quarter.
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct MoonPhaseResponseNextPhases {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub new_moon: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub first_quarter: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub full_moon: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub last_quarter: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MoonSignIngressData {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub from_sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub from_sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub to_sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub to_sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub at: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub at_local: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MoonSignTimelineSegmentData {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub starts_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ends_at: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub starts_at_local: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ends_at_local: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_hours: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_minutes: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub continues_from_previous_month: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub continues_to_next_month: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub next_sign: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub next_sign_id: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MoonVisualData {
     /// Server default: `"svg"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub r#type: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub svg: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub shadow_ratio: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub waxing: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MoveIntoNewHomeElectionFactor {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub code: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detail: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub severity: Option<MoveIntoNewHomeElectionFactorSeverity>,
 }
 
@@ -10010,38 +16138,63 @@ pub struct MoveIntoNewHomeElectionNatalRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MoveIntoNewHomeElectionNatalResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub residents: Vec<MoveIntoNewHomeElectionResidentResonance>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MoveIntoNewHomeElectionResidentResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub resident: Resident,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<MoveIntoNewHomeElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<MoveIntoNewHomeElectionFactor>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MoveIntoNewHomeElectionResult {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_utc: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score_total: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub confidence_level: ConfidenceLevel,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub quality_band: QualityBand,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub status: MoveIntoNewHomeElectionResultStatus,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_verdict: StrictTraditionalVerdict,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_severity: StrictTraditionalSeverity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_percentile: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub best_available_in_window: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub review_flags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hard_stops: Vec<MoveIntoNewHomeElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<MoveIntoNewHomeElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<MoveIntoNewHomeElectionFactor>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_resonance: Option<MoveIntoNewHomeElectionNatalResonance>,
 }
 
@@ -10081,24 +16234,39 @@ impl std::fmt::Display for MoveIntoNewHomeElectionResultStatus {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MoveIntoNewHomeElectionSearchMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scoring_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calibration_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_mode: SearchMode,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub window_strategy: WindowStrategy,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ranking_basis: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub resolved_timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scanned_candidates: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub coarse_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub refined_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub returned_candidates: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub advisories: Option<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_start_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_end_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub step_minutes: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub coarse_step_minutes: Option<i64>,
 }
 
@@ -10126,8 +16294,11 @@ pub struct MoveIntoNewHomeElectionSearchRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MoveIntoNewHomeElectionSearchResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: MoveIntoNewHomeElectionSearchMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub results: Vec<MoveIntoNewHomeElectionResult>,
 }
 
@@ -10179,47 +16350,115 @@ pub struct MoveIntoNewHomeElectionSearchWindowRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MovementsPayload {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ingresses: Option<Vec<IngressEvent>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub stations: Option<Vec<StationEvent>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub phase_markers: Option<Vec<PhaseMarkerEvent>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NakshatraInfo {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pada: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lord: String,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+pub enum Name {
+    #[default]
+    #[serde(rename = "New Moon")]
+    NewMoon,
+    #[serde(rename = "Waxing Crescent")]
+    WaxingCrescent,
+    #[serde(rename = "First Quarter")]
+    FirstQuarter,
+    #[serde(rename = "Waxing Gibbous")]
+    WaxingGibbous,
+    #[serde(rename = "Full Moon")]
+    FullMoon,
+    #[serde(rename = "Waning Gibbous")]
+    WaningGibbous,
+    #[serde(rename = "Last Quarter")]
+    LastQuarter,
+    #[serde(rename = "Waning Crescent")]
+    WaningCrescent,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
+}
+
+impl Name {
+    /// The wire value of this variant.
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::NewMoon => "New Moon",
+            Self::WaxingCrescent => "Waxing Crescent",
+            Self::FirstQuarter => "First Quarter",
+            Self::WaxingGibbous => "Waxing Gibbous",
+            Self::FullMoon => "Full Moon",
+            Self::WaningGibbous => "Waning Gibbous",
+            Self::LastQuarter => "Last Quarter",
+            Self::WaningCrescent => "Waning Crescent",
+            Self::Other(value) => value,
+        }
+    }
+}
+
+impl std::fmt::Display for Name {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NameAnalysis {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_name: NameAnalysisSourceName,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub expression: NumberResult,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub soul_urge: NumberResult,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub personality: NumberResult,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub maturity: NumberResult,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub karmic_lessons: Vec<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub karmic_lesson_content: Option<Vec<NumerologyFacetContent>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hidden_passions: Vec<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub hidden_passion_content: Option<Vec<NumerologyFacetContent>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub present_digits: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub missing_digits: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub frequency_grid: std::collections::BTreeMap<String, i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub balance: NumberResult,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum NameAnalysisSourceName {
     #[default]
     #[serde(rename = "birth")]
     Birth,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl NameAnalysisSourceName {
@@ -10227,6 +16466,7 @@ impl NameAnalysisSourceName {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Birth => "birth",
+            Self::Other(value) => value,
         }
     }
 }
@@ -10266,11 +16506,14 @@ impl std::fmt::Display for NameSource {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum NameSourceBasis {
     #[default]
     #[serde(rename = "freeastro_explicit_selection")]
     FreeastroExplicitSelection,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl NameSourceBasis {
@@ -10278,6 +16521,7 @@ impl NameSourceBasis {
     pub fn as_str(&self) -> &str {
         match self {
             Self::FreeastroExplicitSelection => "freeastro_explicit_selection",
+            Self::Other(value) => value,
         }
     }
 }
@@ -10315,6 +16559,954 @@ impl std::fmt::Display for NameSourcePolicy {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateAngles {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub asc: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub mc: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub ic: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dc: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub vertex: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateAnglesDetailsEntry {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub abs_pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateAspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p1: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p2: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub orb: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_major: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_applying: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateAspectsSummary {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub total: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub major: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub minor: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub by_type: std::collections::BTreeMap<String, i64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateConfidence {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub houses: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angles: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub overall: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateConfigurations {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub total: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub items: Vec<NatalCalculateConfigurationsItem>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateConfigurationsItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub aliases: Option<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub bodies: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub base: Option<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub apex: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sextiles: Option<Vec<Vec<String>>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub trines: Option<Vec<Vec<String>>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub aspects: Vec<NatalCalculateConfigurationsItemAspect>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub derived_from_minor_aspects: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub opposition: Option<Vec<String>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateConfigurationsItemAspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p1: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p2: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub orb: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_major: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateDeclinationAspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p1: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p2: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub orb: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub declination_1: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub declination_2: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_major: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateDeclinationAspectsSummary {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub total: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub parallel: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub contra_parallel: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub orb: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub by_type: std::collections::BTreeMap<String, i64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateDominants {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub elements: NatalCalculateDominantsElements,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub modalities: NatalCalculateDominantsModalities,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub polarities: NatalCalculateDominantsPolarities,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dominant_element: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dominant_modality: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dominant_polarity: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateDominantsElements {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub fire: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub earth: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub air: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub water: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateDominantsModalities {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub cardinal: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub fixed: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub mutable: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateDominantsPolarities {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub masculine: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub feminine: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateDominantsProfile {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub method: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dominant_planets: Vec<NatalCalculateDominantsProfileDominantPlanet>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub top_planets: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dominant_element: NatalCalculateDominantsProfileDominantElement,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub signature_sign: NatalCalculateDominantsProfileSignatureSign,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateDominantsProfileDominantElement {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub table: NatalCalculateDominantsProfileDominantElementTable,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub element: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub ties: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateDominantsProfileDominantElementTable {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub fire: NatalCalculateDominantsProfileDominantElementTableFire,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub earth: NatalCalculateDominantsProfileDominantElementTableFire,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub air: NatalCalculateDominantsProfileDominantElementTableFire,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub water: NatalCalculateDominantsProfileDominantElementTableFire,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateDominantsProfileDominantElementTableFire {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sun_moon_asc: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub personal: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transpersonal: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dominant: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub total: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub percent: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateDominantsProfileDominantPlanet {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angle: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub ruler: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub aspects: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub total: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub percent: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub rank: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateDominantsProfileSignatureSign {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub element_counts: NatalCalculateDominantsProfileSignatureSignElementCounts,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub modality_counts: NatalCalculateDominantsProfileSignatureSignModalityCounts,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub element: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub modality: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub signature: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sign: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub includes_asc: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub element_ties: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub modality_ties: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateDominantsProfileSignatureSignElementCounts {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub fire: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub earth: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub air: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub water: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateDominantsProfileSignatureSignModalityCounts {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub cardinal: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub fixed: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub mutable: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateFixedStarError {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub error: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateFixedStarsEntry {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub requested_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub swiss_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub abs_pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub longitude_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub latitude_deg: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub distance_au: Option<f64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub degree_in_sign: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub right_ascension_deg: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub declination_deg: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub speed: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_stationary: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub house: Option<i64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateHouse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub abs_pos: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ruler: Option<NatalCalculateHouseRuler>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub classic_ruler: Option<NatalCalculateHouseRuler>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateHouseRuler {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculatePlanet {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub abs_pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub retrograde: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub house: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub declination_deg: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dignity: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub speed: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_stationary: Option<bool>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateResponse {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub subject: Option<NatalCalculateSubject>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub planets: Option<Vec<NatalCalculatePlanet>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub aspects: Option<Vec<NatalCalculateAspect>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub aspects_summary: Option<NatalCalculateAspectsSummary>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub confidence: Option<NatalCalculateConfidence>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub houses: Option<Vec<NatalCalculateHouse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub angles: Option<NatalCalculateAngles>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub angles_details:
+        Option<std::collections::BTreeMap<String, NatalCalculateAnglesDetailsEntry>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub declination_aspects: Option<Vec<NatalCalculateDeclinationAspect>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub declination_aspects_summary: Option<NatalCalculateDeclinationAspectsSummary>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fixed_stars: Option<std::collections::BTreeMap<String, NatalCalculateFixedStarsEntry>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dominants: Option<NatalCalculateDominants>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub configurations: Option<NatalCalculateConfigurations>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stelliums: Option<NatalCalculateStelliums>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tables: Option<NatalCalculateTables>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub resolved_time: Option<ResolvedTime>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dominants_profile: Option<NatalCalculateDominantsProfile>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub response_format: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub text: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub subject_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub datetime: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub city: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub timezone: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub time_known: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub zodiac_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub house_system: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub planet_count: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub house_count: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub aspect_count: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fixed_star_count: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fixed_star_names: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fixed_star_errors: Option<Vec<NatalCalculateFixedStarError>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub interpretation: Option<NatalCalculateResponseInterpretation>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub credits_used: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub psychological_report: Option<NatalPsychologicalReportStatus>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum NatalCalculateResponseInterpretation {
+    AtomicInterpretation(AtomicInterpretation),
+    InterpretationUnavailable(InterpretationUnavailable),
+}
+
+impl<'de> Deserialize<'de> for NatalCalculateResponseInterpretation {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "NatalCalculateResponseInterpretation",
+            &[
+                crate::de::Variant {
+                    required: &["metadata", "sections", "index"],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::AtomicInterpretation),
+                },
+                crate::de::Variant {
+                    required: &["error"],
+                    consts: &[],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::InterpretationUnavailable)
+                    },
+                },
+            ],
+        )
+    }
+}
+
+impl Default for NatalCalculateResponseInterpretation {
+    fn default() -> Self {
+        Self::AtomicInterpretation(Default::default())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateStelliums {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub threshold: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub signs: Vec<NatalCalculateStelliumsSign>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub houses: Vec<NatalCalculateStelliumsHouse>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub total: i64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub policy: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub definition: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub eligible_body_ids: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub conjunction_orb_deg: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub clusters: Option<Vec<NatalStelliumCluster>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub concentrations: Option<NatalCalculateStelliumsConcentrations>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateStelliumsConcentrations {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub signs: Option<Vec<NatalCalculateStelliumsConcentrationsSign>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub houses: Option<Vec<NatalCalculateStelliumsConcentrationsHouse>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub total: Option<i64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateStelliumsConcentrationsHouse {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub house: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub count: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub bodies: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub co_present_points: Option<Vec<String>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateStelliumsConcentrationsSign {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sign_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub count: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub bodies: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub co_present_points: Option<Vec<String>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateStelliumsHouse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub bodies: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateStelliumsSign {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub bodies: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateSubject {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub location: NatalCalculateSubjectLocation,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub settings: NatalCalculateSubjectSettings,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateSubjectLocation {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub city: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lat: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lng: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateSubjectSettings {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub julian_day: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub julian_day_tt: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub delta_t_days: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub delta_t_seconds: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zodiac_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub time_known: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sidereal_ayanamsa: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateTables {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub meta: NatalCalculateTablesMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub positions: NatalCalculateTablesPositions,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub element_modality: NatalCalculateTablesElementModality,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub aspect_matrix: NatalCalculateTablesAspectMatrix,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateTablesAspectMatrix {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub points: Vec<NatalCalculateTablesAspectMatrixPoint>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub rows: Vec<NatalCalculateTablesAspectMatrixRow>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateTablesAspectMatrixPoint {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub glyph: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub table_glyph: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub glyph_source: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateTablesAspectMatrixRow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub point: NatalCalculateTablesAspectMatrixPoint,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub cells: Vec<NatalCalculateTablesAspectMatrixRowCell>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateTablesAspectMatrixRowCell {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub with_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub with_name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub with_glyph: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub with_table_glyph: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub with_glyph_source: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub has_aspect: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub r#type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub type_key: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub glyph: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub orb: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub deg: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_major: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_applying: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub derived_from_angles: Option<bool>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateTablesElementModality {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub columns: Vec<NatalCalculateTablesElementModalityColumn>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub rows: Vec<NatalCalculateTablesElementModalityRow>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateTablesElementModalityColumn {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub modality: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub label: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateTablesElementModalityRow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub element: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub element_label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub cells: Vec<NatalCalculateTablesElementModalityRowCell>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateTablesElementModalityRowCell {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub modality: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub modality_label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub items: Vec<NatalCalculateTablesElementModalityRowCellItem>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateTablesElementModalityRowCellItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub glyph: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub table_glyph: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub glyph_source: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_glyph: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateTablesMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub font_family: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub mapping_source: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateTablesPositions {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub point_rows: Vec<NatalCalculateTablesPositionsPointRow>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angle_rows: Vec<NatalCalculateTablesPositionsAngleRow>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house_rows: Vec<NatalCalculateTablesPositionsHouseRow>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateTablesPositionsAngleRow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub glyph: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub table_glyph: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub glyph_source: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_glyph: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub position_in_sign_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub longitude_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub longitude_text: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateTablesPositionsHouseRow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_glyph: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub position_in_sign_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub longitude_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub longitude_text: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalCalculateTablesPositionsPointRow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub glyph: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub table_glyph: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub glyph_source: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_glyph: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub position_in_sign_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub longitude_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub longitude_text: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub house: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub retrograde: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dignity: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
@@ -10536,25 +17728,35 @@ impl std::fmt::Display for NatalChartRequestView {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NatalComparison {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspects: Vec<CrossAspect>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub house_overlay: Option<Vec<HouseOverlayItem>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub angularity: Vec<AngularProximityItem>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NatalInsightDisplay {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub locale: NatalInsightDisplayLocale,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detail: String,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum NatalInsightDisplayLocale {
     #[default]
     #[serde(rename = "fr")]
     Fr,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl NatalInsightDisplayLocale {
@@ -10562,6 +17764,7 @@ impl NatalInsightDisplayLocale {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Fr => "fr",
+            Self::Other(value) => value,
         }
     }
 }
@@ -10573,165 +17776,251 @@ impl std::fmt::Display for NatalInsightDisplayLocale {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NatalInsightDispositorNode {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planet: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sign_id: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub dispositor: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub chain: Vec<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub final_dispositor: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub cycle: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NatalInsightDispositorTree {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub roots: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub mutual_receptions: Vec<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub cycles: Vec<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub nodes: Vec<NatalInsightDispositorNode>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NatalInsightFact {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub semantic_key: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub source_fact_ids: Option<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detector: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub subjects: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub priority: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub evidence: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub flags: std::collections::BTreeMap<String, bool>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planet_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_ids: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_type_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub configuration_type_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub signature_type_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub dignity_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score_bucket: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub relation_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub index_keys: Vec<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub signature_tier: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub tags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub entities: std::collections::BTreeMap<String, Vec<serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_text: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub display: Option<NatalInsightDisplay>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NatalInsightImportance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_fact_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub driver_tags: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NatalInsightIndexDocument {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub document_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub chart_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub fact_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub relation_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detector: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub priority: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score_bucket: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planet_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_ids: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_type_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub configuration_type_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub signature_type_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub dignity_ids: Vec<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub signature_tier: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub tags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub index_keys: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_text: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub time_known: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub zodiac_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub include_minor_aspects: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NatalInsightIndexMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint: String,
     /// Server default: `"natal_insights_v7"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub detector_version: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub time_known: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub zodiac_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub include_minor_aspects: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_fact_count: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub stellium_policy: Option<StelliumPolicy>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub include_dispositor_facts: Option<bool>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub include_combust_facts: Option<bool>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub include_stellium_facts: Option<bool>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub returned_fact_count: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub collapsed_fact_count: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detector_stats: serde_json::Map<String, serde_json::Value>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sidereal_ayanamsa: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub chart_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_document_count: i64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NatalInsightsIndexDocumentsResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: NatalInsightIndexMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub signature_tiers:
         std::collections::BTreeMap<String, Vec<serde_json::Map<String, serde_json::Value>>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub documents: Vec<NatalInsightIndexDocument>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NatalInsightsMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint: String,
     /// Server default: `"natal_insights_v7"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub detector_version: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub time_known: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub zodiac_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub include_minor_aspects: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_fact_count: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub stellium_policy: Option<StelliumPolicy>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub include_dispositor_facts: Option<bool>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub include_combust_facts: Option<bool>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub include_stellium_facts: Option<bool>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub returned_fact_count: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub collapsed_fact_count: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detector_stats: serde_json::Map<String, serde_json::Value>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sidereal_ayanamsa: Option<String>,
 }
 
@@ -10969,27 +18258,77 @@ impl std::fmt::Display for NatalInsightsRequestView {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NatalInsightsResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: NatalInsightsMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: std::collections::BTreeMap<String, std::collections::BTreeMap<String, i64>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub dispositor_tree: NatalInsightDispositorTree,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub signature_tiers:
         std::collections::BTreeMap<String, Vec<serde_json::Map<String, serde_json::Value>>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub importance: Vec<NatalInsightImportance>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub facts: Option<Vec<NatalInsightFact>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub facts_by_category:
         Option<std::collections::BTreeMap<String, serde_json::Map<String, serde_json::Value>>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub signatures_by_category:
         Option<std::collections::BTreeMap<String, serde_json::Map<String, serde_json::Value>>>,
 }
 
+/// The psychological report requested with the chart: a job to poll, or the report itself.
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalPsychologicalReportStatus {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub status: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub mode: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub style: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub output_format: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_chart_in_pdf: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub job_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fetch_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pdf_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub credits_used: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_profile_branding_logo: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub subject: Option<NatalCalculateSubject>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub report_metadata: Option<PsychologicalReportMetadata>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub report_content: Option<PsychologicalReportContent>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub report_markdown: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub next_poll_after_seconds: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub error: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub details: Option<serde_json::Value>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NatalReference {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_datetime_utc: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_location: SolarReturnLocation,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_sun_abs_pos: f64,
 }
 
@@ -11023,44 +18362,98 @@ impl std::fmt::Display for NatalReportFormat {
     }
 }
 
+/// A connected conjunction cluster (``stellium_policy="classified"``).
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalStelliumCluster {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub bodies: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub positions_deg: std::collections::BTreeMap<String, f64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub span_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub conjunction_orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub conjunction_links: Vec<NatalStelliumLink>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub houses: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub personal_planet_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub co_present_points: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct NatalStelliumLink {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p1: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p2: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub separation_deg: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NatalTimeLordDetails {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub abs_pos: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub house: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub retrograde: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub speed: Option<f64>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NextMajorPhase {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub event_date: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NormalizedInput {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub birth_date: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calendar: NormalizedInputCalendar,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub birth_date_boundary: Option<BirthDateBoundary>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub locale: NormalizedInputLocale,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: NormalizedName,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum NormalizedInputCalendar {
     #[default]
     #[serde(rename = "gregory")]
     Gregory,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl NormalizedInputCalendar {
@@ -11068,6 +18461,7 @@ impl NormalizedInputCalendar {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Gregory => "gregory",
+            Self::Other(value) => value,
         }
     }
 }
@@ -11114,73 +18508,185 @@ impl std::fmt::Display for NormalizedInputLocale {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NormalizedName {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub original_birth: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub original_current: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub birth: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub current: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub script: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub script_detected: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transliteration: NormalizedTransliteration,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub source_used_for_name_numbers: Option<SourceUsedForNameNumbers>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub source_reason: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NormalizedTransliteration {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub profile: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub birth: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub current: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NumberResult {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub value: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub raw_total: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub compound: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub root: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub value_display: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub master_number: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aliases: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub method_variance: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub warnings: Vec<NumberWarning>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub karmic_debts: Vec<KarmicDebt>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub interpretation_key: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub interpretation_ref: Option<InterpretationRef>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub reduction_path: Option<Vec<i64>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub steps: Option<Vec<serde_json::Map<String, serde_json::Value>>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub details: Option<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub content: Option<NumberResultContent>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum NumberResultContent {
     ArchetypeInterpretation(ArchetypeInterpretation),
     ChaldeanNameInterpretation(ChaldeanNameInterpretation),
     GematriaMethodExplanation(GematriaMethodExplanation),
+}
+
+impl<'de> Deserialize<'de> for NumberResultContent {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "NumberResultContent",
+            &[
+                crate::de::Variant {
+                    required: &[
+                        "availability",
+                        "personal_interpretation",
+                        "content_key",
+                        "content_id",
+                        "content_version",
+                        "locale",
+                        "claims_mode",
+                        "source_ids",
+                        "source_refs",
+                        "provenance_note",
+                        "disclaimer",
+                        "kind",
+                        "coverage",
+                        "title",
+                        "summary",
+                        "strengths",
+                        "cautions",
+                        "guidance",
+                    ],
+                    consts: &[
+                        ("claims_mode", "symbolic_reflective"),
+                        ("kind", "archetype_interpretation"),
+                        ("coverage", "exact"),
+                    ],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::ArchetypeInterpretation)
+                    },
+                },
+                crate::de::Variant {
+                    required: &[
+                        "availability",
+                        "personal_interpretation",
+                        "content_key",
+                        "content_id",
+                        "content_version",
+                        "locale",
+                        "claims_mode",
+                        "source_ids",
+                        "source_refs",
+                        "provenance_note",
+                        "disclaimer",
+                        "kind",
+                        "coverage",
+                        "title",
+                        "summary",
+                        "constructive_reading",
+                        "cautionary_reading",
+                        "guidance",
+                        "root_context",
+                    ],
+                    consts: &[
+                        ("claims_mode", "symbolic_reflective"),
+                        ("kind", "chaldean_name_interpretation"),
+                    ],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::ChaldeanNameInterpretation)
+                    },
+                },
+                crate::de::Variant {
+                    required: &[
+                        "availability",
+                        "personal_interpretation",
+                        "content_key",
+                        "content_id",
+                        "content_version",
+                        "locale",
+                        "claims_mode",
+                        "source_ids",
+                        "source_refs",
+                        "provenance_note",
+                        "disclaimer",
+                        "kind",
+                        "title",
+                        "summary",
+                        "calculation_notes",
+                    ],
+                    consts: &[
+                        ("availability", "available"),
+                        ("claims_mode", "symbolic_reflective"),
+                        ("kind", "method_explanation"),
+                    ],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::GematriaMethodExplanation)
+                    },
+                },
+            ],
+        )
+    }
 }
 
 impl Default for NumberResultContent {
@@ -11190,14 +18696,20 @@ impl Default for NumberResultContent {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NumberWarning {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub code: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub message: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NumerologyAlphabetsResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub registry_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub alphabets: Vec<AlphabetDefinition>,
 }
 
@@ -11212,29 +18724,40 @@ pub struct NumerologyDateContextRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NumerologyFacetContent {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub value: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_ref: InterpretationRef,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub content: Option<ArchetypeInterpretation>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NumerologyMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub schema_version: SchemaVersion,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_profile_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub method: NumerologyMetadataMethod,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub date_context: Option<ResolvedDateContext>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation_policy: CalculationPolicy,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub graha_mapping: Option<GrahaMapping>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretations: InterpretationResolutionMetadata,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub privacy: PrivacyMetadata,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum NumerologyMetadataMethod {
@@ -11244,6 +18767,63 @@ pub enum NumerologyMetadataMethod {
     ResolvedAnkJyotishMethod(ResolvedAnkJyotishMethod),
 }
 
+impl<'de> Deserialize<'de> for NumerologyMetadataMethod {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "NumerologyMetadataMethod",
+            &[
+                crate::de::Variant {
+                    required: &["system", "profile", "master_policy", "compound_policy"],
+                    consts: &[
+                        ("system", "pythagorean"),
+                        ("master_policy", "preserve_core_11_22_33"),
+                    ],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::ResolvedPythagoreanMethod)
+                    },
+                },
+                crate::de::Variant {
+                    required: &["system", "profile", "master_policy", "compound_policy"],
+                    consts: &[("system", "chaldean"), ("master_policy", "reduce_all")],
+                    decode: |value| serde_json::from_value(value).map(Self::ResolvedChaldeanMethod),
+                },
+                crate::de::Variant {
+                    required: &[
+                        "system",
+                        "profile",
+                        "master_policy",
+                        "compound_policy",
+                        "name_source",
+                    ],
+                    consts: &[("system", "kabbalah"), ("master_policy", "not_applicable")],
+                    decode: |value| serde_json::from_value(value).map(Self::ResolvedKabbalahMethod),
+                },
+                crate::de::Variant {
+                    required: &[
+                        "system",
+                        "profile",
+                        "master_policy",
+                        "compound_policy",
+                        "name_source",
+                    ],
+                    consts: &[
+                        ("system", "ank_jyotish"),
+                        (
+                            "profile",
+                            "ank-jyotish-civil-cheiro-navagraha-reduce-all-v1",
+                        ),
+                        ("master_policy", "reduce_all"),
+                    ],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::ResolvedAnkJyotishMethod)
+                    },
+                },
+            ],
+        )
+    }
+}
+
 impl Default for NumerologyMetadataMethod {
     fn default() -> Self {
         Self::ResolvedPythagoreanMethod(Default::default())
@@ -11251,11 +18831,17 @@ impl Default for NumerologyMetadataMethod {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NumerologyMethodsResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub registry_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub request_discriminator: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub response_discriminator: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub systems: Vec<MethodDefinition>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub content_sources: Vec<serde_json::Map<String, serde_json::Value>>,
 }
 
@@ -11285,7 +18871,7 @@ pub struct NumerologyProfileRequest {
     pub include_interpretations: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum NumerologyProfileRequestMethod {
@@ -11295,6 +18881,44 @@ pub enum NumerologyProfileRequestMethod {
     AnkJyotishMethodRequest(AnkJyotishMethodRequest),
 }
 
+impl<'de> Deserialize<'de> for NumerologyProfileRequestMethod {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "NumerologyProfileRequestMethod",
+            &[
+                crate::de::Variant {
+                    required: &["system"],
+                    consts: &[
+                        ("system", "pythagorean"),
+                        ("master_policy", "preserve_core_11_22_33"),
+                    ],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::PythagoreanMethodRequest)
+                    },
+                },
+                crate::de::Variant {
+                    required: &["system"],
+                    consts: &[("system", "chaldean"), ("master_policy", "reduce_all")],
+                    decode: |value| serde_json::from_value(value).map(Self::ChaldeanMethodRequest),
+                },
+                crate::de::Variant {
+                    required: &["system"],
+                    consts: &[("system", "kabbalah"), ("master_policy", "not_applicable")],
+                    decode: |value| serde_json::from_value(value).map(Self::KabbalahMethodRequest),
+                },
+                crate::de::Variant {
+                    required: &["system"],
+                    consts: &[("system", "ank_jyotish"), ("master_policy", "reduce_all")],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::AnkJyotishMethodRequest)
+                    },
+                },
+            ],
+        )
+    }
+}
+
 impl Default for NumerologyProfileRequestMethod {
     fn default() -> Self {
         Self::PythagoreanMethodRequest(Default::default())
@@ -11302,13 +18926,17 @@ impl Default for NumerologyProfileRequestMethod {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct NumerologyProfileResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: NumerologyMetadata,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub normalized_input: NormalizedInput,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub data: NumerologyProfileResponseData,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum NumerologyProfileResponseData {
@@ -11316,6 +18944,37 @@ pub enum NumerologyProfileResponseData {
     ChaldeanData(ChaldeanData),
     KabbalahData(KabbalahData),
     AnkJyotishData(AnkJyotishData),
+}
+
+impl<'de> Deserialize<'de> for NumerologyProfileResponseData {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "NumerologyProfileResponseData",
+            &[
+                crate::de::Variant {
+                    required: &["kind", "core", "cycles", "life_cycles"],
+                    consts: &[("kind", "pythagorean")],
+                    decode: |value| serde_json::from_value(value).map(Self::PythagoreanData),
+                },
+                crate::de::Variant {
+                    required: &["kind", "chaldean_name_analysis"],
+                    consts: &[("kind", "chaldean")],
+                    decode: |value| serde_json::from_value(value).map(Self::ChaldeanData),
+                },
+                crate::de::Variant {
+                    required: &["kind", "kabbalah_name_analysis"],
+                    consts: &[("kind", "kabbalah")],
+                    decode: |value| serde_json::from_value(value).map(Self::KabbalahData),
+                },
+                crate::de::Variant {
+                    required: &["kind", "core"],
+                    consts: &[("kind", "ank_jyotish")],
+                    decode: |value| serde_json::from_value(value).map(Self::AnkJyotishData),
+                },
+            ],
+        )
+    }
 }
 
 impl Default for NumerologyProfileResponseData {
@@ -11349,11 +19008,14 @@ pub struct NumerologySubject {
     pub tz_str: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum NumerologySubjectCalendar {
     #[default]
     #[serde(rename = "gregory")]
     Gregory,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl NumerologySubjectCalendar {
@@ -11361,6 +19023,7 @@ impl NumerologySubjectCalendar {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Gregory => "gregory",
+            Self::Other(value) => value,
         }
     }
 }
@@ -11407,21 +19070,22 @@ impl std::fmt::Display for NumerologySubjectLocale {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct OrbPolicy {
     /// Server default: `6.0`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub default_orb_deg: Option<f64>,
     /// Server default: `{"conjunction": 8.0, "opposition": 8.0, "sextile": 5.0, "square": 7.0, "trine": 7.0}`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub by_aspect_deg: Option<std::collections::BTreeMap<String, f64>>,
     /// Server default: `{"asc": 1.2, "mc": 1.1, "moon": 1.3, "neptune": 0.9, "pluto": 0.9, "saturn": 1.0, "sun": 1.2, "uranus": 0.9}`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub by_body_multiplier: Option<std::collections::BTreeMap<String, f64>>,
     /// Server default: `true`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub apply_separate: Option<bool>,
     /// Server default: `0.1`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub apply_bonus: Option<f64>,
 }
 
@@ -11516,76 +19180,121 @@ impl std::fmt::Display for OverallTone {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PanchangElement {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub number: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ends_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ends_at_iso: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PanchangKarana {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub number: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ends_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ends_at_iso: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PanchangLocation {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lat: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lng: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PanchangLunarMonth {
     /// Stable month ID: Chaitra=1 through Phalguna=12.
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub number: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub amanta: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub month_type: MonthType,
     /// For Kshaya, the next named month omitted as a separate lunation. The top-level name/number identify the continuing month. Null otherwise.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub omitted_month: Option<PanchangMonthIdentity>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub vikram_samvat: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub vikram_samvat_convention: VikramSamvatConvention,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PanchangMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ruleset_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calendar_ruleset_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ayanamsha: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone_used: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation_basis: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub request_local_time: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PanchangMonthIdentity {
     /// Stable month ID: Chaitra=1 through Phalguna=12.
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub number: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PanchangNakshatra {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub number: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ends_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ends_at_iso: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pada: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lord: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PanchangRequestTime {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub tithi: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub nakshatra: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub yoga: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub karana: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sun_sign: PanchangSign,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub moon_sign: PanchangSign,
 }
 
@@ -11680,41 +19389,68 @@ pub struct PanchangRequestV2 {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PanchangSign {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub degree: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PanchangTithi {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub number: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ends_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ends_at_iso: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub paksha: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PanchangV2Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub location: PanchangLocation,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sunrise: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sunset: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub weekday: PanchangWeekday,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub lunar_month: PanchangLunarMonth,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub tithi: PanchangTithi,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub nakshatra: PanchangNakshatra,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub yoga: PanchangElement,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub karanas: Vec<PanchangKarana>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rahu_kalam: std::collections::BTreeMap<String, String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub request_time_panchang: PanchangRequestTime,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub metadata: PanchangMetadata,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PanchangWeekday {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub number: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
 }
 
@@ -11782,11 +19518,14 @@ impl std::fmt::Display for Partner {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum Patient {
     #[default]
     #[serde(rename = "patient")]
     Patient,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl Patient {
@@ -11794,6 +19533,7 @@ impl Patient {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Patient => "patient",
+            Self::Other(value) => value,
         }
     }
 }
@@ -11928,9 +19668,13 @@ pub struct PersonNatalOptions {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PersonalCycles {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub personal_year: NumberResult,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub personal_month: NumberResult,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub personal_day: NumberResult,
 }
 
@@ -12015,19 +19759,28 @@ impl std::fmt::Display for PersonalInterpretation {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PhaseMarkerEvent {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_key: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PhysicalExaminationElectionFactor {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub code: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detail: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub severity: Option<PhysicalExaminationElectionFactorSeverity>,
 }
 
@@ -12105,38 +19858,63 @@ pub struct PhysicalExaminationElectionNatalRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PhysicalExaminationElectionNatalResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub patients: Vec<PhysicalExaminationElectionPatientResonance>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PhysicalExaminationElectionPatientResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub patient: Patient,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<PhysicalExaminationElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<PhysicalExaminationElectionFactor>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PhysicalExaminationElectionResult {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_utc: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score_total: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub confidence_level: ConfidenceLevel,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub quality_band: QualityBand,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub status: PhysicalExaminationElectionResultStatus,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_verdict: StrictTraditionalVerdict,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_severity: StrictTraditionalSeverity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_percentile: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub best_available_in_window: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub review_flags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hard_stops: Vec<PhysicalExaminationElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<PhysicalExaminationElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<PhysicalExaminationElectionFactor>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_resonance: Option<PhysicalExaminationElectionNatalResonance>,
 }
 
@@ -12176,24 +19954,39 @@ impl std::fmt::Display for PhysicalExaminationElectionResultStatus {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PhysicalExaminationElectionSearchMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scoring_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calibration_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_mode: SearchMode,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub window_strategy: WindowStrategy,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ranking_basis: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub resolved_timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scanned_candidates: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub coarse_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub refined_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub returned_candidates: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub advisories: Option<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_start_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_end_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub step_minutes: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub coarse_step_minutes: Option<i64>,
 }
 
@@ -12221,8 +20014,11 @@ pub struct PhysicalExaminationElectionSearchRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PhysicalExaminationElectionSearchResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: PhysicalExaminationElectionSearchMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub results: Vec<PhysicalExaminationElectionResult>,
 }
 
@@ -12273,11 +20069,14 @@ pub struct PhysicalExaminationElectionSearchWindowRequest {
     pub step_minutes: Option<i64>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum PillarPrecision {
     #[default]
     #[serde(rename = "start_of_civil_day")]
     StartOfCivilDay,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl PillarPrecision {
@@ -12285,6 +20084,7 @@ impl PillarPrecision {
     pub fn as_str(&self) -> &str {
         match self {
             Self::StartOfCivilDay => "start_of_civil_day",
+            Self::Other(value) => value,
         }
     }
 }
@@ -12295,11 +20095,14 @@ impl std::fmt::Display for PillarPrecision {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum Plaintiff {
     #[default]
     #[serde(rename = "plaintiff")]
     Plaintiff,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl Plaintiff {
@@ -12307,6 +20110,7 @@ impl Plaintiff {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Plaintiff => "plaintiff",
+            Self::Other(value) => value,
         }
     }
 }
@@ -12417,30 +20221,43 @@ impl std::fmt::Display for PlanetConnectorScope {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PlanetOverlay {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub target_house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub distance_to_cusp_deg: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub strength: Option<f64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub strength_label: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub text_key: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PlanetReturnComparison {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspects: Vec<GenericCrossAspect>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub house_overlay: Option<Vec<GenericHouseOverlayItem>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub angularity: Vec<GenericAngularityItem>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PlanetReturnNatalReference {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_datetime_utc: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_location: SolarReturnLocation,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_target_abs_pos: f64,
 }
 
@@ -12451,64 +20268,88 @@ pub struct PlanetReturnRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PlanetReturnResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: PlanetReturnResponseMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub subject: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planets: Vec<serde_json::Map<String, serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub houses: Vec<serde_json::Map<String, serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub angles: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub angles_details: serde_json::Map<String, serde_json::Value>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub aspects: Option<Vec<serde_json::Map<String, serde_json::Value>>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub aspects_summary: Option<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_comparison: Option<PlanetReturnComparison>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PlanetReturnResponseMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub report_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub engine: Option<EngineMeta>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation: SolarReturnMetaCalculation,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub return_event: ReturnEventMetaDetails,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_reference: PlanetReturnNatalReference,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub resolved_time: Option<serde_json::Map<String, serde_json::Value>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PointPayload {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub longitude_deg: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub longitude_text: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub latitude_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub distance_au: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub speed_longitude_deg_per_day: Option<f64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub speed_latitude_deg_per_day: Option<f64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub speed_distance_au_per_day: Option<f64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: SignInfo,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub position_in_sign_deg: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub house: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub retrograde: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub is_stationary: Option<bool>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub dignity: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum PositionFrame {
     #[default]
     #[serde(rename = "geocentric")]
     Geocentric,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl PositionFrame {
@@ -12516,6 +20357,7 @@ impl PositionFrame {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Geocentric => "geocentric",
+            Self::Other(value) => value,
         }
     }
 }
@@ -12556,64 +20398,87 @@ impl std::fmt::Display for Precision {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PrimaryDirectionActiveWindow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub from: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub to: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub from_datetime_utc: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub exact_datetime_utc: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub to_datetime_utc: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub from_datetime_local: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub exact_datetime_local: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub to_datetime_local: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PrimaryDirectionEvent {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_datetime_utc: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub exact_datetime_local: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub age_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub direction: PrimaryDirectionEventDirection,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub promissor: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub significator: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect: AspectDescriptor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub arc_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub arc_group_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub key: PrimaryDirectionEventKey,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub key_deg_per_year: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub promissor_natal_longitude_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub directed_longitude_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub significator_longitude_deg: f64,
     /// Server default: `"mundane"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub measurement: Option<Measurement>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub house_system: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub promissor_natal_mundane_position: Option<f64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub directed_mundane_position: Option<f64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub significator_mundane_position: Option<f64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub promissor_bound: Option<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub significator_bound: Option<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub directed_bound: Option<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub parallel_axis: Option<ParallelAxis>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub active_window: PrimaryDirectionActiveWindow,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_key: String,
 }
 
@@ -12679,24 +20544,33 @@ impl std::fmt::Display for PrimaryDirectionEventKey {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PrimaryDirectionsCalendarEvent {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_datetime_utc: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub exact_datetime_local: Option<String>,
     /// Server default: `"primary_direction"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub r#type: Option<PrimaryDirectionsCalendarEventType>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub direction_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_key: String,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum PrimaryDirectionsCalendarEventType {
     #[default]
     #[serde(rename = "primary_direction")]
     PrimaryDirection,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl PrimaryDirectionsCalendarEventType {
@@ -12704,6 +20578,7 @@ impl PrimaryDirectionsCalendarEventType {
     pub fn as_str(&self) -> &str {
         match self {
             Self::PrimaryDirection => "primary_direction",
+            Self::Other(value) => value,
         }
     }
 }
@@ -12715,64 +20590,92 @@ impl std::fmt::Display for PrimaryDirectionsCalendarEventType {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PrimaryDirectionsCalendarResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: PrimaryDirectionsMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub events: Vec<PrimaryDirectionsCalendarEvent>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PrimaryDirectionsInput {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub birth_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub birth_location: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub time_known: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub promissors: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub significators: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspects: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_step_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub secondary_motion: SecondaryMotion,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub latitude_doctrine: LatitudeDoctrine,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub bounds_system: BoundsSystem,
     /// Server default: `false`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub include_bounds: Option<bool>,
     /// Server default: `false`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub include_bound_promissors: Option<bool>,
     /// Server default: `false`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub include_antiscia: Option<bool>,
     /// Server default: `false`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub include_contra_antiscia: Option<bool>,
     /// Server default: `false`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub include_mundane_parallels: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PrimaryDirectionsMeta {
     /// Server default: `"primary_directions"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub endpoint: Option<PrimaryDirectionsMetaEndpoint>,
     /// Server default: `"v1"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub provider: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub swisseph_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ephemeris_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub method: Method,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation_method: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub zodiac_type: PrimaryDirectionsMetaZodiacType,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ayanamsa: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub direction: PrimaryDirectionsMetaDirection,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub key: PrimaryDirectionsMetaKey,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub key_deg_per_year: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub warnings: Option<Vec<String>>,
 }
 
@@ -12808,11 +20711,14 @@ impl std::fmt::Display for PrimaryDirectionsMetaDirection {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum PrimaryDirectionsMetaEndpoint {
     #[default]
     #[serde(rename = "primary_directions")]
     PrimaryDirections,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl PrimaryDirectionsMetaEndpoint {
@@ -12820,6 +20726,7 @@ impl PrimaryDirectionsMetaEndpoint {
     pub fn as_str(&self) -> &str {
         match self {
             Self::PrimaryDirections => "primary_directions",
+            Self::Other(value) => value,
         }
     }
 }
@@ -12912,11 +20819,15 @@ pub struct PrimaryDirectionsRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PrimaryDirectionsResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: PrimaryDirectionsMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub input: PrimaryDirectionsInput,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_reference: Option<serde_json::Map<String, serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub directions: Vec<PrimaryDirectionEvent>,
 }
 
@@ -13042,12 +20953,33 @@ impl std::fmt::Display for PrimaryDirectionsSettingsKey {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum PrimaryDirectionsSettingsSecondaryMotion {
     Enum(PrimaryDirectionsSettingsSecondaryMotionEnum),
     Bool(bool),
+}
+
+impl<'de> Deserialize<'de> for PrimaryDirectionsSettingsSecondaryMotion {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "PrimaryDirectionsSettingsSecondaryMotion",
+            &[
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Enum),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Bool),
+                },
+            ],
+        )
+    }
 }
 
 impl Default for PrimaryDirectionsSettingsSecondaryMotion {
@@ -13117,11 +21049,14 @@ impl std::fmt::Display for PrimaryDirectionsSettingsZodiacType {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum Principal {
     #[default]
     #[serde(rename = "principal")]
     Principal,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl Principal {
@@ -13129,6 +21064,7 @@ impl Principal {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Principal => "principal",
+            Self::Other(value) => value,
         }
     }
 }
@@ -13140,47 +21076,59 @@ impl std::fmt::Display for Principal {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PrivacyMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub persisted: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub retention: Retention,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub request_data_stored_by_endpoint: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProfectionAspectOrbPolicy {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub default_orb_deg: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub by_aspect_deg: Option<std::collections::BTreeMap<String, f64>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProfectionBody {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub annual: AnnualProfectionSummary,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub monthly_profections: Option<Vec<MonthlyProfectionItem>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_time_lord_details: Option<NatalTimeLordDetails>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub activated_house_planets: Option<Vec<ActivatedHousePlanet>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub time_lord_aspects: Option<Vec<TimeLordAspect>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProfectionEngineMeta {
     /// Server default: `"AnnualProfectionsEngine"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     /// Server default: `"1.0.0"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ProfectionMethod {
     #[default]
     #[serde(rename = "whole_sign")]
     WholeSign,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ProfectionMethod {
@@ -13188,6 +21136,7 @@ impl ProfectionMethod {
     pub fn as_str(&self) -> &str {
         match self {
             Self::WholeSign => "whole_sign",
+            Self::Other(value) => value,
         }
     }
 }
@@ -13199,52 +21148,73 @@ impl std::fmt::Display for ProfectionMethod {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProfectionNatalReference {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_location: ProfectionPublicLocation,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub time_known: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProfectionPublicLocation {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub city: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub lat: Option<f64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub lng: Option<f64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub timezone: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProfectionSubject {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub location: ProfectionPublicLocation,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub settings: ProfectionSubjectSettings,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProfectionSubjectSettings {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub zodiac_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub time_known: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sidereal_ayanamsa: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProfectionTimeWindow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProfectionWarning {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub code: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub message: String,
     /// Server default: `"warning"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub severity: Option<ProfectionWarningSeverity>,
 }
 
@@ -13280,11 +21250,14 @@ impl std::fmt::Display for ProfectionWarningSeverity {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ProfileType {
     #[default]
     #[serde(rename = "explicit_composite_modern")]
     ExplicitCompositeModern,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ProfileType {
@@ -13292,6 +21265,7 @@ impl ProfileType {
     pub fn as_str(&self) -> &str {
         match self {
             Self::ExplicitCompositeModern => "explicit_composite_modern",
+            Self::Other(value) => value,
         }
     }
 }
@@ -13303,36 +21277,57 @@ impl std::fmt::Display for ProfileType {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProgressedMoonLifecycle {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub phase_angle_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub phase_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub waxing: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub next_major_phase: NextMajorPhase,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProgressedSunLifecycle {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: SignInfo,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub position_in_sign_deg: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub next_ingress: Option<IngressEvent>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProgressedToNatalAspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect: AspectDescriptor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub progressed_point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub separation_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub applying: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub exact_date: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub polarity: ProgressedToNatalAspectPolarity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: Category,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_key: String,
 }
 
@@ -13369,20 +21364,33 @@ impl std::fmt::Display for ProgressedToNatalAspectPolarity {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProgressedToProgressedAspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect: AspectDescriptor,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub point_1: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub point_2: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub separation_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub applying: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub exact_date: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub polarity: ProgressedToProgressedAspectPolarity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: Category,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_key: String,
 }
 
@@ -13419,25 +21427,34 @@ impl std::fmt::Display for ProgressedToProgressedAspectPolarity {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProgressionBasis {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub age_years_decimal: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub progressed_days_after_birth: Option<f64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_datetime_utc: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub progressed_datetime_utc: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub arc_deg: Option<f64>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProgressionCalendarEvent {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub r#type: ProgressionCalendarEventType,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub system: ProgressionCalendarEventSystem,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_key: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub basis: Option<serde_json::Map<String, serde_json::Value>>,
 }
 
@@ -13541,47 +21558,66 @@ pub struct ProgressionCalendarRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProgressionCalendarResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: ProgressionSearchMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub window: ProgressionCalendarWindow,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub events: Vec<ProgressionCalendarEvent>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub counts: Option<std::collections::BTreeMap<String, i64>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub groups: Option<std::collections::BTreeMap<String, Vec<ProgressionCalendarEvent>>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProgressionCalendarWindow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub from: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub to: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProgressionChartMeta {
     /// Server default: `"progressions_chart"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub endpoint: Option<ProgressionChartMetaEndpoint>,
     /// Server default: `"v1"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub system: ProgressionChartMetaSystem,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub zodiac_type: ProgressionChartMetaZodiacType,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ayanamsa: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation_method: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub target_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub target_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ProgressionChartMetaEndpoint {
     #[default]
     #[serde(rename = "progressions_chart")]
     ProgressionsChart,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ProgressionChartMetaEndpoint {
@@ -13589,6 +21625,7 @@ impl ProgressionChartMetaEndpoint {
     pub fn as_str(&self) -> &str {
         match self {
             Self::ProgressionsChart => "progressions_chart",
+            Self::Other(value) => value,
         }
     }
 }
@@ -13667,28 +21704,39 @@ impl std::fmt::Display for ProgressionChartMetaZodiacType {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProgressionChartResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: ProgressionChartMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub input: SecondaryProgressionsInput,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub progression_basis: ProgressionBasis,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub progressed_chart: ChartPayload,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_reference: Option<ChartPayload>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub aspects: Option<AspectsPayload>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProgressionSearchMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint: String,
     /// Server default: `"v1"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub system: ProgressionSearchMetaSystem,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub zodiac_type: ProgressionSearchMetaZodiacType,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ayanamsa: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
 }
 
@@ -13760,24 +21808,236 @@ impl std::fmt::Display for ProgressionSearchMetaZodiacType {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProgressionTableResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: ProgressionChartMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub input: SecondaryProgressionsInput,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub progression_basis: ProgressionBasis,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub tables: ProgressionTablesPayload,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProgressionTablesPayload {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub points: Vec<TablePointRow>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub angles: Option<Vec<TableAngleRow>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub houses: Option<Vec<TableHouseRow>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub aspects: Option<Vec<TableAspectRow>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub events: Option<Vec<TableEventRow>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct PsychologicalReportChapter {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub question: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sections: Vec<PsychologicalReportSection>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct PsychologicalReportChapterPlan {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub question: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub target_words: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub subsections: Vec<PsychologicalReportSubsectionPlan>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub evidence: Vec<PsychologicalReportEvidence>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct PsychologicalReportContent {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub summary: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub word_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub chapters: Vec<PsychologicalReportChapter>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct PsychologicalReportEvidence {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub r#type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub r#ref: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub note: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub weight: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_field: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub topics: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub bodies: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub houses: Option<Vec<i64>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub signs: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub confidence: Option<PsychologicalReportEvidenceConfidence>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum PsychologicalReportEvidenceConfidence {
+    Number(f64),
+    String(String),
+}
+
+impl<'de> Deserialize<'de> for PsychologicalReportEvidenceConfidence {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "PsychologicalReportEvidenceConfidence",
+            &[
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Number),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::String),
+                },
+            ],
+        )
+    }
+}
+
+impl Default for PsychologicalReportEvidenceConfidence {
+    fn default() -> Self {
+        Self::Number(Default::default())
+    }
+}
+
+/// Status of a psychological report job, with the report once it is completed.
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct PsychologicalReportJobResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub job_id: String,
+    /// pending, processing, completed or failed.
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub status: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub credits_used: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pdf_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_profile_branding_logo: Option<bool>,
+    /// The natal chart subject (see NatalCalculateSubject).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub subject: Option<serde_json::Map<String, serde_json::Value>>,
+    /// The natal chart the report was written from (see NatalCalculateResponse).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub natal_chart: Option<serde_json::Map<String, serde_json::Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub next_poll_after_seconds: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub report_metadata: Option<PsychologicalReportMetadata>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub report_content: Option<PsychologicalReportContent>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub report_markdown: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub error: Option<PsychologicalReportJobResponseError>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum PsychologicalReportJobResponseError {
+    String(String),
+    Map(serde_json::Map<String, serde_json::Value>),
+}
+
+impl<'de> Deserialize<'de> for PsychologicalReportJobResponseError {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "PsychologicalReportJobResponseError",
+            &[
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::String),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Map),
+                },
+            ],
+        )
+    }
+}
+
+impl Default for PsychologicalReportJobResponseError {
+    fn default() -> Self {
+        Self::String(Default::default())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct PsychologicalReportMetadata {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub report_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub generated_at: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub provider: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub model: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub summary: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub language: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub word_count: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub structure_plan: Option<Vec<PsychologicalReportChapterPlan>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct PsychologicalReportSection {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub paragraphs: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
@@ -13868,20 +22128,39 @@ impl std::fmt::Display for PsychologicalReportSettingsMode {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct PsychologicalReportSubsectionPlan {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub heading: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub purpose: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PurchaseCarElectionBuyerResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub buyer: Buyer,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<PurchaseCarElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<PurchaseCarElectionFactor>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PurchaseCarElectionFactor {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub code: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detail: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub severity: Option<PurchaseCarElectionFactorSeverity>,
 }
 
@@ -13959,30 +22238,50 @@ pub struct PurchaseCarElectionNatalRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PurchaseCarElectionNatalResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub buyers: Vec<PurchaseCarElectionBuyerResonance>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PurchaseCarElectionResult {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_utc: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score_total: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub confidence_level: ConfidenceLevel,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub quality_band: QualityBand,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub status: PurchaseCarElectionResultStatus,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_verdict: StrictTraditionalVerdict,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_severity: StrictTraditionalSeverity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_percentile: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub best_available_in_window: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub review_flags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hard_stops: Vec<PurchaseCarElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<PurchaseCarElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<PurchaseCarElectionFactor>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_resonance: Option<PurchaseCarElectionNatalResonance>,
 }
 
@@ -14022,24 +22321,39 @@ impl std::fmt::Display for PurchaseCarElectionResultStatus {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PurchaseCarElectionSearchMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scoring_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calibration_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_mode: SearchMode,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub window_strategy: WindowStrategy,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ranking_basis: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub resolved_timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scanned_candidates: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub coarse_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub refined_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub returned_candidates: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub advisories: Option<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_start_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_end_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub step_minutes: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub coarse_step_minutes: Option<i64>,
 }
 
@@ -14067,8 +22381,11 @@ pub struct PurchaseCarElectionSearchRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PurchaseCarElectionSearchResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: PurchaseCarElectionSearchMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub results: Vec<PurchaseCarElectionResult>,
 }
 
@@ -14120,20 +22437,30 @@ pub struct PurchaseCarElectionSearchWindowRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PurchasePropertyElectionBuyerResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub buyer: Buyer,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<PurchasePropertyElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<PurchasePropertyElectionFactor>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PurchasePropertyElectionFactor {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub code: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detail: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub severity: Option<PurchasePropertyElectionFactorSeverity>,
 }
 
@@ -14211,30 +22538,50 @@ pub struct PurchasePropertyElectionNatalRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PurchasePropertyElectionNatalResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub buyers: Vec<PurchasePropertyElectionBuyerResonance>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PurchasePropertyElectionResult {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_utc: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score_total: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub confidence_level: ConfidenceLevel,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub quality_band: QualityBand,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub status: PurchasePropertyElectionResultStatus,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_verdict: StrictTraditionalVerdict,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_severity: StrictTraditionalSeverity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_percentile: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub best_available_in_window: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub review_flags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hard_stops: Vec<PurchasePropertyElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<PurchasePropertyElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<PurchasePropertyElectionFactor>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_resonance: Option<PurchasePropertyElectionNatalResonance>,
 }
 
@@ -14274,24 +22621,39 @@ impl std::fmt::Display for PurchasePropertyElectionResultStatus {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PurchasePropertyElectionSearchMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scoring_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calibration_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_mode: SearchMode,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub window_strategy: WindowStrategy,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ranking_basis: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub resolved_timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scanned_candidates: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub coarse_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub refined_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub returned_candidates: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub advisories: Option<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_start_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_end_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub step_minutes: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub coarse_step_minutes: Option<i64>,
 }
 
@@ -14319,8 +22681,11 @@ pub struct PurchasePropertyElectionSearchRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PurchasePropertyElectionSearchResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: PurchasePropertyElectionSearchMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub results: Vec<PurchasePropertyElectionResult>,
 }
 
@@ -14372,20 +22737,28 @@ pub struct PurchasePropertyElectionSearchWindowRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PythagoreanData {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: PythagoreanDataKind,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub core: CoreNumbers,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub cycles: PersonalCycles,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub life_cycles: LifeCycles,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub name_analysis: Option<NameAnalysis>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum PythagoreanDataKind {
     #[default]
     #[serde(rename = "pythagorean")]
     Pythagorean,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl PythagoreanDataKind {
@@ -14393,6 +22766,7 @@ impl PythagoreanDataKind {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Pythagorean => "pythagorean",
+            Self::Other(value) => value,
         }
     }
 }
@@ -14449,11 +22823,14 @@ impl std::fmt::Display for PythagoreanMethodRequestCompoundPolicy {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum PythagoreanMethodRequestMasterPolicy {
     #[default]
     #[serde(rename = "preserve_core_11_22_33")]
     PreserveCore112233,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl PythagoreanMethodRequestMasterPolicy {
@@ -14461,6 +22838,7 @@ impl PythagoreanMethodRequestMasterPolicy {
     pub fn as_str(&self) -> &str {
         match self {
             Self::PreserveCore112233 => "preserve_core_11_22_33",
+            Self::Other(value) => value,
         }
     }
 }
@@ -14506,11 +22884,14 @@ impl std::fmt::Display for PythagoreanMethodRequestProfile {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum PythagoreanMethodRequestSystem {
     #[default]
     #[serde(rename = "pythagorean")]
     Pythagorean,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl PythagoreanMethodRequestSystem {
@@ -14518,6 +22899,7 @@ impl PythagoreanMethodRequestSystem {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Pythagorean => "pythagorean",
+            Self::Other(value) => value,
         }
     }
 }
@@ -14597,21 +22979,32 @@ pub struct QuotidianProgressionsRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct RashifalCalculations {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transits: Vec<RashifalTransit>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub conditions: Vec<RashifalCondition>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub factors: Vec<RashifalFactor>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct RashifalCondition {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_from_moon: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub polarity: RashifalConditionPolarity,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub phase: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub evidence_refs: Vec<String>,
 }
 
@@ -14648,26 +23041,42 @@ impl std::fmt::Display for RashifalConditionPolarity {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct RashifalData {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: Sign,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rashi_label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculations: RashifalCalculations,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub interpretation: Option<RashifalInterpretation>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct RashifalFactor {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: RashifalFactorKind,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planets: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_from_moon: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub polarity: RashifalFactorPolarity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub time_scale: TimeScale,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub details: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub evidence_refs: Vec<String>,
 }
 
@@ -14754,9 +23163,13 @@ impl std::fmt::Display for RashifalFactorPolarity {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct RashifalInfluence {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub text: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub polarity: RashifalInfluencePolarity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub evidence_refs: Vec<String>,
 }
 
@@ -14793,44 +23206,59 @@ impl std::fmt::Display for RashifalInfluencePolarity {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct RashifalInterpretation {
     /// Server default: `"en"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub language: Option<Language>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub overall_tone: OverallTone,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub evidence_refs: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sections: Vec<RashifalSection>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub background_influences: Vec<RashifalInfluence>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct RashifalMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint: RashifalMetaEndpoint,
     /// Server default: `"v2"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub endpoint_version: Option<EndpointVersion>,
     /// Server default: `"moon_sign_rashifal_v5"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ruleset_version: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub target_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub reference_datetime: String,
     /// Server default: `"sidereal"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub zodiac: Option<RashifalMetaZodiac>,
     /// Server default: `"moon_sign"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub reference: Option<Reference>,
     /// Server default: `"geocentric"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub position_frame: Option<PositionFrame>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ayanamsha: RashifalMetaAyanamsha,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub node_type: RashifalMetaNodeType,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub include_interpretation: bool,
     /// Server default: `"en"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub lang: Option<Lang>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
 }
 
@@ -14936,11 +23364,14 @@ impl std::fmt::Display for RashifalMetaNodeType {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum RashifalMetaZodiac {
     #[default]
     #[serde(rename = "sidereal")]
     Sidereal,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl RashifalMetaZodiac {
@@ -14948,6 +23379,7 @@ impl RashifalMetaZodiac {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Sidereal => "sidereal",
+            Self::Other(value) => value,
         }
     }
 }
@@ -14959,17 +23391,23 @@ impl std::fmt::Display for RashifalMetaZodiac {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct RashifalSection {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub key: RashifalSectionKey,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub text: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub tone: RashifalSectionTone,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub opportunity: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub caution: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub review: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub advice: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub evidence_refs: Vec<String>,
 }
 
@@ -15041,27 +23479,44 @@ impl std::fmt::Display for RashifalSectionTone {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct RashifalTransit {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: Sign,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub longitude: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub degree_in_sign: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub speed_deg_per_day: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub is_retrograde: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub nakshatra: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub nakshatra_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pada: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub nakshatra_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_from_moon: i64,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum Reference {
     #[default]
     #[serde(rename = "moon_sign")]
     MoonSign,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl Reference {
@@ -15069,6 +23524,7 @@ impl Reference {
     pub fn as_str(&self) -> &str {
         match self {
             Self::MoonSign => "moon_sign",
+            Self::Other(value) => value,
         }
     }
 }
@@ -15108,11 +23564,14 @@ impl std::fmt::Display for ReferenceChartBasis {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ReferenceTimezone {
     #[default]
     #[serde(rename = "UTC+08:00")]
     Utc0800,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ReferenceTimezone {
@@ -15120,6 +23579,7 @@ impl ReferenceTimezone {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Utc0800 => "UTC+08:00",
+            Self::Other(value) => value,
         }
     }
 }
@@ -15159,11 +23619,14 @@ impl std::fmt::Display for RelationshipContext {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum Renderer {
     #[default]
     #[serde(rename = "default")]
     Default,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl Renderer {
@@ -15171,6 +23634,7 @@ impl Renderer {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Default => "default",
+            Self::Other(value) => value,
         }
     }
 }
@@ -15179,6 +23643,21 @@ impl std::fmt::Display for Renderer {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct ReportCreditsResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub user_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub key_id: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub report_credits_remaining: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub auto_recharge_enabled: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub auto_recharge_threshold: i64,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
@@ -15242,11 +23721,14 @@ impl std::fmt::Display for RequiredProfile {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum Resident {
     #[default]
     #[serde(rename = "resident")]
     Resident,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl Resident {
@@ -15254,6 +23736,7 @@ impl Resident {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Resident => "resident",
+            Self::Other(value) => value,
         }
     }
 }
@@ -15265,11 +23748,17 @@ impl std::fmt::Display for Resident {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ResolvedAnkJyotishMethod {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub system: ResolvedAnkJyotishMethodSystem,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub profile: ResolvedAnkJyotishMethodProfile,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub master_policy: ResolvedAnkJyotishMethodMasterPolicy,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub compound_policy: ResolvedAnkJyotishMethodCompoundPolicy,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name_source: NameSource,
 }
 
@@ -15302,11 +23791,14 @@ impl std::fmt::Display for ResolvedAnkJyotishMethodCompoundPolicy {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ResolvedAnkJyotishMethodMasterPolicy {
     #[default]
     #[serde(rename = "reduce_all")]
     ReduceAll,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ResolvedAnkJyotishMethodMasterPolicy {
@@ -15314,6 +23806,7 @@ impl ResolvedAnkJyotishMethodMasterPolicy {
     pub fn as_str(&self) -> &str {
         match self {
             Self::ReduceAll => "reduce_all",
+            Self::Other(value) => value,
         }
     }
 }
@@ -15324,11 +23817,14 @@ impl std::fmt::Display for ResolvedAnkJyotishMethodMasterPolicy {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ResolvedAnkJyotishMethodProfile {
     #[default]
     #[serde(rename = "ank-jyotish-civil-cheiro-navagraha-reduce-all-v1")]
     AnkJyotishCivilCheiroNavagrahaReduceAllV1,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ResolvedAnkJyotishMethodProfile {
@@ -15338,6 +23834,7 @@ impl ResolvedAnkJyotishMethodProfile {
             Self::AnkJyotishCivilCheiroNavagrahaReduceAllV1 => {
                 "ank-jyotish-civil-cheiro-navagraha-reduce-all-v1"
             }
+            Self::Other(value) => value,
         }
     }
 }
@@ -15348,11 +23845,14 @@ impl std::fmt::Display for ResolvedAnkJyotishMethodProfile {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ResolvedAnkJyotishMethodSystem {
     #[default]
     #[serde(rename = "ank_jyotish")]
     AnkJyotish,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ResolvedAnkJyotishMethodSystem {
@@ -15360,6 +23860,7 @@ impl ResolvedAnkJyotishMethodSystem {
     pub fn as_str(&self) -> &str {
         match self {
             Self::AnkJyotish => "ank_jyotish",
+            Self::Other(value) => value,
         }
     }
 }
@@ -15371,10 +23872,15 @@ impl std::fmt::Display for ResolvedAnkJyotishMethodSystem {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ResolvedChaldeanMethod {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub system: ResolvedChaldeanMethodSystem,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub profile: ResolvedChaldeanMethodProfile,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub master_policy: ResolvedChaldeanMethodMasterPolicy,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub compound_policy: ResolvedChaldeanMethodCompoundPolicy,
 }
 
@@ -15407,11 +23913,14 @@ impl std::fmt::Display for ResolvedChaldeanMethodCompoundPolicy {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ResolvedChaldeanMethodMasterPolicy {
     #[default]
     #[serde(rename = "reduce_all")]
     ReduceAll,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ResolvedChaldeanMethodMasterPolicy {
@@ -15419,6 +23928,7 @@ impl ResolvedChaldeanMethodMasterPolicy {
     pub fn as_str(&self) -> &str {
         match self {
             Self::ReduceAll => "reduce_all",
+            Self::Other(value) => value,
         }
     }
 }
@@ -15458,11 +23968,14 @@ impl std::fmt::Display for ResolvedChaldeanMethodProfile {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ResolvedChaldeanMethodSystem {
     #[default]
     #[serde(rename = "chaldean")]
     Chaldean,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ResolvedChaldeanMethodSystem {
@@ -15470,6 +23983,7 @@ impl ResolvedChaldeanMethodSystem {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Chaldean => "chaldean",
+            Self::Other(value) => value,
         }
     }
 }
@@ -15481,21 +23995,28 @@ impl std::fmt::Display for ResolvedChaldeanMethodSystem {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ResolvedDateContext {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub reference_date: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub timezone_requested: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub timezone_resolved: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calendar: ResolvedDateContextCalendar,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub year_anchor: YearAnchor,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ResolvedDateContextCalendar {
     #[default]
     #[serde(rename = "gregory")]
     Gregory,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ResolvedDateContextCalendar {
@@ -15503,6 +24024,7 @@ impl ResolvedDateContextCalendar {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Gregory => "gregory",
+            Self::Other(value) => value,
         }
     }
 }
@@ -15514,11 +24036,17 @@ impl std::fmt::Display for ResolvedDateContextCalendar {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ResolvedKabbalahMethod {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub system: ResolvedKabbalahMethodSystem,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub profile: ResolvedKabbalahMethodProfile,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub master_policy: ResolvedKabbalahMethodMasterPolicy,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub compound_policy: ResolvedKabbalahMethodCompoundPolicy,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name_source: NameSource,
 }
 
@@ -15551,11 +24079,14 @@ impl std::fmt::Display for ResolvedKabbalahMethodCompoundPolicy {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ResolvedKabbalahMethodMasterPolicy {
     #[default]
     #[serde(rename = "not_applicable")]
     NotApplicable,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ResolvedKabbalahMethodMasterPolicy {
@@ -15563,6 +24094,7 @@ impl ResolvedKabbalahMethodMasterPolicy {
     pub fn as_str(&self) -> &str {
         match self {
             Self::NotApplicable => "not_applicable",
+            Self::Other(value) => value,
         }
     }
 }
@@ -15614,11 +24146,14 @@ impl std::fmt::Display for ResolvedKabbalahMethodProfile {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ResolvedKabbalahMethodSystem {
     #[default]
     #[serde(rename = "kabbalah")]
     Kabbalah,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ResolvedKabbalahMethodSystem {
@@ -15626,6 +24161,7 @@ impl ResolvedKabbalahMethodSystem {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Kabbalah => "kabbalah",
+            Self::Other(value) => value,
         }
     }
 }
@@ -15637,10 +24173,15 @@ impl std::fmt::Display for ResolvedKabbalahMethodSystem {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ResolvedPythagoreanMethod {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub system: ResolvedPythagoreanMethodSystem,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub profile: ResolvedPythagoreanMethodProfile,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub master_policy: ResolvedPythagoreanMethodMasterPolicy,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub compound_policy: ResolvedPythagoreanMethodCompoundPolicy,
 }
 
@@ -15676,11 +24217,14 @@ impl std::fmt::Display for ResolvedPythagoreanMethodCompoundPolicy {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ResolvedPythagoreanMethodMasterPolicy {
     #[default]
     #[serde(rename = "preserve_core_11_22_33")]
     PreserveCore112233,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ResolvedPythagoreanMethodMasterPolicy {
@@ -15688,6 +24232,7 @@ impl ResolvedPythagoreanMethodMasterPolicy {
     pub fn as_str(&self) -> &str {
         match self {
             Self::PreserveCore112233 => "preserve_core_11_22_33",
+            Self::Other(value) => value,
         }
     }
 }
@@ -15727,11 +24272,14 @@ impl std::fmt::Display for ResolvedPythagoreanMethodProfile {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum ResolvedPythagoreanMethodSystem {
     #[default]
     #[serde(rename = "pythagorean")]
     Pythagorean,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl ResolvedPythagoreanMethodSystem {
@@ -15739,6 +24287,7 @@ impl ResolvedPythagoreanMethodSystem {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Pythagorean => "pythagorean",
+            Self::Other(value) => value,
         }
     }
 }
@@ -15747,6 +24296,24 @@ impl std::fmt::Display for ResolvedPythagoreanMethodSystem {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
     }
+}
+
+/// How a local wall-clock time was resolved (DST gaps and overlaps, tz database version).
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct ResolvedTime {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub input_timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub resolved_timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub utc_offset: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub utc_instant: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub resolution_status: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub tzdb_version: String,
 }
 
 /// Use 'flat' to return a shallow no-code-friendly response with a single text field.
@@ -15780,28 +24347,36 @@ impl std::fmt::Display for ResponseFormat {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ResponseMeta {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub engine: Option<MetaEngine>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ephemeris: MetaEphemeris,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub settings_resolved: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation_hash: String,
     /// Server default: `\[\]`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub warnings: Option<Vec<MetaWarning>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub display:
         Option<std::collections::BTreeMap<String, std::collections::BTreeMap<String, String>>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub aliases: Option<std::collections::BTreeMap<String, String>>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum Retention {
     #[default]
     #[serde(rename = "none_by_numerology_endpoint")]
     NoneByNumerologyEndpoint,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl Retention {
@@ -15809,6 +24384,7 @@ impl Retention {
     pub fn as_str(&self) -> &str {
         match self {
             Self::NoneByNumerologyEndpoint => "none_by_numerology_endpoint",
+            Self::Other(value) => value,
         }
     }
 }
@@ -15849,15 +24425,25 @@ impl std::fmt::Display for RetrogradeMarkerStyle {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ReturnEventMetaDetails {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub body: Body,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub selection_mode: SelectionMode,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_moment_utc: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_moment_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub target_longitude_abs: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub target_error_arcsec: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub iterations: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_window_days: i64,
 }
 
@@ -15874,21 +24460,20 @@ pub struct ReturnTarget {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct RiseSetData {
-    #[serde(default)]
     pub rise: Option<String>,
-    #[serde(default)]
     pub set: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub rise_local: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub set_local: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub location: Option<String>,
     /// Server default: `"UTC"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub timezone: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub timezone_local: Option<String>,
 }
 
@@ -15921,11 +24506,14 @@ impl std::fmt::Display for Role {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum RomanizationScheme {
     #[default]
     #[serde(rename = "common_indian_english_and_iast")]
     CommonIndianEnglishAndIast,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl RomanizationScheme {
@@ -15933,6 +24521,7 @@ impl RomanizationScheme {
     pub fn as_str(&self) -> &str {
         match self {
             Self::CommonIndianEnglishAndIast => "common_indian_english_and_iast",
+            Self::Other(value) => value,
         }
     }
 }
@@ -15944,21 +24533,32 @@ impl std::fmt::Display for RomanizationScheme {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct RulingGraha {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub number: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: Id,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub english_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub common_romanization: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub iast_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hindi_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hindi_aliases: Vec<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum SchemaVersion {
     #[default]
     #[serde(rename = "2.0")]
     V20,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl SchemaVersion {
@@ -15966,6 +24566,7 @@ impl SchemaVersion {
     pub fn as_str(&self) -> &str {
         match self {
             Self::V20 => "2.0",
+            Self::Other(value) => value,
         }
     }
 }
@@ -15977,9 +24578,13 @@ impl std::fmt::Display for SchemaVersion {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ScoreContributor {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ref_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub weight: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub bucket: String,
 }
 
@@ -16042,14 +24647,17 @@ impl std::fmt::Display for SearchMode {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SearchWindow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub from: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub to: String,
     /// Server default: `100`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<i64>,
     /// Server default: `"asc"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub order: Option<Order>,
 }
 
@@ -16095,48 +24703,70 @@ pub struct SecondaryProgressionTarget {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SecondaryProgressionsInput {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub birth_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub birth_location: std::collections::BTreeMap<String, f64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub include_angles: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub include_houses: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub include_aspects: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub include_speed: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub include_dignity: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub include_minor_aspects: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub include_stelliums: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub include_features: Option<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub include_dominants: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub include_timeline: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SecondaryProgressionsMeta {
     /// Server default: `"secondary_progressions"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub endpoint: Option<SecondaryProgressionsMetaEndpoint>,
     /// Server default: `"v1"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub zodiac_type: SecondaryProgressionsMetaZodiacType,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ayanamsa: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_system: String,
     /// Server default: `"secondary_progressions_day_for_year"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub calculation_method: Option<CalculationMethod>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub target_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub target_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum SecondaryProgressionsMetaEndpoint {
     #[default]
     #[serde(rename = "secondary_progressions")]
     SecondaryProgressions,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl SecondaryProgressionsMetaEndpoint {
@@ -16144,6 +24774,7 @@ impl SecondaryProgressionsMetaEndpoint {
     pub fn as_str(&self) -> &str {
         match self {
             Self::SecondaryProgressions => "secondary_progressions",
+            Self::Other(value) => value,
         }
     }
 }
@@ -16202,22 +24833,27 @@ pub struct SecondaryProgressionsRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SecondaryProgressionsResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: SecondaryProgressionsMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub input: SecondaryProgressionsInput,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub progression_basis: ProgressionBasis,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub progressed_chart: ChartPayload,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_reference: Option<ChartPayload>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub movements: Option<MovementsPayload>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub aspects: Option<AspectsPayload>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub lifecycle: Option<LifecyclePayload>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub highlights: Option<Vec<HighlightPayload>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub timeline: Option<TimelinePayload>,
 }
 
@@ -16390,23 +25026,38 @@ impl std::fmt::Display for Sex {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SharedAspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub points: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub user_orb: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub match_orb: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb_delta: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SharedPosition {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub user_sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub match_sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub user_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub match_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub degree_distance: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub same_sign: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub close: bool,
 }
 
@@ -16498,25 +25149,146 @@ impl std::fmt::Display for SignDisplay {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+pub enum SignId {
+    #[default]
+    #[serde(rename = "aries")]
+    Aries,
+    #[serde(rename = "taurus")]
+    Taurus,
+    #[serde(rename = "gemini")]
+    Gemini,
+    #[serde(rename = "cancer")]
+    Cancer,
+    #[serde(rename = "leo")]
+    Leo,
+    #[serde(rename = "virgo")]
+    Virgo,
+    #[serde(rename = "libra")]
+    Libra,
+    #[serde(rename = "scorpio")]
+    Scorpio,
+    #[serde(rename = "sagittarius")]
+    Sagittarius,
+    #[serde(rename = "capricorn")]
+    Capricorn,
+    #[serde(rename = "aquarius")]
+    Aquarius,
+    #[serde(rename = "pisces")]
+    Pisces,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
+}
+
+impl SignId {
+    /// The wire value of this variant.
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Aries => "aries",
+            Self::Taurus => "taurus",
+            Self::Gemini => "gemini",
+            Self::Cancer => "cancer",
+            Self::Leo => "leo",
+            Self::Virgo => "virgo",
+            Self::Libra => "libra",
+            Self::Scorpio => "scorpio",
+            Self::Sagittarius => "sagittarius",
+            Self::Capricorn => "capricorn",
+            Self::Aquarius => "aquarius",
+            Self::Pisces => "pisces",
+            Self::Other(value) => value,
+        }
+    }
+}
+
+impl std::fmt::Display for SignId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SignInfo {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub index: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub abbr: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SignResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: String,
-    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: SignId,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub abs_pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub interpretation: Option<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub resolved_time: Option<serde_json::Map<String, serde_json::Value>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SimpleNatalHouse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub absolute_degree: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SimpleNatalMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub endpoint: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zodiac_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub planet_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house_count: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SimpleNatalPlanet {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub absolute_degree: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub house: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub retrograde: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
@@ -16545,6 +25317,51 @@ pub struct SimpleNatalRequest {
     /// Server default: `"AUTO"`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tz_str: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SimpleNatalResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub subject: SimpleNatalSubject,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub summary: SimpleNatalSummary,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub planets: Vec<SimpleNatalPlanet>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub planets_by_name: std::collections::BTreeMap<String, SimpleNatalPlanet>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub houses: Vec<SimpleNatalHouse>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub houses_by_number: std::collections::BTreeMap<String, SimpleNatalHouse>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub angles: std::collections::BTreeMap<String, Option<SimpleNatalHouse>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub meta: SimpleNatalMeta,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SimpleNatalSubject {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub time_known: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub location: NatalCalculateSubjectLocation,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SimpleNatalSummary {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sun_sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub moon_sign: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rising_sign: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
@@ -16586,29 +25403,35 @@ impl std::fmt::Display for Site {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SkyEvent {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub r#type: SkyEventType,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub formulation: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_time: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub importance: Importance,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub body: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sign: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub bodies: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub aspect: Option<Aspect>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub angle: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub orb: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub direction: Option<SkyEventDirection>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub phase: Option<SkyEventPhase>,
 }
 
@@ -16741,63 +25564,89 @@ impl std::fmt::Display for SkyEventsPreset {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SkyEventsResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub events: Vec<SkyEvent>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SolarReturnLocation {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub city: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub lat: Option<f64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub lng: Option<f64>,
     /// Server default: `"AUTO"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub tz_str: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SolarReturnMetaCalculation {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub zodiac_type: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sidereal_ayanamsa: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_set: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb_policy: OrbPolicy,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SolarReturnMetaDetails {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub target_year: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_moment_utc: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_moment_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sun_target_longitude_abs: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sun_error_arcsec: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub iterations: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_window_days: i64,
     /// Server default: `"single_moment"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub calculation_mode: Option<CalculationMode>,
     /// Server default: `"exact"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub confidence: Option<Confidence>,
     /// Server default: `"exact_birth_time"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub reference_chart_basis: Option<ReferenceChartBasis>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub uncertainty: Option<SolarReturnUncertainty>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SolarReturnPlanetPositionRange {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub body: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start_abs_pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end_abs_pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub span_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub same_sign: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub stable: bool,
 }
 
@@ -16808,31 +25657,44 @@ pub struct SolarReturnRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SolarReturnResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: SolarReturnResponseMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub subject: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planets: Vec<serde_json::Map<String, serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub houses: Vec<serde_json::Map<String, serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub angles: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub angles_details: serde_json::Map<String, serde_json::Value>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub aspects: Option<Vec<serde_json::Map<String, serde_json::Value>>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub aspects_summary: Option<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_comparison: Option<NatalComparison>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SolarReturnResponseMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub report_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub engine: Option<EngineMeta>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation: SolarReturnMetaCalculation,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub solar_return: SolarReturnMetaDetails,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_reference: NatalReference,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub resolved_time: Option<serde_json::Map<String, serde_json::Value>>,
 }
 
@@ -16970,27 +25832,44 @@ pub struct SolarReturnTarget {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SolarReturnUncertainty {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub birth_time_start_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub birth_time_end_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub possible_return_start_utc: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub possible_return_start_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub possible_return_end_utc: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub possible_return_end_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub window_hours: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub position_stability_threshold_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub position_sample_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planet_position_ranges: Vec<SolarReturnPlanetPositionRange>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub stable_factors: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub unstable_factors: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub suppressed_fields: Vec<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum SolarTermTimes {
     #[default]
     #[serde(rename = "iso_8601_with_fixed_utc_offset")]
     Iso8601WithFixedUtcOffset,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl SolarTermTimes {
@@ -16998,6 +25877,7 @@ impl SolarTermTimes {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Iso8601WithFixedUtcOffset => "iso_8601_with_fixed_utc_offset",
+            Self::Other(value) => value,
         }
     }
 }
@@ -17035,6 +25915,105 @@ impl std::fmt::Display for SourceUsedForNameNumbers {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SpaceChartEngine {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub extension: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SpaceChartHouses {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub cusps: Vec<SpaceChartHousesCusp>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub asc: SpaceChartPoint,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub mc: SpaceChartPoint,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub obliquity: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SpaceChartHousesCusp {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lon: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_degree: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SpaceChartInstant {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub jd_ut: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub jd_tt: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub utc: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub timezone: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub time_basis: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub light_time_seconds: Option<f64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SpaceChartMarsTime {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sol: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub mars_sol_date: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub local_mean_solar_time: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub local_time: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SpaceChartPlanet {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lon: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lat: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub distance_au: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub speed: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub retrograde: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SpaceChartPoint {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lon: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_degree: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
@@ -17167,6 +26146,48 @@ impl std::fmt::Display for SpaceChartRequestZodiac {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SpaceChartResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub site: SpaceChartSite,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub instant: SpaceChartInstant,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zodiac: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house_system: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub house_note: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub planets: Vec<SpaceChartPlanet>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub houses: SpaceChartHouses,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub engine: SpaceChartEngine,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mars_time: Option<SpaceChartMarsTime>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub earth_comparison: Option<std::collections::BTreeMap<String, Option<SpaceChartPoint>>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SpaceChartSite {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub world: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lon: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lat: f64,
 }
 
 /// `SpaceChartRequest` plus the natal chart SVG design settings (themes, chart_config).
@@ -17316,37 +26337,43 @@ impl std::fmt::Display for SpaceChartSvgRequestZodiac {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SpecialMoonData {
     /// Server default: `false`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub is_supermoon: Option<bool>,
     /// Server default: `false`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub is_micromoon: Option<bool>,
     /// Server default: `false`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub is_blue_moon: Option<bool>,
     /// Server default: `false`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub is_black_moon: Option<bool>,
     /// Server default: `false`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub is_harvest_moon: Option<bool>,
     /// Server default: `false`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub is_hunter_moon: Option<bool>,
     /// Server default: `\[\]`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub labels: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct StartingJourneyElectionFactor {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub code: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detail: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub severity: Option<StartingJourneyElectionFactorSeverity>,
 }
 
@@ -17424,30 +26451,50 @@ pub struct StartingJourneyElectionNatalRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct StartingJourneyElectionNatalResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub travelers: Vec<StartingJourneyElectionTravelerResonance>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct StartingJourneyElectionResult {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_utc: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score_total: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub confidence_level: ConfidenceLevel,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub quality_band: QualityBand,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub status: StartingJourneyElectionResultStatus,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_verdict: StrictTraditionalVerdict,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_severity: StrictTraditionalSeverity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_percentile: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub best_available_in_window: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub review_flags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hard_stops: Vec<StartingJourneyElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<StartingJourneyElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<StartingJourneyElectionFactor>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_resonance: Option<StartingJourneyElectionNatalResonance>,
 }
 
@@ -17487,24 +26534,39 @@ impl std::fmt::Display for StartingJourneyElectionResultStatus {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct StartingJourneyElectionSearchMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scoring_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calibration_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_mode: SearchMode,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub window_strategy: WindowStrategy,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ranking_basis: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub resolved_timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scanned_candidates: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub coarse_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub refined_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub returned_candidates: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub advisories: Option<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_start_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_end_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub step_minutes: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub coarse_step_minutes: Option<i64>,
 }
 
@@ -17532,8 +26594,11 @@ pub struct StartingJourneyElectionSearchRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct StartingJourneyElectionSearchResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: StartingJourneyElectionSearchMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub results: Vec<StartingJourneyElectionResult>,
 }
 
@@ -17585,18 +26650,28 @@ pub struct StartingJourneyElectionSearchWindowRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct StartingJourneyElectionTravelerResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub traveler: Traveler,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<StartingJourneyElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<StartingJourneyElectionFactor>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct StationEvent {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub station_type: StationType,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_key: String,
 }
 
@@ -17660,22 +26735,36 @@ impl std::fmt::Display for StelliumPolicy {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct StrengthMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ruleset_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ayanamsha: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub node_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone_used: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub shadbala_engine: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ashtakavarga_engine: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub dig_bala_basis: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct StrengthV2Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub shadbala: std::collections::BTreeMap<String, std::collections::BTreeMap<String, f64>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ashtakavarga: AshtakavargaV2Response,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub metadata: StrengthMetadata,
 }
 
@@ -17776,49 +26865,67 @@ impl std::fmt::Display for Style {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SynastryArchetype {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub confidence: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub drivers: Vec<ArchetypeDriver>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub one_liner: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SynastryAspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: SynastryAspectKind,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub a_point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub b_point: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub pair_key: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub canonical_key: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_angle_deg: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub separation_deg: Option<f64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub delta_deg: Option<f64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub applying: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub strength_label: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub polarity: SynastryAspectPolarity,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub polarity_confidence: Option<f64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub categories: Vec<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub domains: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub themes: Option<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub weight_breakdown: AspectWeightBreakdown,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub text_key: String,
     /// Server default: `false`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub is_angle_contact: Option<bool>,
 }
 
@@ -17887,32 +26994,39 @@ impl std::fmt::Display for SynastryAspectPolarity {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SynastryCardsResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: CardsMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: CardsSummary,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspects: Vec<CardsAspect>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SynastryData {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub aspects: Option<Vec<SynastryAspect>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub house_overlays: Option<HouseOverlays>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub highlights: Option<Vec<Highlight>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub scores: Option<SynastryScores>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub archetype: Option<SynastryArchetype>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub text: Option<SynastryText>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub index: Option<SynastryIndex>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SynastryIndex {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspects_by_id: std::collections::BTreeMap<String, i64>,
 }
 
@@ -17935,28 +27049,41 @@ pub struct SynastryRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SynastryResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: ResponseMeta,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub resolved_time:
         Option<std::collections::BTreeMap<String, serde_json::Map<String, serde_json::Value>>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal: Option<serde_json::Map<String, serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub synastry: SynastryData,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SynastryScores {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub overall: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub romance: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub communication: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub stability: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub intimacy: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub growth: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub tension: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub contributors: Vec<ScoreContributor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub model: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub scoring_meta: Option<serde_json::Map<String, serde_json::Value>>,
 }
 
@@ -18087,85 +27214,123 @@ impl std::fmt::Display for SynastrySettingsZodiac {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SynastrySimplifiedResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: ResponseMeta,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub resolved_time:
         Option<std::collections::BTreeMap<String, serde_json::Map<String, serde_json::Value>>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub highlights: Vec<Highlight>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub top_aspects: Vec<SynastryAspect>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scores: SynastryScores,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub archetype: Option<SynastryArchetype>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SynastrySummaryData {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scores: SynastryScores,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub archetype: SynastryArchetype,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strengths: Vec<serde_json::Map<String, serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub challenges: Vec<serde_json::Map<String, serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub narrative: serde_json::Map<String, serde_json::Value>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SynastrySummaryResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: ResponseMeta,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub resolved_time:
         Option<std::collections::BTreeMap<String, serde_json::Map<String, serde_json::Value>>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: SynastrySummaryData,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SynastryText {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub locale: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub tone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub by_key: std::collections::BTreeMap<String, SynastryTextEntry>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SynastryTextEntry {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub detail: Option<String>,
     /// Server default: `\[\]`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub themes: Option<Vec<String>>,
     /// Server default: `"normal"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub strength_label: Option<String>,
     /// Server default: `\[\]`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub keywords: Option<Vec<String>>,
     /// Server default: `\[\]`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub advice: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TableAngleRow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub angle: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub longitude_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub longitude_text: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: SignInfo,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub position_in_sign_deg: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TableAspectRow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub relation: TableAspectRowRelation,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub point_1: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub point_2: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_angle_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub separation_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub applying: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub exact_date: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_key: String,
 }
 
@@ -18199,36 +27364,55 @@ impl std::fmt::Display for TableAspectRowRelation {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TableEventRow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_key: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TableHouseRow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub longitude_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub longitude_text: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: SignInfo,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub position_in_sign_deg: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TablePointRow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub longitude_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub longitude_text: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: SignInfo,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub position_in_sign_deg: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub house: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub retrograde: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub speed_longitude_deg_per_day: Option<f64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub dignity: Option<String>,
 }
 
@@ -18372,20 +27556,33 @@ impl std::fmt::Display for TimeBasis {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TimeLordAspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub time_lord_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub time_lord_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub other_body_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub other_body_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub other_body_sign_name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub other_body_sign_id: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub other_body_house: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub other_body_abs_pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub is_major: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub is_applying: bool,
 }
 
@@ -18451,46 +27648,155 @@ impl std::fmt::Display for TimeStandard {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TimedNumberResult {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub value: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub raw_total: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub compound: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub root: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub value_display: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub master_number: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aliases: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub method_variance: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub warnings: Vec<NumberWarning>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub karmic_debts: Vec<KarmicDebt>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub interpretation_key: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub interpretation_ref: Option<InterpretationRef>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub reduction_path: Option<Vec<i64>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub steps: Option<Vec<serde_json::Map<String, serde_json::Value>>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub details: Option<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub content: Option<TimedNumberResultContent>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub age_start: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub age_end_exclusive: Option<i64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum TimedNumberResultContent {
     ArchetypeInterpretation(ArchetypeInterpretation),
     ChaldeanNameInterpretation(ChaldeanNameInterpretation),
     GematriaMethodExplanation(GematriaMethodExplanation),
+}
+
+impl<'de> Deserialize<'de> for TimedNumberResultContent {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "TimedNumberResultContent",
+            &[
+                crate::de::Variant {
+                    required: &[
+                        "availability",
+                        "personal_interpretation",
+                        "content_key",
+                        "content_id",
+                        "content_version",
+                        "locale",
+                        "claims_mode",
+                        "source_ids",
+                        "source_refs",
+                        "provenance_note",
+                        "disclaimer",
+                        "kind",
+                        "coverage",
+                        "title",
+                        "summary",
+                        "strengths",
+                        "cautions",
+                        "guidance",
+                    ],
+                    consts: &[
+                        ("claims_mode", "symbolic_reflective"),
+                        ("kind", "archetype_interpretation"),
+                        ("coverage", "exact"),
+                    ],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::ArchetypeInterpretation)
+                    },
+                },
+                crate::de::Variant {
+                    required: &[
+                        "availability",
+                        "personal_interpretation",
+                        "content_key",
+                        "content_id",
+                        "content_version",
+                        "locale",
+                        "claims_mode",
+                        "source_ids",
+                        "source_refs",
+                        "provenance_note",
+                        "disclaimer",
+                        "kind",
+                        "coverage",
+                        "title",
+                        "summary",
+                        "constructive_reading",
+                        "cautionary_reading",
+                        "guidance",
+                        "root_context",
+                    ],
+                    consts: &[
+                        ("claims_mode", "symbolic_reflective"),
+                        ("kind", "chaldean_name_interpretation"),
+                    ],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::ChaldeanNameInterpretation)
+                    },
+                },
+                crate::de::Variant {
+                    required: &[
+                        "availability",
+                        "personal_interpretation",
+                        "content_key",
+                        "content_id",
+                        "content_version",
+                        "locale",
+                        "claims_mode",
+                        "source_ids",
+                        "source_refs",
+                        "provenance_note",
+                        "disclaimer",
+                        "kind",
+                        "title",
+                        "summary",
+                        "calculation_notes",
+                    ],
+                    consts: &[
+                        ("availability", "available"),
+                        ("claims_mode", "symbolic_reflective"),
+                        ("kind", "method_explanation"),
+                    ],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::GematriaMethodExplanation)
+                    },
+                },
+            ],
+        )
+    }
 }
 
 impl Default for TimedNumberResultContent {
@@ -18500,10 +27806,15 @@ impl Default for TimedNumberResultContent {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TimelineEvent {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub r#type: TimelineEventType,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub interpretation_key: String,
 }
 
@@ -18546,17 +27857,24 @@ impl std::fmt::Display for TimelineEventType {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TimelinePayload {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub from: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub to: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub events: Vec<TimelineEvent>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum Timezone {
     #[default]
     #[serde(rename = "UTC+08:00")]
     Utc0800,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl Timezone {
@@ -18564,6 +27882,7 @@ impl Timezone {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Utc0800 => "UTC+08:00",
+            Self::Other(value) => value,
         }
     }
 }
@@ -18575,73 +27894,116 @@ impl std::fmt::Display for Timezone {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TraditionalMoonData {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
     /// Server default: `"north_american_traditional"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub naming_system: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub month: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub applies_to_full_moon_at: String,
     /// Server default: `false`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub is_current_full_moon: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitInsightFact {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detector: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub subjects: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub priority: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub evidence: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub flags: std::collections::BTreeMap<String, bool>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub tags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub entities: std::collections::BTreeMap<String, Vec<serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_text: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub relation_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub index_keys: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitInsightImportance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub focus_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub peak_datetime: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub window_days: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_fact_ids: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub driver_tags: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitInsightMeta {
     /// Server default: `"western_transit_insights"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub endpoint: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detector_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub mode: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub time_known: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub include_houses: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timeline_pass_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_fact_count: i64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitInsightsResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: TransitInsightMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: std::collections::BTreeMap<String, std::collections::BTreeMap<String, i64>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub importance: Vec<TransitInsightImportance>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub facts: Vec<TransitInsightFact>,
 }
 
@@ -18667,163 +28029,266 @@ pub struct TransitRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitSearchClosestApproach {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub series_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub within_standard_orb: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub significance: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub phase: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub context: Option<TransitSearchContext>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitSearchContext {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transit_sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transit_sign_id: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub transit_house: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_house: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub retrograde: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub near_station: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitSearchCycle {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub cycle_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub series_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transit_planet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub short_symbol_label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub cycle_start_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub cycle_end_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_days: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub raw_segment_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hit_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub closest_orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub is_partile: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength_band: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub passes: Vec<TransitSearchCyclePass>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hits: Vec<TransitSearchCycleHit>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitSearchCycleHit {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hit_number: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pass_sequence: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_age_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub near_station: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub context: Option<TransitSearchContext>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitSearchCyclePass {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub series_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transit_planet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub short_symbol_label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_datetimes: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_days: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pass_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start_age_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_age_years: Vec<f64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end_age_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub row_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pair_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub closest_orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub closest_approach_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_hit_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub is_partile: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength_band: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub applying_or_separating: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub context: Option<TransitSearchContext>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pass_sequence: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hit_numbers: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub phase: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitSearchInput {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transit_planet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_types: Vec<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub age_start_years: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub age_end_years: Option<i64>,
     /// Server default: `false`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub include_context: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitSearchMeta {
     /// Server default: `"western_transits_search"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub endpoint: Option<String>,
     /// Server default: `"v1"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub resolved_time: Option<serde_json::Map<String, serde_json::Value>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitSearchNextExact {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub series_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_datetime: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub exact_age_years: Option<f64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub context: Option<TransitSearchContext>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitSearchPass {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub series_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transit_planet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub short_symbol_label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_datetimes: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_days: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pass_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start_age_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_age_years: Vec<f64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end_age_years: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub row_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pair_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub closest_orb_deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub closest_approach_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_hit_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub is_partile: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength_band: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub applying_or_separating: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub context: Option<TransitSearchContext>,
 }
 
@@ -18850,115 +28315,178 @@ pub struct TransitSearchRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitSearchResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: TransitSearchMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub input: TransitSearchInput,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_summary: TransitSearchSummary,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub passes: Vec<TransitSearchPass>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub cycles: Vec<TransitSearchCycle>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitSearchSummary {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub cycle_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pass_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hit_count: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub closest_approach_in_range: Option<TransitSearchClosestApproach>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub next_exact_after_range: Option<TransitSearchNextExact>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitTimelineIndexDocument {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub document_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub chart_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pass_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub series_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub relation_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transit_planet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transit_planet_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_point_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_type_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub short_symbol_label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_datetimes: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_days: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pass_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub visible_start_day: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub visible_end_day: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub continues_from_previous_month: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub continues_to_next_month: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_hits_in_month: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_hit_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub row_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pair_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub include_houses: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_point_house: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub transit_house_at_exact: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub transit_house_in_month: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub tags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub index_keys: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_text: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitTimelineIndexDocumentsResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: TransitTimelineIndexMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub input: TransitTimelineInput,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub documents: Vec<TransitTimelineIndexDocument>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitTimelineIndexMeta {
     /// Server default: `"western_transits_timeline"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub endpoint: Option<String>,
     /// Server default: `"v1"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub resolved_time: Option<serde_json::Map<String, serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub chart_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_document_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timeline_pass_count: i64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitTimelineInput {
     /// Server default: `"month"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub mode: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub include_houses: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transit_categories: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transit_planets: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_points: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_types: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitTimelineMeta {
     /// Server default: `"western_transits_timeline"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub endpoint: Option<String>,
     /// Server default: `"v1"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub resolved_time: Option<serde_json::Map<String, serde_json::Value>>,
 }
 
@@ -19015,46 +28543,235 @@ impl std::fmt::Display for TransitTimelineRequestMode {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitTimelineResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: TransitTimelineMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub input: TransitTimelineInput,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transits: Vec<TransitTimelineTransit>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitTimelineTransit {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub series_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transit_planet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub natal_point: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub aspect_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub short_symbol_label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_datetimes: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_days: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pass_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub visible_start_day: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub visible_end_day: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub continues_from_previous_month: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub continues_to_next_month: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub exact_hits_in_month: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub row_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pair_key: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub houses: Option<TransitTimelineTransitHouses>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TransitTimelineTransitHouses {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_point_house: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub transit_house_at_exact: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub transit_house_in_month: Option<i64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct TransitsCalculateAspect {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p1: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p2: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub between: TransitsCalculateAspectBetween,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub orb: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub deg: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_major: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_applying: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct TransitsCalculateAspectBetween {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub natal: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transit: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct TransitsCalculateAspectsSummary {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub total: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub major: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub minor: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub by_type: TransitsCalculateAspectsSummaryByType,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub exact: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub applying: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub separating: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct TransitsCalculateAspectsSummaryByType {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub opposition: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub square: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub conjunction: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sextile: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub trine: i64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub semi_sextile: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub semi_square: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub quintile: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sesquiquadrate: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub quincunx: Option<i64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct TransitsCalculateNatal {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub julian_day: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub zodiac_type: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct TransitsCalculateNatalPlanet {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub abs_pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub retrograde: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub house: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub declination_deg: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct TransitsCalculateResolvedTime {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transit: ResolvedTime,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct TransitsCalculateResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub mode: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transit_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub transit_planets: Vec<TransitsCalculateTransitPlanet>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub natal_planets: Vec<TransitsCalculateNatalPlanet>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub natal: TransitsCalculateNatal,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub aspects: Vec<TransitsCalculateAspect>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub aspects_summary: TransitsCalculateAspectsSummary,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub interpretation: AtomicInterpretation,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub resolved_time: Option<TransitsCalculateResolvedTime>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct TransitsCalculateTransitPlanet {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub abs_pos: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub retrograde: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub speed: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
@@ -19067,11 +28784,14 @@ pub struct TransliterationInput {
     pub current: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum Traveler {
     #[default]
     #[serde(rename = "traveler")]
     Traveler,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl Traveler {
@@ -19079,11 +28799,47 @@ impl Traveler {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Traveler => "traveler",
+            Self::Other(value) => value,
         }
     }
 }
 
 impl std::fmt::Display for Traveler {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+pub enum TypeAtLocation {
+    #[default]
+    #[serde(rename = "total")]
+    Total,
+    #[serde(rename = "annular")]
+    Annular,
+    #[serde(rename = "hybrid")]
+    Hybrid,
+    #[serde(rename = "partial")]
+    Partial,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
+}
+
+impl TypeAtLocation {
+    /// The wire value of this variant.
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Total => "total",
+            Self::Annular => "annular",
+            Self::Hybrid => "hybrid",
+            Self::Partial => "partial",
+            Self::Other(value) => value,
+        }
+    }
+}
+
+impl std::fmt::Display for TypeAtLocation {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
     }
@@ -19131,12 +28887,33 @@ pub struct ValidationError {
     pub r#type: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum ValidationErrorLocItem {
     String(String),
     Integer(i64),
+}
+
+impl<'de> Deserialize<'de> for ValidationErrorLocItem {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "ValidationErrorLocItem",
+            &[
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::String),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Integer),
+                },
+            ],
+        )
+    }
 }
 
 impl Default for ValidationErrorLocItem {
@@ -19146,52 +28923,74 @@ impl Default for ValidationErrorLocItem {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VargaAscendant {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub degree: Option<f64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house: i64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VargaChart {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub warnings: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub calculation_profile: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ruleset_version: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub source_ayanamsha: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub source_longitudes: Option<std::collections::BTreeMap<String, f64>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub normalization: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub division: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calibrated: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_basis: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ascendant: VargaAscendant,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planets: Vec<VargaPlanet>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub houses: Vec<VargaHouse>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub row_sign_ids: std::collections::BTreeMap<String, i64>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VargaHouse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub degree_cusp: Option<f64>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VargaPlanet {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house: i64,
 }
 
@@ -19247,15 +29046,25 @@ pub struct VargaRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VargasMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ruleset_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ayanamsha: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub node_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone_used: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub requested_divisions: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supported_divisions: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calibrated_divisions: Vec<i64>,
 }
 
@@ -19326,10 +29135,13 @@ pub struct VargasRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VargasV2Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub vargas: std::collections::BTreeMap<String, VargaChart>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub bhava_chalit: Option<BhavaChalitChart>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub metadata: VargasMetadata,
 }
 
@@ -19384,8 +29196,310 @@ impl std::fmt::Display for VedicBatchItemEndpoint {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicBatchItemResult {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub endpoint: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub success: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub status_code: i64,
+    /// On success, the response of the named endpoint (VedicChartResponse, VedicCalculateResponse, VedicDashaResponse, VedicYogasResponse, VedicStrengthResponse, VedicVargasResponse or VedicPanchangResponse).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub data: Option<serde_json::Map<String, serde_json::Value>>,
+    /// On failure: validation errors (422), the error detail, or a message.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub error: Option<VedicBatchItemResultError>,
+}
+
+/// On failure: validation errors (422), the error detail, or a message.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum VedicBatchItemResultError {
+    String(String),
+    List(Vec<serde_json::Value>),
+    Map(serde_json::Map<String, serde_json::Value>),
+}
+
+impl<'de> Deserialize<'de> for VedicBatchItemResultError {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "VedicBatchItemResultError",
+            &[
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::String),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::List),
+                },
+                crate::de::Variant {
+                    required: &[],
+                    consts: &[],
+                    decode: |value| serde_json::from_value(value).map(Self::Map),
+                },
+            ],
+        )
+    }
+}
+
+impl Default for VedicBatchItemResultError {
+    fn default() -> Self {
+        Self::String(Default::default())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct VedicBatchRequest {
     pub items: Vec<VedicBatchItem>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicBatchResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub items: Vec<VedicBatchItemResult>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicCalculateAshtakavarga {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sarvashtakavarga: Vec<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub bhinnashtakavarga: VedicCalculateAshtakavargaBhinnashtakavarga,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub total_points: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicCalculateAshtakavargaBhinnashtakavarga {
+    #[serde(rename = "Sun", deserialize_with = "crate::de::null_as_default")]
+    pub sun: Vec<i64>,
+    #[serde(rename = "Moon", deserialize_with = "crate::de::null_as_default")]
+    pub moon: Vec<i64>,
+    #[serde(rename = "Mars", deserialize_with = "crate::de::null_as_default")]
+    pub mars: Vec<i64>,
+    #[serde(rename = "Mercury", deserialize_with = "crate::de::null_as_default")]
+    pub mercury: Vec<i64>,
+    #[serde(rename = "Jupiter", deserialize_with = "crate::de::null_as_default")]
+    pub jupiter: Vec<i64>,
+    #[serde(rename = "Venus", deserialize_with = "crate::de::null_as_default")]
+    pub venus: Vec<i64>,
+    #[serde(rename = "Saturn", deserialize_with = "crate::de::null_as_default")]
+    pub saturn: Vec<i64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicCalculatePanchang {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub tithi: VedicCalculatePanchangTithi,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nakshatra: VedicChartAscendantNakshatra,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub yoga: VedicCalculatePanchangYoga,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub karana: VedicCalculatePanchangYoga,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub weekday: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub rahu_kalam: VedicCalculatePanchangRahuKalam,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicCalculatePanchangRahuKalam {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub end: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicCalculatePanchangTithi {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub number: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub paksha: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicCalculatePanchangYoga {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub number: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicCalculateResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub ayanamsha: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone_used: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub node_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub ascendant: VedicChartAscendant,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub planets: Vec<VedicChartPlanet>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub houses: Vec<VedicChartHouse>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub vimshottari_dasha: Vec<VedicDashaPeriod>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sade_sati: VedicCalculateSadeSati,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub yogas: Option<Vec<VedicCalculateYoga>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub panchang: Option<VedicCalculatePanchang>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub shadbala: Option<std::collections::BTreeMap<String, VedicCalculateShadbalaEntry>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ashtakavarga: Option<VedicCalculateAshtakavarga>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicCalculateSadeSati {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub active: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub phase: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub description: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub reference_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub moon_sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub moon_sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub saturn_sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub saturn_sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub saturn_degree_in_sign: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub saturn_absolute_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub saturn_is_retrograde: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicCalculateShadbalaEntry {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sthana_bala: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub dig_bala: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub kala_bala: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub cheshta_bala: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub naisargika_bala: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub drik_bala: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub total: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicCalculateYoga {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub present: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub description: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicChartAscendant {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nakshatra: VedicChartAscendantNakshatra,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicChartAscendantNakshatra {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pada: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lord: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicChartHouse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub degree_cusp: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicChartPlanet {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub absolute_degree: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub degree_in_sign: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub house: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub is_retrograde: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nakshatra: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nakshatra_id: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub pada: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nakshatra_lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub vargas: std::collections::BTreeMap<String, VedicPlanetVargaSign>,
 }
 
 /// Full chart request with all options.
@@ -19465,6 +29579,21 @@ pub struct VedicChartRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicChartResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub ayanamsha: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub timezone_used: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub ascendant: VedicChartAscendant,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub planets: Vec<VedicChartPlanet>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub houses: Vec<VedicChartHouse>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct VedicChatHistoryItem {
     pub role: Role,
     pub content: String,
@@ -19522,13 +29651,19 @@ pub struct VedicChatProfile {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicChatQuota {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub tier: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub limit: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub used: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub remaining: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub period_key: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub reset_at: Option<String>,
 }
 
@@ -19607,179 +29742,341 @@ impl std::fmt::Display for VedicChatRequestTone {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicChatResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub reply: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub conversation_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub needs_birth_data: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub required_profile: Option<RequiredProfile>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub required_fields: Option<Vec<RequiredFields>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub used_tools: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub latency_ms: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub model: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub quota: Option<VedicChatQuota>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub tool_trace: Option<serde_json::Map<String, serde_json::Value>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicCompatibilityResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scores: std::collections::BTreeMap<String, VedicCompatibilityScoresEntry>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub total_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub max_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub percentage: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub recommendation: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicCompatibilityScoresEntry {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub max: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicDashaInsightFact {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detector: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub subjects: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub priority: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub evidence: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub flags: std::collections::BTreeMap<String, bool>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub tags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub entities: std::collections::BTreeMap<String, Vec<serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_text: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub relation_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub index_keys: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicDashaInsightImportanceItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub fact_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detector: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicDashaInsightMeta {
     /// Server default: `"vedic_dasha_insights"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub endpoint: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detector_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub levels_requested: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub birth_datetime_context: serde_json::Map<String, serde_json::Value>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub moon_nakshatra: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_fact_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub active_fact_count: i64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicDashaInsightsResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: VedicDashaInsightMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: std::collections::BTreeMap<String, std::collections::BTreeMap<String, i64>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub importance: Vec<VedicDashaInsightImportanceItem>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub facts: Vec<VedicDashaInsightFact>,
 }
 
+/// A Vimshottari period; ``sub_periods`` holds the next level down when more levels are requested.
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicDashaPeriod {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub level: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub lord: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub duration_years: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sub_periods: Option<Vec<VedicDashaPeriod>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicDashaResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub moon_nakshatra: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub vimshottari_dasha: Vec<VedicDashaPeriod>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicGocharTimelineInput {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transit_planets: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub include_dasha_overlay: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transit_hour: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transit_minute: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transit_tz_str: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicGocharTimelineInsightFact {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detector: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub subjects: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub priority: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub evidence: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub flags: std::collections::BTreeMap<String, bool>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub tags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub entities: std::collections::BTreeMap<String, Vec<serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_text: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub relation_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub index_keys: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicGocharTimelineInsightImportanceItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub fact_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detector: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicGocharTimelineInsightsMeta {
     /// Server default: `"vedic_gochar_timeline_insights"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub endpoint: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detector_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timeline_window_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_fact_count: i64,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicGocharTimelineInsightsResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: VedicGocharTimelineInsightsMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: std::collections::BTreeMap<String, std::collections::BTreeMap<String, i64>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub importance: Vec<VedicGocharTimelineInsightImportanceItem>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub facts: Vec<VedicGocharTimelineInsightFact>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicGocharTimelineInsightsV2Meta {
     /// Server default: `"vedic_gochar_timeline_insights"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub endpoint: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detector_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timeline_window_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_fact_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ruleset_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_timeline_version: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicGocharTimelineInsightsV2Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: VedicGocharTimelineInsightsV2Meta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: std::collections::BTreeMap<String, std::collections::BTreeMap<String, i64>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub importance: Vec<VedicGocharTimelineInsightImportanceItem>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub facts: Vec<VedicGocharTimelineInsightFact>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicGocharTimelineMeta {
     /// Server default: `"vedic_gochar_timeline"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub endpoint: Option<String>,
     /// Server default: `"v1"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range_end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_window_count: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub day_count: i64,
 }
 
@@ -19855,48 +30152,86 @@ pub struct VedicGocharTimelineRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicGocharTimelineResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: VedicGocharTimelineMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub input: VedicGocharTimelineInput,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub windows: Vec<VedicGocharTimelineWindow>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicGocharTimelineWindow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub series_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detector: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transit_planet: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub reference_point: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub short_symbol_label: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub peak_dates: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub peak_datetimes: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end_datetime: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_days: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pass_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub visible_start_day: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub visible_end_day: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub continues_from_previous_range: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub continues_to_next_range: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub row_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub pair_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub relation_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub subjects: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub priority: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub evidence: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub flags: std::collections::BTreeMap<String, bool>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub tags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub entities: std::collections::BTreeMap<String, Vec<serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub index_keys: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_text: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub source_fact_ids: Vec<String>,
 }
 
@@ -20051,6 +30386,34 @@ impl std::fmt::Display for VedicHoroscopeDailySignNodeType {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicMatchP1Details {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub moon_sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub moon_nakshatra: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicMatchResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub scores: std::collections::BTreeMap<String, VedicCompatibilityScoresEntry>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub total_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub max_score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub percentage: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub recommendation: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p1_details: VedicMatchP1Details,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub p2_details: VedicMatchP1Details,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct VedicMuhuratPersonalizedSearchRequest {
     /// Purpose for the search: general_work, vehicle_purchase, property_purchase, griha_pravesh, namkaran, or mundan.
     ///
@@ -20115,42 +30478,52 @@ pub struct VedicMuhuratPersonalizedSearchRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicMuhuratSearchMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ruleset_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ayanamsha: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone_used: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation_basis: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub calculation_notes: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub personalization_basis: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub public_candidate_count: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub subject: Option<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sampling_interval_minutes: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub strict_rejection_policy: Option<bool>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub strictness: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub strict_selection_status: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub search_mode: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub scan_months_requested: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub scanned_months: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub scanned_ranges: Option<Vec<std::collections::BTreeMap<String, String>>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicMuhuratSearchRange {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end_date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub day_count: i64,
 }
 
@@ -20199,47 +30572,62 @@ pub struct VedicMuhuratSearchRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicMuhuratSearchResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub purpose: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub range: VedicMuhuratSearchRange,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub best_windows: Vec<VedicMuhuratSearchWindow>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub best_moment: Option<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub no_compromise_moment: Option<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub acceptable_moments: Option<Vec<serde_json::Map<String, serde_json::Value>>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub avoid_moments: Option<Vec<serde_json::Map<String, serde_json::Value>>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub rejected_windows: Option<Vec<serde_json::Map<String, serde_json::Value>>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub selection_explanation: Option<serde_json::Map<String, serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub metadata: VedicMuhuratSearchMetadata,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicMuhuratSearchWindow {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start_time: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end_time: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_minutes: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub public_score: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub personal_score: Option<i64>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub quality: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub reasons: Vec<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub warnings: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub criteria: Option<serde_json::Map<String, serde_json::Value>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub source_periods: Option<Vec<String>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub best_moment: Option<serde_json::Map<String, serde_json::Value>>,
 }
 
@@ -20250,98 +30638,156 @@ pub struct VedicMundanChildContext {
     pub is_first_child: Option<bool>,
 }
 
+/// Panchang at sunrise for the given date and place.
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicPanchangResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub tithi: VedicCalculatePanchangTithi,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub nakshatra: VedicChartAscendantNakshatra,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub yoga: VedicCalculatePanchangYoga,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub karana: VedicCalculatePanchangYoga,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub weekday: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub rahu_kalam: VedicCalculatePanchangRahuKalam,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicPlanetVargaSign {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicQAMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ruleset_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ayanamsha: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone_used: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calculation_basis: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub calculation_notes: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicQAMuhurat {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub section: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start_time: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end_time: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub quality: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_minutes: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub index: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub prahar: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub planet: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub weekday: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub date: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub nakshatra: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub karana: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub moon_sign: Option<String>,
     /// Hindi display label; quality remains a stable code.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub quality_label: Option<String>,
     /// Hindi display label; section remains a stable code.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub section_label: Option<String>,
     /// Hindi display label for Hora; planet remains a stable name.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub planet_label: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicQAPanchangContext {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sunrise: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sunset: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub weekday: PanchangWeekday,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rahu_kalam: std::collections::BTreeMap<String, String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicQAPeriod {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub section: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub start_time: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub end_time: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub quality: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub duration_minutes: f64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub index: Option<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub prahar: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub planet: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub weekday: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub date: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub nakshatra: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub karana: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub moon_sign: Option<String>,
     /// Hindi display label; quality remains a stable code.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub quality_label: Option<String>,
     /// Hindi display label; section remains a stable code.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub section_label: Option<String>,
     /// Hindi display label for Hora; planet remains a stable name.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub planet_label: Option<String>,
 }
 
@@ -20384,68 +30830,118 @@ pub struct VedicQARequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicQAResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub intent: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub question: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub answer: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub date: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub location: PanchangLocation,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub muhurat: Option<VedicQAMuhurat>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub period: Option<VedicQAPeriod>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub current_period: Option<VedicQAPeriod>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sections: Option<std::collections::BTreeMap<String, Vec<VedicQAPeriod>>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub periods: Option<Vec<VedicQAPeriod>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub warnings: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub panchang_context: VedicQAPanchangContext,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supported_questions: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub metadata: VedicQAMetadata,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicStrengthResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub shadbala: std::collections::BTreeMap<String, VedicCalculateShadbalaEntry>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub ashtakavarga: VedicCalculateAshtakavarga,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicTransitInsightFact {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detector: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub subjects: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strength: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub priority: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub evidence: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub flags: std::collections::BTreeMap<String, bool>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub tags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub entities: std::collections::BTreeMap<String, Vec<serde_json::Value>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_text: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub relation_key: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub index_keys: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicTransitInsightImportanceItem {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub fact_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detector: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicTransitInsightsMeta {
     /// Server default: `"vedic_transit_insights"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub endpoint: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detector_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_at: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub birth_datetime_context: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub transit_datetime_context: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub generated_fact_count: i64,
 }
 
@@ -20515,11 +31011,34 @@ pub struct VedicTransitInsightsRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VedicTransitInsightsResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: VedicTransitInsightsMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: std::collections::BTreeMap<String, std::collections::BTreeMap<String, i64>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub importance: Vec<VedicTransitInsightImportanceItem>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub facts: Vec<VedicTransitInsightFact>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicVargaPlacement {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub planet: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicVargasResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub vargas: std::collections::BTreeMap<String, Vec<VedicVargaPlacement>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
@@ -20660,6 +31179,15 @@ impl std::fmt::Display for VedicVisualChartRequestFormat {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VedicYogasResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub yogas: Vec<VedicCalculateYoga>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sade_sati: VedicCalculateSadeSati,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum VikramSamvatConvention {
     #[default]
@@ -20693,12 +31221,17 @@ impl std::fmt::Display for VikramSamvatConvention {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct WeddingElectionFactor {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub code: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub title: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub detail: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub severity: Option<WeddingElectionFactorSeverity>,
 }
 
@@ -20776,38 +31309,63 @@ pub struct WeddingElectionNatalRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct WeddingElectionNatalResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub partners: Vec<WeddingElectionPartnerResonance>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct WeddingElectionPartnerResonance {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub partner: Partner,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<WeddingElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<WeddingElectionFactor>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct WeddingElectionResult {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub event_time_utc: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub score_total: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub confidence_level: ConfidenceLevel,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub quality_band: QualityBand,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub status: WeddingElectionResultStatus,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_verdict: StrictTraditionalVerdict,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub strict_traditional_severity: StrictTraditionalSeverity,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_rank: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub comparative_window_percentile: f64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub best_available_in_window: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub review_flags: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub hard_stops: Vec<WeddingElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub supporting_factors: Vec<WeddingElectionFactor>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub caution_factors: Vec<WeddingElectionFactor>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub natal_resonance: Option<WeddingElectionNatalResonance>,
 }
 
@@ -20847,24 +31405,39 @@ impl std::fmt::Display for WeddingElectionResultStatus {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct WeddingElectionSearchMeta {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scoring_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub calibration_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_mode: SearchMode,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub window_strategy: WindowStrategy,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ranking_basis: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub resolved_timezone: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub scanned_candidates: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub coarse_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub refined_candidates_scanned: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub returned_candidates: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub advisories: Option<Vec<String>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_start_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub search_end_local: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub step_minutes: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub coarse_step_minutes: Option<i64>,
 }
 
@@ -20894,8 +31467,11 @@ pub struct WeddingElectionSearchRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct WeddingElectionSearchResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub meta: WeddingElectionSearchMeta,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub results: Vec<WeddingElectionResult>,
 }
 
@@ -21057,13 +31633,19 @@ impl std::fmt::Display for WesternChatProfileZodiacType {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct WesternChatQuota {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub tier: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub limit: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub used: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub remaining: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub period_key: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub reset_at: Option<String>,
 }
 
@@ -21142,30 +31724,61 @@ impl std::fmt::Display for WesternChatRequestTone {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct WesternChatResponse {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub reply: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub conversation_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub needs_birth_data: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub required_profile: Option<RequiredProfile>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub required_fields: Option<Vec<RequiredFields>>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub used_tools: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub latency_ms: i64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub model: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub quota: Option<WesternChatQuota>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub tool_trace: Option<serde_json::Map<String, serde_json::Value>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum WesternProgressionsConverseSecondaryResponse {
     ProgressionChartResponse(ProgressionChartResponse),
     ProgressionTableResponse(ProgressionTableResponse),
+}
+
+impl<'de> Deserialize<'de> for WesternProgressionsConverseSecondaryResponse {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "WesternProgressionsConverseSecondaryResponse",
+            &[
+                crate::de::Variant {
+                    required: &["meta", "input", "progression_basis", "progressed_chart"],
+                    consts: &[],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::ProgressionChartResponse)
+                    },
+                },
+                crate::de::Variant {
+                    required: &["meta", "input", "progression_basis", "tables"],
+                    consts: &[],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::ProgressionTableResponse)
+                    },
+                },
+            ],
+        )
+    }
 }
 
 impl Default for WesternProgressionsConverseSecondaryResponse {
@@ -21203,12 +31816,37 @@ impl std::fmt::Display for WesternProgressionsConverseSecondaryResponseMode {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum WesternProgressionsQuaternaryResponse {
     ProgressionChartResponse(ProgressionChartResponse),
     ProgressionTableResponse(ProgressionTableResponse),
+}
+
+impl<'de> Deserialize<'de> for WesternProgressionsQuaternaryResponse {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "WesternProgressionsQuaternaryResponse",
+            &[
+                crate::de::Variant {
+                    required: &["meta", "input", "progression_basis", "progressed_chart"],
+                    consts: &[],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::ProgressionChartResponse)
+                    },
+                },
+                crate::de::Variant {
+                    required: &["meta", "input", "progression_basis", "tables"],
+                    consts: &[],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::ProgressionTableResponse)
+                    },
+                },
+            ],
+        )
+    }
 }
 
 impl Default for WesternProgressionsQuaternaryResponse {
@@ -21246,12 +31884,37 @@ impl std::fmt::Display for WesternProgressionsQuaternaryResponseMode {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum WesternProgressionsQuotidianResponse {
     ProgressionChartResponse(ProgressionChartResponse),
     ProgressionTableResponse(ProgressionTableResponse),
+}
+
+impl<'de> Deserialize<'de> for WesternProgressionsQuotidianResponse {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "WesternProgressionsQuotidianResponse",
+            &[
+                crate::de::Variant {
+                    required: &["meta", "input", "progression_basis", "progressed_chart"],
+                    consts: &[],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::ProgressionChartResponse)
+                    },
+                },
+                crate::de::Variant {
+                    required: &["meta", "input", "progression_basis", "tables"],
+                    consts: &[],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::ProgressionTableResponse)
+                    },
+                },
+            ],
+        )
+    }
 }
 
 impl Default for WesternProgressionsQuotidianResponse {
@@ -21289,12 +31952,37 @@ impl std::fmt::Display for WesternProgressionsQuotidianResponseMode {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum WesternProgressionsSecondaryResponse {
     SecondaryProgressionsResponse(SecondaryProgressionsResponse),
     ProgressionTableResponse(ProgressionTableResponse),
+}
+
+impl<'de> Deserialize<'de> for WesternProgressionsSecondaryResponse {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "WesternProgressionsSecondaryResponse",
+            &[
+                crate::de::Variant {
+                    required: &["meta", "input", "progression_basis", "progressed_chart"],
+                    consts: &[],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::SecondaryProgressionsResponse)
+                    },
+                },
+                crate::de::Variant {
+                    required: &["meta", "input", "progression_basis", "tables"],
+                    consts: &[],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::ProgressionTableResponse)
+                    },
+                },
+            ],
+        )
+    }
 }
 
 impl Default for WesternProgressionsSecondaryResponse {
@@ -21333,12 +32021,37 @@ impl std::fmt::Display for WesternProgressionsSecondaryResponseMode {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum WesternProgressionsTertiaryResponse {
     ProgressionChartResponse(ProgressionChartResponse),
     ProgressionTableResponse(ProgressionTableResponse),
+}
+
+impl<'de> Deserialize<'de> for WesternProgressionsTertiaryResponse {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::de::union(
+            deserializer,
+            "WesternProgressionsTertiaryResponse",
+            &[
+                crate::de::Variant {
+                    required: &["meta", "input", "progression_basis", "progressed_chart"],
+                    consts: &[],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::ProgressionChartResponse)
+                    },
+                },
+                crate::de::Variant {
+                    required: &["meta", "input", "progression_basis", "tables"],
+                    consts: &[],
+                    decode: |value| {
+                        serde_json::from_value(value).map(Self::ProgressionTableResponse)
+                    },
+                },
+            ],
+        )
+    }
 }
 
 impl Default for WesternProgressionsTertiaryResponse {
@@ -21434,11 +32147,14 @@ impl std::fmt::Display for World {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum YearAnchor {
     #[default]
     #[serde(rename = "calendar_year")]
     CalendarYear,
+    /// A value this SDK version does not know about.
+    #[serde(untagged)]
+    Other(String),
 }
 
 impl YearAnchor {
@@ -21446,6 +32162,7 @@ impl YearAnchor {
     pub fn as_str(&self) -> &str {
         match self {
             Self::CalendarYear => "calendar_year",
+            Self::Other(value) => value,
         }
     }
 }
@@ -21490,60 +32207,96 @@ impl std::fmt::Display for YearConvention {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct YogaEvaluation {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub name: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub r#type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub category: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub active: bool,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub description: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub planets: Vec<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub houses_involved: Vec<i64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub strength: Option<String>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub evidence: Vec<YogaEvidence>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct YogaEvidence {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub kind: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub message: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct YogasMetadata {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub endpoint_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ruleset_version: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub ayanamsha: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub house_system: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub node_type: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub timezone_used: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub evaluated_rule_ids: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct YogasSummary {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub total_evaluated: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub active: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub inactive: i64,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub by_category: std::collections::BTreeMap<String, CountBucket>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub by_type: std::collections::BTreeMap<String, CountBucket>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct YogasV2Response {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub yogas: Vec<YogaEvaluation>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sade_sati: serde_json::Map<String, serde_json::Value>,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub summary: YogasSummary,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub metadata: YogasMetadata,
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ZodiacData {
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub sign: String,
-    pub sign_id: String,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
+    pub sign_id: SignId,
+    #[serde(deserialize_with = "crate::de::null_as_default")]
     pub degree: f64,
     /// Server default: `"tropical"`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub zodiac_type: Option<String>,
 }

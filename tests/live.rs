@@ -53,7 +53,7 @@ async fn moon_phase() {
         ..Default::default()
     };
     let moon = client().moon().phase(Some(&params)).await.unwrap();
-    assert!(!moon.phase.name.is_empty());
+    assert!(!moon.phase.name.as_str().is_empty());
 }
 
 #[tokio::test]
@@ -65,7 +65,7 @@ async fn western_sun_sign() {
         .sun(&paris_birth())
         .await
         .unwrap();
-    assert_eq!(sign.sign_id, "gemini");
+    assert_eq!(sign.sign_id, types::SignId::Gemini);
 }
 
 #[tokio::test]
@@ -76,7 +76,7 @@ async fn natal_calculate() {
         .calculate(&paris_birth(), None)
         .await
         .unwrap();
-    assert!(chart.as_object().is_some_and(|o| !o.is_empty()));
+    assert!(chart.planets.is_some_and(|p| !p.is_empty()));
 }
 
 #[tokio::test]

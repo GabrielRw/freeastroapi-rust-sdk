@@ -14,12 +14,14 @@ pub enum Error {
     #[error("authentication failed: {0}")]
     Authentication(Box<ApiError>),
 
-    /// Too many requests (HTTP 429), after the configured retries were used up.
+    /// Too many requests (HTTP 429), after the configured retries were used up or when the
+    /// server asked for a longer wait than [`ClientBuilder::max_retry_after`](crate::ClientBuilder::max_retry_after).
     #[error("rate limited: {error}")]
     RateLimit {
         /// The error response.
         error: Box<ApiError>,
-        /// How long the server asked to wait (`Retry-After`), when it said.
+        /// How long the server asked to wait (`Retry-After` header, else `retry_after_ms` in
+        /// the body), when it said.
         retry_after: Option<Duration>,
     },
 

@@ -70,7 +70,9 @@ async fn run(client: &freeastroapi::Client) -> freeastroapi::Result<()> {
     // POST /api/v1/natal/calculate?include_minor=true
     let options = NatalCalculateParams { include_minor: Some(true), ..Default::default() };
     let chart = client.natal().calculate(&birth, Some(&options)).await?;
-    println!("{}", chart["planets"]);
+    for planet in chart.planets.iter().flatten() {
+        println!("{} in {}", planet.name, planet.sign);
+    }
     Ok(())
 }
 ```
@@ -137,9 +139,10 @@ parameter is optional).
 - `freeastroapi::types` has one type per schema. Every type implements `Default`, `Clone`,
   `Debug`, `PartialEq`, `Serialize` and `Deserialize`; optional fields are `Option`s that are
   left out of the request so the server applies its documented defaults (shown in the field docs).
-- String enums have an `Other(String)` variant, so values added to the API later still decode.
-- Operations whose response the spec does not describe yet return `serde_json::Value`; they
-  become typed as the API's spec gains response schemas.
+- Every JSON operation returns a typed response. Response decoding is lenient: a missing field
+  or a `null` becomes the field's default, unknown fields are ignored and string enums have an
+  `Other(String)` variant, so a response that drifts from the schema (or values added to the API
+  later) never fails to decode. Request types keep their required fields as non-`Option`s.
 - Image responses (`client.vedic().kp_render(..)`, `client.vedic().visual().chart(..)`) return
   `Binary { content_type, bytes }`; use `.text()` for SVG. Text-only responses return `String`,
   and operations that can answer with JSON or an image return `Content<T>`.
@@ -163,14 +166,27 @@ async fn run(client: &freeastroapi::Client, params: freeastroapi::params::GeoSea
 }
 ```
 
-Requests time out after 30 s per attempt (`ClientBuilder::timeout`). Failed requests are retried
-up to `max_retries` times (default 2) with exponential backoff and jitter, honouring
-`Retry-After`:
+Requests time out after 30 s per attempt (`ClientBuilder::timeout`).
 
-- 429 is always retried.
-- Connection errors, timeouts and 408/500/502/503/504 are retried for operations that are safe to
-  replay: all the read-only calculations (GET and POST). Chat and AI generation are only retried
-  on these when you set an idempotency key.
+### Retries
+
+Failed requests are retried up to `max_retries` times (default 2, so at most 3 attempts):
+
+- **429** is retried for every operation (the request was rejected before it ran).
+- **408, 500, 502, 503, 504, connection errors and timeouts** are retried for every operation
+  except those with side effects, listed in `freeastroapi::SIDE_EFFECT_OPERATIONS`:
+  `v1_natal_calculate` (may create a paid report job), `v1_ai_generate`, `v2_vedic_chat`,
+  `v2_western_chat`, `v2_vedic_qa`, `v1_western_transits_timeline` and
+  `v1_western_transits_insights`. These are retried only when the request carries an idempotency
+  key (`RequestOptions::idempotency_key`, sent as `Idempotency-Key`) or opts in with
+  `RequestOptions::retry_side_effects(true)`.
+- Other 4xx responses are never retried.
+
+The wait before a retry is the server's `Retry-After` header (seconds or HTTP date) or
+`retry_after_ms` in the error body. Otherwise it is exponential backoff with full jitter: a
+random delay up to 0.5 s × 2^attempt, capped at 8 s (`retry_base_delay`, `max_retry_delay`). When
+the server asks for more than 30 s (`max_retry_after`) the client does not wait: it returns the
+error at once, `Error::RateLimit { retry_after, .. }` for a 429, so you can schedule the retry.
 
 Per-request settings go through a derived client that shares the connection pool:
 

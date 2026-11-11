@@ -1007,3 +1007,18 @@ pub static OPERATIONS: &[OperationInfo] = &[
         deprecated: false,
     },
 ];
+
+/// Operations with side effects (paid report jobs, AI generation, chat, stored timelines).
+///
+/// They are retried on 429 like every operation, but on 408/5xx responses, timeouts and
+/// network errors only when the request carries an idempotency key or opts in with
+/// [`RequestOptions::retry_side_effects`](crate::RequestOptions::retry_side_effects).
+pub static SIDE_EFFECT_OPERATIONS: &[&str] = &[
+    "v1_natal_calculate",
+    "v1_ai_generate",
+    "v2_vedic_chat",
+    "v2_western_chat",
+    "v2_vedic_qa",
+    "v1_western_transits_timeline",
+    "v1_western_transits_insights",
+];

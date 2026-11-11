@@ -25,10 +25,15 @@ impl<'a> Ai<'a> {
     /// Generates a full astrological report using the Atomic Interpretation System.
     ///
     /// `POST /api/v1/ai/generate` (operation `v1_ai_generate`).
-    pub async fn generate(&self, body: &types::AtomicReportRequest) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/ai/generate")
-            .json(body)?
-            .not_replay_safe();
+    ///
+    /// Has side effects: retried on 429, but on server errors, timeouts and network failures only
+    /// with an idempotency key or [`RequestOptions::retry_side_effects`](crate::RequestOptions::retry_side_effects).
+    pub async fn generate(
+        &self,
+        body: &types::AtomicReportRequest,
+    ) -> Result<types::AtomicReportResponse> {
+        let request = RequestSpec::operation("v1_ai_generate", Method::POST, "/api/v1/ai/generate")
+            .json(body)?;
         self.client.send_json(request).await
     }
 }
@@ -52,8 +57,10 @@ impl<'a> Chinese<'a> {
     /// - Uses "AUTO" by default to resolve valid LMT (Local Mean Time) for historical dates.
     ///
     /// `POST /api/v1/chinese/bazi` (operation `v1_chinese_bazi`).
-    pub async fn bazi(&self, body: &types::BaziRequest) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/chinese/bazi").json(body)?;
+    pub async fn bazi(&self, body: &types::BaziRequest) -> Result<types::BaziChartResponse> {
+        let request =
+            RequestSpec::operation("v1_chinese_bazi", Method::POST, "/api/v1/chinese/bazi")
+                .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -66,8 +73,12 @@ impl<'a> Chinese<'a> {
     pub async fn bazi_dictionary(
         &self,
         params: Option<&params::ChineseBaziDictionaryParams>,
-    ) -> Result<serde_json::Value> {
-        let mut request = RequestSpec::new(Method::GET, "/api/v1/chinese/bazi/dictionary");
+    ) -> Result<types::BaziDictionaryResponse> {
+        let mut request = RequestSpec::operation(
+            "v1_chinese_bazi_dictionary",
+            Method::GET,
+            "/api/v1/chinese/bazi/dictionary",
+        );
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -80,8 +91,16 @@ impl<'a> Chinese<'a> {
     /// Used for professional timing and predictive analysis.
     ///
     /// `POST /api/v1/chinese/bazi/flow` (operation `v1_chinese_bazi_flow`).
-    pub async fn bazi_flow(&self, body: &types::BaziFlowRequest) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/chinese/bazi/flow").json(body)?;
+    pub async fn bazi_flow(
+        &self,
+        body: &types::BaziFlowRequest,
+    ) -> Result<types::BaziFlowResponse> {
+        let request = RequestSpec::operation(
+            "v1_chinese_bazi_flow",
+            Method::POST,
+            "/api/v1/chinese/bazi/flow",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -101,8 +120,16 @@ impl<'a> Chinese<'a> {
     /// NOTE: This is not medical advice. See disclaimer in response.
     ///
     /// `POST /api/v1/chinese/bazi/health` (operation `v1_chinese_bazi_health`).
-    pub async fn bazi_health(&self, body: &types::BaziHealthRequest) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/chinese/bazi/health").json(body)?;
+    pub async fn bazi_health(
+        &self,
+        body: &types::BaziHealthRequest,
+    ) -> Result<types::BaziHealthResponse> {
+        let request = RequestSpec::operation(
+            "v1_chinese_bazi_health",
+            Method::POST,
+            "/api/v1/chinese/bazi/health",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -115,8 +142,13 @@ impl<'a> Chinese<'a> {
     pub async fn bazi_lifespan(
         &self,
         body: &types::BaziLifespanRequest,
-    ) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/chinese/bazi/lifespan").json(body)?;
+    ) -> Result<types::BaziLifespanResponse> {
+        let request = RequestSpec::operation(
+            "v1_chinese_bazi_lifespan",
+            Method::POST,
+            "/api/v1/chinese/bazi/lifespan",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -128,8 +160,13 @@ impl<'a> Chinese<'a> {
     pub async fn bazi_synastry(
         &self,
         body: &types::BaziSynastryRequest,
-    ) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/chinese/bazi/synastry").json(body)?;
+    ) -> Result<types::BaziSynastryResponse> {
+        let request = RequestSpec::operation(
+            "v1_chinese_bazi_synastry",
+            Method::POST,
+            "/api/v1/chinese/bazi/synastry",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -142,9 +179,13 @@ impl<'a> Chinese<'a> {
     pub async fn bazi_time_correction(
         &self,
         body: &types::BaziTimeCorrectionRequest,
-    ) -> Result<serde_json::Value> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/chinese/bazi/time-correction").json(body)?;
+    ) -> Result<types::BaziTimeCorrectionResponse> {
+        let request = RequestSpec::operation(
+            "v1_chinese_bazi_time_correction",
+            Method::POST,
+            "/api/v1/chinese/bazi/time-correction",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -160,7 +201,8 @@ impl<'a> Chinese<'a> {
         date: impl std::fmt::Display,
         params: Option<&params::ChineseCalendarParams>,
     ) -> Result<types::ChineseCalendarResponse> {
-        let mut request = RequestSpec::new(
+        let mut request = RequestSpec::operation(
+            "v1_chinese_calendar_date",
             Method::GET,
             format!("/api/v1/chinese/calendar/{}", encode_path(date)),
         );
@@ -179,8 +221,9 @@ impl<'a> Chinese<'a> {
     pub async fn today(
         &self,
         params: Option<&params::ChineseTodayParams>,
-    ) -> Result<serde_json::Value> {
-        let mut request = RequestSpec::new(Method::GET, "/api/v1/chinese/today");
+    ) -> Result<types::ChineseTodayResponse> {
+        let mut request =
+            RequestSpec::operation("v1_chinese_today", Method::GET, "/api/v1/chinese/today");
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -198,16 +241,28 @@ impl<'a> Ephemeris<'a> {
     /// Get Ephemeris
     ///
     /// `GET /api/v1/ephemeris` (operation `v1_ephemeris`).
-    pub async fn get(&self, params: &params::EphemerisGetParams) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::GET, "/api/v1/ephemeris").query(params)?;
+    pub async fn get(
+        &self,
+        params: &params::EphemerisGetParams,
+    ) -> Result<types::EphemerisResponse> {
+        let request = RequestSpec::operation("v1_ephemeris", Method::GET, "/api/v1/ephemeris")
+            .query(params)?;
         self.client.send_json(request).await
     }
 
     /// Calculate Ephemeris
     ///
     /// `POST /api/v1/ephemeris/calculate` (operation `v1_ephemeris_calculate`).
-    pub async fn calculate(&self, body: &types::EphemerisRequest) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/ephemeris/calculate").json(body)?;
+    pub async fn calculate(
+        &self,
+        body: &types::EphemerisRequest,
+    ) -> Result<types::EphemerisResponse> {
+        let request = RequestSpec::operation(
+            "v1_ephemeris_calculate",
+            Method::POST,
+            "/api/v1/ephemeris/calculate",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 }
@@ -245,7 +300,8 @@ impl<'a> Geo<'a> {
         &self,
         params: Option<&params::GeoSearchV1Params>,
     ) -> Result<types::CitySearchResponse> {
-        let mut request = RequestSpec::new(Method::GET, "/api/v1/geo/search");
+        let mut request =
+            RequestSpec::operation("v1_geo_search", Method::GET, "/api/v1/geo/search");
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -282,7 +338,8 @@ impl<'a> Geo<'a> {
         &self,
         params: &params::GeoSearchParams,
     ) -> Result<types::CitySearchResponse> {
-        let request = RequestSpec::new(Method::GET, "/api/v2/geo/search").query(params)?;
+        let request = RequestSpec::operation("v2_geo_search", Method::GET, "/api/v2/geo/search")
+            .query(params)?;
         self.client.send_json(request).await
     }
 }
@@ -302,8 +359,12 @@ impl<'a> HoroscopeDaily<'a> {
     pub async fn bulk(
         &self,
         params: Option<&params::HoroscopeDailyBulkParams>,
-    ) -> Result<serde_json::Value> {
-        let mut request = RequestSpec::new(Method::GET, "/api/v1/horoscope/daily/bulk");
+    ) -> Result<types::HoroscopeDailyBulkResponse> {
+        let mut request = RequestSpec::operation(
+            "v1_horoscope_daily_bulk",
+            Method::GET,
+            "/api/v1/horoscope/daily/bulk",
+        );
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -318,9 +379,13 @@ impl<'a> HoroscopeDaily<'a> {
     pub async fn personal_v1(
         &self,
         body: &types::PersonalHoroscopeRequestV1,
-    ) -> Result<serde_json::Value> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/horoscope/daily/personal").json(body)?;
+    ) -> Result<types::HoroscopeDailyPersonalResponse> {
+        let request = RequestSpec::operation(
+            "v1_horoscope_daily_personal",
+            Method::POST,
+            "/api/v1/horoscope/daily/personal",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -332,9 +397,13 @@ impl<'a> HoroscopeDaily<'a> {
     pub async fn sign_v1(
         &self,
         params: &params::HoroscopeDailySignV1Params,
-    ) -> Result<serde_json::Value> {
-        let request =
-            RequestSpec::new(Method::GET, "/api/v1/horoscope/daily/sign").query(params)?;
+    ) -> Result<types::HoroscopeDailySignResponse> {
+        let request = RequestSpec::operation(
+            "v1_horoscope_daily_sign",
+            Method::GET,
+            "/api/v1/horoscope/daily/sign",
+        )
+        .query(params)?;
         self.client.send_json(request).await
     }
 
@@ -344,9 +413,13 @@ impl<'a> HoroscopeDaily<'a> {
     pub async fn personal_v2(
         &self,
         body: &types::PersonalHoroscopeRequestV2,
-    ) -> Result<serde_json::Value> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v2/horoscope/daily/personal").json(body)?;
+    ) -> Result<types::HoroscopeDailyPersonalV2Response> {
+        let request = RequestSpec::operation(
+            "v2_horoscope_daily_personal",
+            Method::POST,
+            "/api/v2/horoscope/daily/personal",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -356,9 +429,13 @@ impl<'a> HoroscopeDaily<'a> {
     pub async fn sign_v2(
         &self,
         params: &params::HoroscopeDailySignV2Params,
-    ) -> Result<serde_json::Value> {
-        let request =
-            RequestSpec::new(Method::GET, "/api/v2/horoscope/daily/sign").query(params)?;
+    ) -> Result<types::HoroscopeDailySignV2Response> {
+        let request = RequestSpec::operation(
+            "v2_horoscope_daily_sign",
+            Method::GET,
+            "/api/v2/horoscope/daily/sign",
+        )
+        .query(params)?;
         self.client.send_json(request).await
     }
 
@@ -368,9 +445,13 @@ impl<'a> HoroscopeDaily<'a> {
     pub async fn personal(
         &self,
         body: &types::PersonalHoroscopeRequestV3,
-    ) -> Result<serde_json::Value> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v3/horoscope/daily/personal").json(body)?;
+    ) -> Result<types::HoroscopeDailyPersonalV3Response> {
+        let request = RequestSpec::operation(
+            "v3_horoscope_daily_personal",
+            Method::POST,
+            "/api/v3/horoscope/daily/personal",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -384,9 +465,13 @@ impl<'a> HoroscopeDaily<'a> {
     pub async fn sign(
         &self,
         params: &params::HoroscopeDailySignParams,
-    ) -> Result<serde_json::Value> {
-        let request =
-            RequestSpec::new(Method::GET, "/api/v3/horoscope/daily/sign").query(params)?;
+    ) -> Result<types::HoroscopeDailySignV3Response> {
+        let request = RequestSpec::operation(
+            "v3_horoscope_daily_sign",
+            Method::GET,
+            "/api/v3/horoscope/daily/sign",
+        )
+        .query(params)?;
         self.client.send_json(request).await
     }
 }
@@ -404,9 +489,13 @@ impl<'a> HoroscopeWeekly<'a> {
     pub async fn personal(
         &self,
         body: &types::WeeklyPersonalHoroscopeRequest,
-    ) -> Result<serde_json::Value> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v3/horoscope/weekly/personal").json(body)?;
+    ) -> Result<types::HoroscopeWeeklyPersonalV3Response> {
+        let request = RequestSpec::operation(
+            "v3_horoscope_weekly_personal",
+            Method::POST,
+            "/api/v3/horoscope/weekly/personal",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 }
@@ -452,7 +541,8 @@ impl<'a> Moon<'a> {
         &self,
         params: &params::MoonMonthParams,
     ) -> Result<types::MoonMonthResponse> {
-        let request = RequestSpec::new(Method::GET, "/api/v1/moon/month").query(params)?;
+        let request = RequestSpec::operation("v1_moon_month", Method::GET, "/api/v1/moon/month")
+            .query(params)?;
         self.client.send_json(request).await
     }
 
@@ -473,7 +563,8 @@ impl<'a> Moon<'a> {
         &self,
         params: Option<&params::MoonPhaseParams>,
     ) -> Result<types::MoonPhaseResponse> {
-        let mut request = RequestSpec::new(Method::GET, "/api/v1/moon/phase");
+        let mut request =
+            RequestSpec::operation("v1_moon_phase", Method::GET, "/api/v1/moon/phase");
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -494,15 +585,22 @@ impl<'a> NatalExperimental<'a> {
     ///
     /// `POST /api/v1/natal/experimental/solar-return` (operation `v1_natal_experimental_solar_return`).
     ///
+    /// Returns the raw body; use [`Binary::text`] for SVG output.
+    ///
     /// **Deprecated** by the API.
     #[deprecated(note = "this operation is deprecated by the API")]
     pub async fn solar_return(
         &self,
         body: &types::ExperimentalSolarReturnChartRequest,
-    ) -> Result<serde_json::Value> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/natal/experimental/solar-return").json(body)?;
-        self.client.send_json(request).await
+    ) -> Result<Binary> {
+        let request = RequestSpec::operation(
+            "v1_natal_experimental_solar_return",
+            Method::POST,
+            "/api/v1/natal/experimental/solar-return",
+        )
+        .json(body)?
+        .accept("image/png, image/svg+xml, application/json");
+        self.client.send_binary(request).await
     }
 
     /// Experimental Transits Chart
@@ -511,15 +609,19 @@ impl<'a> NatalExperimental<'a> {
     ///
     /// `POST /api/v1/natal/experimental/transits` (operation `v1_natal_experimental_transits`).
     ///
+    /// Returns the raw body; use [`Binary::text`] for SVG output.
+    ///
     /// **Deprecated** by the API.
     #[deprecated(note = "this operation is deprecated by the API")]
-    pub async fn transits(
-        &self,
-        body: &types::ExperimentalTransitChartRequest,
-    ) -> Result<serde_json::Value> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/natal/experimental/transits").json(body)?;
-        self.client.send_json(request).await
+    pub async fn transits(&self, body: &types::ExperimentalTransitChartRequest) -> Result<Binary> {
+        let request = RequestSpec::operation(
+            "v1_natal_experimental_transits",
+            Method::POST,
+            "/api/v1/natal/experimental/transits",
+        )
+        .json(body)?
+        .accept("image/png, image/svg+xml, application/json");
+        self.client.send_binary(request).await
     }
 }
 
@@ -542,12 +644,20 @@ impl<'a> Natal<'a> {
     /// Calculate natal chart with planetary positions, houses, and aspects.
     ///
     /// `POST /api/v1/natal/calculate` (operation `v1_natal_calculate`).
+    ///
+    /// Has side effects: retried on 429, but on server errors, timeouts and network failures only
+    /// with an idempotency key or [`RequestOptions::retry_side_effects`](crate::RequestOptions::retry_side_effects).
     pub async fn calculate(
         &self,
         body: &types::NatalChartRequest,
         params: Option<&params::NatalCalculateParams>,
-    ) -> Result<serde_json::Value> {
-        let mut request = RequestSpec::new(Method::POST, "/api/v1/natal/calculate").json(body)?;
+    ) -> Result<types::NatalCalculateResponse> {
+        let mut request = RequestSpec::operation(
+            "v1_natal_calculate",
+            Method::POST,
+            "/api/v1/natal/calculate",
+        )
+        .json(body)?;
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -559,12 +669,14 @@ impl<'a> Natal<'a> {
     /// Render a natal chart using the bundled natal library.
     ///
     /// `POST /api/v1/natal/chart/` (operation `v1_natal_chart`).
-    pub async fn chart(
-        &self,
-        body: &types::ExperimentalNatalChartRequest,
-    ) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/natal/chart/").json(body)?;
-        self.client.send_json(request).await
+    ///
+    /// Returns the raw body; use [`Binary::text`] for SVG output.
+    pub async fn chart(&self, body: &types::ExperimentalNatalChartRequest) -> Result<Binary> {
+        let request =
+            RequestSpec::operation("v1_natal_chart", Method::POST, "/api/v1/natal/chart/")
+                .json(body)?
+                .accept("image/png, image/svg+xml, application/json");
+        self.client.send_binary(request).await
     }
 
     /// Experimental Composite Chart
@@ -573,12 +685,20 @@ impl<'a> Natal<'a> {
     /// Renders a standalone composite chart from two people, reusing the natal SVG renderer.
     ///
     /// `POST /api/v1/natal/chart/composite` (operation `v1_natal_chart_composite`).
+    ///
+    /// Returns the raw body; use [`Binary::text`] for SVG output.
     pub async fn chart_composite(
         &self,
         body: &types::ExperimentalCompositeChartRequest,
-    ) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/natal/chart/composite").json(body)?;
-        self.client.send_json(request).await
+    ) -> Result<Binary> {
+        let request = RequestSpec::operation(
+            "v1_natal_chart_composite",
+            Method::POST,
+            "/api/v1/natal/chart/composite",
+        )
+        .json(body)?
+        .accept("image/png, image/svg+xml, application/json");
+        self.client.send_binary(request).await
     }
 
     /// Experimental Secondary Progressions Chart
@@ -595,13 +715,20 @@ impl<'a> Natal<'a> {
     /// `X-Progression-Target-Date-UTC`, `X-Progressed-Datetime-UTC`, `X-Progression-Age-Years`.
     ///
     /// `POST /api/v1/natal/chart/progressions` (operation `v1_natal_chart_progressions`).
+    ///
+    /// Returns the raw body; use [`Binary::text`] for SVG output.
     pub async fn chart_progressions(
         &self,
         body: &types::ExperimentalSecondaryProgressionsChartRequest,
-    ) -> Result<serde_json::Value> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/natal/chart/progressions").json(body)?;
-        self.client.send_json(request).await
+    ) -> Result<Binary> {
+        let request = RequestSpec::operation(
+            "v1_natal_chart_progressions",
+            Method::POST,
+            "/api/v1/natal/chart/progressions",
+        )
+        .json(body)?
+        .accept("image/png, image/svg+xml, application/json");
+        self.client.send_binary(request).await
     }
 
     /// Experimental Secondary Progressions Chart
@@ -618,13 +745,20 @@ impl<'a> Natal<'a> {
     /// `X-Progression-Target-Date-UTC`, `X-Progressed-Datetime-UTC`, `X-Progression-Age-Years`.
     ///
     /// `POST /api/v1/natal/chart/secondary-progressions` (operation `v1_natal_chart_secondary_progressions`).
+    ///
+    /// Returns the raw body; use [`Binary::text`] for SVG output.
     pub async fn chart_secondary_progressions(
         &self,
         body: &types::ExperimentalSecondaryProgressionsChartRequest,
-    ) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/natal/chart/secondary-progressions")
-            .json(body)?;
-        self.client.send_json(request).await
+    ) -> Result<Binary> {
+        let request = RequestSpec::operation(
+            "v1_natal_chart_secondary_progressions",
+            Method::POST,
+            "/api/v1/natal/chart/secondary-progressions",
+        )
+        .json(body)?
+        .accept("image/png, image/svg+xml, application/json");
+        self.client.send_binary(request).await
     }
 
     /// Experimental Solar Return Chart
@@ -632,13 +766,20 @@ impl<'a> Natal<'a> {
     /// Generate a bi-wheel or standalone chart for the exact solar return in a target year.
     ///
     /// `POST /api/v1/natal/chart/solar-return` (operation `v1_natal_chart_solar_return`).
+    ///
+    /// Returns the raw body; use [`Binary::text`] for SVG output.
     pub async fn chart_solar_return(
         &self,
         body: &types::ExperimentalSolarReturnChartRequest,
-    ) -> Result<serde_json::Value> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/natal/chart/solar-return").json(body)?;
-        self.client.send_json(request).await
+    ) -> Result<Binary> {
+        let request = RequestSpec::operation(
+            "v1_natal_chart_solar_return",
+            Method::POST,
+            "/api/v1/natal/chart/solar-return",
+        )
+        .json(body)?
+        .accept("image/png, image/svg+xml, application/json");
+        self.client.send_binary(request).await
     }
 
     /// Experimental Synastry Chart
@@ -647,12 +788,20 @@ impl<'a> Natal<'a> {
     /// Renders person A (outer) and person B (inner) with optional B house ring and inter-aspects.
     ///
     /// `POST /api/v1/natal/chart/synastry` (operation `v1_natal_chart_synastry`).
+    ///
+    /// Returns the raw body; use [`Binary::text`] for SVG output.
     pub async fn chart_synastry(
         &self,
         body: &types::ExperimentalSynastryChartRequest,
-    ) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/natal/chart/synastry").json(body)?;
-        self.client.send_json(request).await
+    ) -> Result<Binary> {
+        let request = RequestSpec::operation(
+            "v1_natal_chart_synastry",
+            Method::POST,
+            "/api/v1/natal/chart/synastry",
+        )
+        .json(body)?
+        .accept("image/png, image/svg+xml, application/json");
+        self.client.send_binary(request).await
     }
 
     /// Experimental Transits Chart
@@ -660,19 +809,31 @@ impl<'a> Natal<'a> {
     /// Generate a bi-wheel chart with natal planets inside and transits outside.
     ///
     /// `POST /api/v1/natal/chart/transits` (operation `v1_natal_chart_transits`).
+    ///
+    /// Returns the raw body; use [`Binary::text`] for SVG output.
     pub async fn chart_transits(
         &self,
         body: &types::ExperimentalTransitChartRequest,
-    ) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/natal/chart/transits").json(body)?;
-        self.client.send_json(request).await
+    ) -> Result<Binary> {
+        let request = RequestSpec::operation(
+            "v1_natal_chart_transits",
+            Method::POST,
+            "/api/v1/natal/chart/transits",
+        )
+        .json(body)?
+        .accept("image/png, image/svg+xml, application/json");
+        self.client.send_binary(request).await
     }
 
     /// Get Report Credits For Api Key
     ///
     /// `GET /api/v1/natal/report-credits` (operation `v1_natal_report_credits`).
-    pub async fn report_credits(&self) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::GET, "/api/v1/natal/report-credits");
+    pub async fn report_credits(&self) -> Result<types::ReportCreditsResponse> {
+        let request = RequestSpec::operation(
+            "v1_natal_report_credits",
+            Method::GET,
+            "/api/v1/natal/report-credits",
+        );
         self.client.send_json(request).await
     }
 
@@ -683,15 +844,17 @@ impl<'a> Natal<'a> {
         &self,
         job_id: impl std::fmt::Display,
         params: Option<&params::NatalReportParams>,
-    ) -> Result<serde_json::Value> {
-        let mut request = RequestSpec::new(
+    ) -> Result<Content<types::PsychologicalReportJobResponse>> {
+        let mut request = RequestSpec::operation(
+            "v1_natal_report_job_id",
             Method::GET,
             format!("/api/v1/natal/report/{}", encode_path(job_id)),
-        );
+        )
+        .accept("application/json, application/pdf");
         if let Some(params) = params {
             request = request.query(params)?;
         }
-        self.client.send_json(request).await
+        self.client.send_content(request).await
     }
 
     /// Calculate Simple Natal
@@ -700,8 +863,11 @@ impl<'a> Natal<'a> {
     /// Returns a compact response with curated planets, houses, and useful summary fields.
     ///
     /// `POST /natal` (operation `simple_natal`).
-    pub async fn simple(&self, body: &types::SimpleNatalRequest) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/natal").json(body)?;
+    pub async fn simple(
+        &self,
+        body: &types::SimpleNatalRequest,
+    ) -> Result<types::SimpleNatalResponse> {
+        let request = RequestSpec::operation("simple_natal", Method::POST, "/natal").json(body)?;
         self.client.send_json(request).await
     }
 }
@@ -717,7 +883,11 @@ impl<'a> Numerology<'a> {
     ///
     /// `GET /api/v1/numerology/alphabets` (operation `v1_numerology_alphabets`).
     pub async fn alphabets(&self) -> Result<types::NumerologyAlphabetsResponse> {
-        let request = RequestSpec::new(Method::GET, "/api/v1/numerology/alphabets");
+        let request = RequestSpec::operation(
+            "v1_numerology_alphabets",
+            Method::GET,
+            "/api/v1/numerology/alphabets",
+        );
         self.client.send_json(request).await
     }
 
@@ -725,7 +895,11 @@ impl<'a> Numerology<'a> {
     ///
     /// `GET /api/v1/numerology/methods` (operation `v1_numerology_methods`).
     pub async fn methods(&self) -> Result<types::NumerologyMethodsResponse> {
-        let request = RequestSpec::new(Method::GET, "/api/v1/numerology/methods");
+        let request = RequestSpec::operation(
+            "v1_numerology_methods",
+            Method::GET,
+            "/api/v1/numerology/methods",
+        );
         self.client.send_json(request).await
     }
 
@@ -738,7 +912,12 @@ impl<'a> Numerology<'a> {
         &self,
         body: &types::NumerologyProfileRequest,
     ) -> Result<types::NumerologyProfileResponse> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/numerology/profile").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_numerology_profile",
+            Method::POST,
+            "/api/v1/numerology/profile",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 }
@@ -757,7 +936,8 @@ impl<'a> SkyEvents<'a> {
         &self,
         params: &params::SkyEventsListParams,
     ) -> Result<types::SkyEventsResponse> {
-        let request = RequestSpec::new(Method::GET, "/api/v1/sky-events").query(params)?;
+        let request = RequestSpec::operation("v1_sky_events", Method::GET, "/api/v1/sky-events")
+            .query(params)?;
         self.client.send_json(request).await
     }
 }
@@ -772,8 +952,12 @@ impl<'a> Space<'a> {
     /// Space Chart
     ///
     /// `POST /api/v1/space/chart` (operation `v1_space_chart`).
-    pub async fn chart(&self, body: &types::SpaceChartRequest) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/space/chart").json(body)?;
+    pub async fn chart(
+        &self,
+        body: &types::SpaceChartRequest,
+    ) -> Result<types::SpaceChartResponse> {
+        let request = RequestSpec::operation("v1_space_chart", Method::POST, "/api/v1/space/chart")
+            .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -782,9 +966,15 @@ impl<'a> Space<'a> {
     /// The chart wheel, drawn by the natal chart renderer with the same themes and options.
     ///
     /// `POST /api/v1/space/chart/svg` (operation `v1_space_chart_svg`).
-    pub async fn chart_svg(&self, body: &types::SpaceChartSvgRequest) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/space/chart/svg").json(body)?;
-        self.client.send_json(request).await
+    pub async fn chart_svg(&self, body: &types::SpaceChartSvgRequest) -> Result<String> {
+        let request = RequestSpec::operation(
+            "v1_space_chart_svg",
+            Method::POST,
+            "/api/v1/space/chart/svg",
+        )
+        .json(body)?
+        .accept("image/svg+xml, application/json");
+        self.client.send_text(request).await
     }
 }
 
@@ -807,9 +997,13 @@ impl<'a> Transits<'a> {
         &self,
         body: &types::TransitRequest,
         params: Option<&params::TransitsCalculateParams>,
-    ) -> Result<serde_json::Value> {
-        let mut request =
-            RequestSpec::new(Method::POST, "/api/v1/transits/calculate").json(body)?;
+    ) -> Result<types::TransitsCalculateResponse> {
+        let mut request = RequestSpec::operation(
+            "v1_transits_calculate",
+            Method::POST,
+            "/api/v1/transits/calculate",
+        )
+        .json(body)?;
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -833,7 +1027,12 @@ impl<'a> VedicGochar<'a> {
         &self,
         body: &types::VedicGocharTimelineRequest,
     ) -> Result<types::VedicGocharTimelineResponse> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/vedic/gochar/timeline").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_vedic_gochar_timeline",
+            Method::POST,
+            "/api/v1/vedic/gochar/timeline",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -846,8 +1045,12 @@ impl<'a> VedicGochar<'a> {
         &self,
         body: &types::VedicGocharTimelineRequest,
     ) -> Result<types::VedicGocharTimelineInsightsResponse> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/vedic/gochar/timeline/insights").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_vedic_gochar_timeline_insights",
+            Method::POST,
+            "/api/v1/vedic/gochar/timeline/insights",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -860,7 +1063,12 @@ impl<'a> VedicGochar<'a> {
         &self,
         body: &types::GocharTimelineRequest,
     ) -> Result<types::GocharTimelineV2Response> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/gochar/timeline").json(body)?;
+        let request = RequestSpec::operation(
+            "v2_vedic_gochar_timeline",
+            Method::POST,
+            "/api/v2/vedic/gochar/timeline",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -873,8 +1081,12 @@ impl<'a> VedicGochar<'a> {
         &self,
         body: &types::GocharTimelineRequest,
     ) -> Result<types::VedicGocharTimelineInsightsV2Response> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v2/vedic/gochar/timeline/insights").json(body)?;
+        let request = RequestSpec::operation(
+            "v2_vedic_gochar_timeline_insights",
+            Method::POST,
+            "/api/v2/vedic/gochar/timeline/insights",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 }
@@ -895,7 +1107,11 @@ impl<'a> VedicHoroscope<'a> {
         &self,
         params: Option<&params::VedicHoroscopeDailyBulkParams>,
     ) -> Result<types::DailyRashifalBulkResponse> {
-        let mut request = RequestSpec::new(Method::GET, "/api/v2/vedic/horoscope/daily/bulk");
+        let mut request = RequestSpec::operation(
+            "v2_vedic_horoscope_daily_bulk",
+            Method::GET,
+            "/api/v2/vedic/horoscope/daily/bulk",
+        );
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -912,8 +1128,12 @@ impl<'a> VedicHoroscope<'a> {
         &self,
         body: &types::DailyVedicHoroscopeRequest,
     ) -> Result<types::DailyVedicHoroscopeV2Response> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v2/vedic/horoscope/daily/personal").json(body)?;
+        let request = RequestSpec::operation(
+            "v2_vedic_horoscope_daily_personal",
+            Method::POST,
+            "/api/v2/vedic/horoscope/daily/personal",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -926,8 +1146,12 @@ impl<'a> VedicHoroscope<'a> {
         &self,
         params: &params::VedicHoroscopeDailySignParams,
     ) -> Result<types::DailyRashifalSignResponse> {
-        let request =
-            RequestSpec::new(Method::GET, "/api/v2/vedic/horoscope/daily/sign").query(params)?;
+        let request = RequestSpec::operation(
+            "v2_vedic_horoscope_daily_sign",
+            Method::GET,
+            "/api/v2/vedic/horoscope/daily/sign",
+        )
+        .query(params)?;
         self.client.send_json(request).await
     }
 }
@@ -952,8 +1176,12 @@ impl<'a> VedicMuhurat<'a> {
         &self,
         body: &types::VedicMuhuratPersonalizedSearchRequest,
     ) -> Result<types::VedicMuhuratSearchResponse> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/muhurat/personalized-search")
-            .json(body)?;
+        let request = RequestSpec::operation(
+            "v2_vedic_muhurat_personalized_search",
+            Method::POST,
+            "/api/v2/vedic/muhurat/personalized-search",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -972,7 +1200,12 @@ impl<'a> VedicMuhurat<'a> {
         &self,
         body: &types::VedicMuhuratSearchRequest,
     ) -> Result<types::VedicMuhuratSearchResponse> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/muhurat/search").json(body)?;
+        let request = RequestSpec::operation(
+            "v2_vedic_muhurat_search",
+            Method::POST,
+            "/api/v2/vedic/muhurat/search",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 }
@@ -993,8 +1226,12 @@ impl<'a> VedicTransits<'a> {
         &self,
         body: &types::VedicTransitInsightsRequest,
     ) -> Result<types::VedicTransitInsightsResponse> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/vedic/transits/insights").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_vedic_transits_insights",
+            Method::POST,
+            "/api/v1/vedic/transits/insights",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 }
@@ -1014,9 +1251,13 @@ impl<'a> VedicVisual<'a> {
     ///
     /// Returns the raw body; use [`Binary::text`] for SVG output.
     pub async fn chart(&self, body: &types::VedicVisualChartRequest) -> Result<Binary> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/visual/chart")
-            .json(body)?
-            .accept("image/png, image/svg+xml, application/json");
+        let request = RequestSpec::operation(
+            "v2_vedic_visual_chart",
+            Method::POST,
+            "/api/v2/vedic/visual/chart",
+        )
+        .json(body)?
+        .accept("image/png, image/svg+xml, application/json");
         self.client.send_binary(request).await
     }
 }
@@ -1069,8 +1310,12 @@ impl<'a> Vedic<'a> {
     /// Items execute sequentially to keep compute bounded and preserve per-item order.
     ///
     /// `POST /api/v1/vedic/batch` (operation `v1_vedic_batch`).
-    pub async fn batch(&self, body: &types::VedicBatchRequest) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/vedic/batch").json(body)?;
+    pub async fn batch(
+        &self,
+        body: &types::VedicBatchRequest,
+    ) -> Result<types::VedicBatchResponse> {
+        let request = RequestSpec::operation("v1_vedic_batch", Method::POST, "/api/v1/vedic/batch")
+            .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1080,8 +1325,16 @@ impl<'a> Vedic<'a> {
     /// Use feature toggles to customize response.
     ///
     /// `POST /api/v1/vedic/calculate` (operation `v1_vedic_calculate`).
-    pub async fn calculate_v1(&self, body: &types::VedicChartRequest) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/vedic/calculate").json(body)?;
+    pub async fn calculate_v1(
+        &self,
+        body: &types::VedicChartRequest,
+    ) -> Result<types::VedicCalculateResponse> {
+        let request = RequestSpec::operation(
+            "v1_vedic_calculate",
+            Method::POST,
+            "/api/v1/vedic/calculate",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1091,8 +1344,12 @@ impl<'a> Vedic<'a> {
     /// Lightweight endpoint for essential data only.
     ///
     /// `POST /api/v1/vedic/chart` (operation `v1_vedic_chart`).
-    pub async fn chart_v1(&self, body: &types::BaseChartRequestV1) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/vedic/chart").json(body)?;
+    pub async fn chart_v1(
+        &self,
+        body: &types::BaseChartRequestV1,
+    ) -> Result<types::VedicChartResponse> {
+        let request = RequestSpec::operation("v1_vedic_chart", Method::POST, "/api/v1/vedic/chart")
+            .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1105,8 +1362,13 @@ impl<'a> Vedic<'a> {
     pub async fn compatibility_v1(
         &self,
         body: &types::CompatibilityRequest,
-    ) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/vedic/compatibility").json(body)?;
+    ) -> Result<types::VedicCompatibilityResponse> {
+        let request = RequestSpec::operation(
+            "v1_vedic_compatibility",
+            Method::POST,
+            "/api/v1/vedic/compatibility",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1115,8 +1377,12 @@ impl<'a> Vedic<'a> {
     /// Get Vimshottari Dasha timeline only.
     ///
     /// `POST /api/v1/vedic/dasha` (operation `v1_vedic_dasha`).
-    pub async fn dasha_v1(&self, body: &types::DashaRequestV1) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/vedic/dasha").json(body)?;
+    pub async fn dasha_v1(
+        &self,
+        body: &types::DashaRequestV1,
+    ) -> Result<types::VedicDashaResponse> {
+        let request = RequestSpec::operation("v1_vedic_dasha", Method::POST, "/api/v1/vedic/dasha")
+            .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1129,7 +1395,12 @@ impl<'a> Vedic<'a> {
         &self,
         body: &types::DashaRequestV1,
     ) -> Result<types::VedicDashaInsightsResponse> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/vedic/dasha/insights").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_vedic_dasha_insights",
+            Method::POST,
+            "/api/v1/vedic/dasha/insights",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1139,8 +1410,9 @@ impl<'a> Vedic<'a> {
     /// Computes Moon Nakshatra/Sign internally to avoid ID lookup errors.
     ///
     /// `POST /api/v1/vedic/match` (operation `v1_vedic_match`).
-    pub async fn match_v1(&self, body: &types::MatchRequest) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/vedic/match").json(body)?;
+    pub async fn match_v1(&self, body: &types::MatchRequest) -> Result<types::VedicMatchResponse> {
+        let request = RequestSpec::operation("v1_vedic_match", Method::POST, "/api/v1/vedic/match")
+            .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1149,8 +1421,13 @@ impl<'a> Vedic<'a> {
     /// Get Panchang (daily almanac): Tithi, Nakshatra, Yoga, Karana, Rahu Kalam.
     ///
     /// `POST /api/v1/vedic/panchang` (operation `v1_vedic_panchang`).
-    pub async fn panchang_v1(&self, body: &types::PanchangRequestV1) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/vedic/panchang").json(body)?;
+    pub async fn panchang_v1(
+        &self,
+        body: &types::PanchangRequestV1,
+    ) -> Result<types::VedicPanchangResponse> {
+        let request =
+            RequestSpec::operation("v1_vedic_panchang", Method::POST, "/api/v1/vedic/panchang")
+                .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1159,8 +1436,13 @@ impl<'a> Vedic<'a> {
     /// Get planetary strength: Shadbala + Ashtakavarga.
     ///
     /// `POST /api/v1/vedic/strength` (operation `v1_vedic_strength`).
-    pub async fn strength_v1(&self, body: &types::BaseChartRequestV1) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/vedic/strength").json(body)?;
+    pub async fn strength_v1(
+        &self,
+        body: &types::BaseChartRequestV1,
+    ) -> Result<types::VedicStrengthResponse> {
+        let request =
+            RequestSpec::operation("v1_vedic_strength", Method::POST, "/api/v1/vedic/strength")
+                .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1169,8 +1451,13 @@ impl<'a> Vedic<'a> {
     /// Get divisional chart positions (D1, D9, D10, etc).
     ///
     /// `POST /api/v1/vedic/vargas` (operation `v1_vedic_vargas`).
-    pub async fn vargas_v1(&self, body: &types::VargaRequest) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/vedic/vargas").json(body)?;
+    pub async fn vargas_v1(
+        &self,
+        body: &types::VargaRequest,
+    ) -> Result<types::VedicVargasResponse> {
+        let request =
+            RequestSpec::operation("v1_vedic_vargas", Method::POST, "/api/v1/vedic/vargas")
+                .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1179,8 +1466,12 @@ impl<'a> Vedic<'a> {
     /// Get detected Yogas only (Manglik, Kala Sarpa, Raj Yogas, etc).
     ///
     /// `POST /api/v1/vedic/yogas` (operation `v1_vedic_yogas`).
-    pub async fn yogas_v1(&self, body: &types::BaseChartRequestV1) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/vedic/yogas").json(body)?;
+    pub async fn yogas_v1(
+        &self,
+        body: &types::BaseChartRequestV1,
+    ) -> Result<types::VedicYogasResponse> {
+        let request = RequestSpec::operation("v1_vedic_yogas", Method::POST, "/api/v1/vedic/yogas")
+            .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1193,7 +1484,12 @@ impl<'a> Vedic<'a> {
         &self,
         body: &types::CalculateRequest,
     ) -> Result<types::CalculateV2Response> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/calculate").json(body)?;
+        let request = RequestSpec::operation(
+            "v2_vedic_calculate",
+            Method::POST,
+            "/api/v2/vedic/calculate",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1203,7 +1499,8 @@ impl<'a> Vedic<'a> {
     ///
     /// `POST /api/v2/vedic/chart` (operation `v2_vedic_chart`).
     pub async fn chart(&self, body: &types::ChartRequest) -> Result<types::ChartV2Response> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/chart").json(body)?;
+        let request = RequestSpec::operation("v2_vedic_chart", Method::POST, "/api/v2/vedic/chart")
+            .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1216,10 +1513,12 @@ impl<'a> Vedic<'a> {
     /// Developers who bring their own model should use `/mcp/vedic-bot` directly.
     ///
     /// `POST /api/v2/vedic/chat` (operation `v2_vedic_chat`).
+    ///
+    /// Has side effects: retried on 429, but on server errors, timeouts and network failures only
+    /// with an idempotency key or [`RequestOptions::retry_side_effects`](crate::RequestOptions::retry_side_effects).
     pub async fn chat(&self, body: &types::VedicChatRequest) -> Result<types::VedicChatResponse> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/chat")
-            .json(body)?
-            .not_replay_safe();
+        let request = RequestSpec::operation("v2_vedic_chat", Method::POST, "/api/v2/vedic/chat")
+            .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1235,7 +1534,12 @@ impl<'a> Vedic<'a> {
         &self,
         body: &types::CompatibilityV2Request,
     ) -> Result<types::CompatibilityV2Response> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/compatibility").json(body)?;
+        let request = RequestSpec::operation(
+            "v2_vedic_compatibility",
+            Method::POST,
+            "/api/v2/vedic/compatibility",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1245,7 +1549,8 @@ impl<'a> Vedic<'a> {
     ///
     /// `POST /api/v2/vedic/dasha` (operation `v2_vedic_dasha`).
     pub async fn dasha(&self, body: &types::DashaRequestV2) -> Result<types::DashaV2Response> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/dasha").json(body)?;
+        let request = RequestSpec::operation("v2_vedic_dasha", Method::POST, "/api/v2/vedic/dasha")
+            .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1258,7 +1563,12 @@ impl<'a> Vedic<'a> {
         &self,
         body: &types::DashaRequestV2,
     ) -> Result<types::VedicDashaInsightsResponse> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/dasha/insights").json(body)?;
+        let request = RequestSpec::operation(
+            "v2_vedic_dasha_insights",
+            Method::POST,
+            "/api/v2/vedic/dasha/insights",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1272,7 +1582,8 @@ impl<'a> Vedic<'a> {
     ///
     /// `POST /api/v2/vedic/kp` (operation `v2_vedic_kp`).
     pub async fn kp(&self, body: &types::KPChartRequest) -> Result<types::KPChartResponse> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/kp").json(body)?;
+        let request =
+            RequestSpec::operation("v2_vedic_kp", Method::POST, "/api/v2/vedic/kp").json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1284,9 +1595,13 @@ impl<'a> Vedic<'a> {
     ///
     /// Returns the raw body; use [`Binary::text`] for SVG output.
     pub async fn kp_render(&self, body: &types::KPChartRenderRequest) -> Result<Binary> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/kp/render")
-            .json(body)?
-            .accept("image/png, image/svg+xml, application/json");
+        let request = RequestSpec::operation(
+            "v2_vedic_kp_render",
+            Method::POST,
+            "/api/v2/vedic/kp/render",
+        )
+        .json(body)?
+        .accept("image/png, image/svg+xml, application/json");
         self.client.send_binary(request).await
     }
 
@@ -1301,7 +1616,8 @@ impl<'a> Vedic<'a> {
         &self,
         body: &types::MatchV2Request,
     ) -> Result<types::CompatibilityV2Response> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/match").json(body)?;
+        let request = RequestSpec::operation("v2_vedic_match", Method::POST, "/api/v2/vedic/match")
+            .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1315,7 +1631,9 @@ impl<'a> Vedic<'a> {
         &self,
         body: &types::PanchangRequestV2,
     ) -> Result<types::PanchangV2Response> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/panchang").json(body)?;
+        let request =
+            RequestSpec::operation("v2_vedic_panchang", Method::POST, "/api/v2/vedic/panchang")
+                .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1329,8 +1647,12 @@ impl<'a> Vedic<'a> {
     /// a local lookup time is supplied or the requested date is today.
     ///
     /// `POST /api/v2/vedic/qa` (operation `v2_vedic_qa`).
+    ///
+    /// Has side effects: retried on 429, but on server errors, timeouts and network failures only
+    /// with an idempotency key or [`RequestOptions::retry_side_effects`](crate::RequestOptions::retry_side_effects).
     pub async fn qa(&self, body: &types::VedicQARequest) -> Result<types::VedicQAResponse> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/qa").json(body)?;
+        let request =
+            RequestSpec::operation("v2_vedic_qa", Method::POST, "/api/v2/vedic/qa").json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1343,7 +1665,9 @@ impl<'a> Vedic<'a> {
         &self,
         body: &types::BaseChartRequestV2,
     ) -> Result<types::StrengthV2Response> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/strength").json(body)?;
+        let request =
+            RequestSpec::operation("v2_vedic_strength", Method::POST, "/api/v2/vedic/strength")
+                .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1353,7 +1677,9 @@ impl<'a> Vedic<'a> {
     ///
     /// `POST /api/v2/vedic/vargas` (operation `v2_vedic_vargas`).
     pub async fn vargas(&self, body: &types::VargasRequest) -> Result<types::VargasV2Response> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/vargas").json(body)?;
+        let request =
+            RequestSpec::operation("v2_vedic_vargas", Method::POST, "/api/v2/vedic/vargas")
+                .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1363,7 +1689,8 @@ impl<'a> Vedic<'a> {
     ///
     /// `POST /api/v2/vedic/yogas` (operation `v2_vedic_yogas`).
     pub async fn yogas(&self, body: &types::BaseChartRequestV2) -> Result<types::YogasV2Response> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/vedic/yogas").json(body)?;
+        let request = RequestSpec::operation("v2_vedic_yogas", Method::POST, "/api/v2/vedic/yogas")
+            .json(body)?;
         self.client.send_json(request).await
     }
 }
@@ -1383,9 +1710,13 @@ impl<'a> WesternAstrocartography<'a> {
     pub async fn city_check(
         &self,
         body: &types::AstrocartographyCityCheckRequest,
-    ) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/western/astrocartography/city-check")
-            .json(body)?;
+    ) -> Result<types::AstrocartographyCityCheckResponse> {
+        let request = RequestSpec::operation(
+            "v1_western_astrocartography_city_check",
+            Method::POST,
+            "/api/v1/western/astrocartography/city-check",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1397,9 +1728,13 @@ impl<'a> WesternAstrocartography<'a> {
     pub async fn lines(
         &self,
         body: &types::AstrocartographyLinesRequest,
-    ) -> Result<serde_json::Value> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/western/astrocartography/lines").json(body)?;
+    ) -> Result<types::AstrocartographyLinesResponse> {
+        let request = RequestSpec::operation(
+            "v1_western_astrocartography_lines",
+            Method::POST,
+            "/api/v1/western/astrocartography/lines",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1411,9 +1746,13 @@ impl<'a> WesternAstrocartography<'a> {
     pub async fn parans(
         &self,
         body: &types::AstrocartographyParansRequest,
-    ) -> Result<serde_json::Value> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/western/astrocartography/parans").json(body)?;
+    ) -> Result<types::AstrocartographyParansResponse> {
+        let request = RequestSpec::operation(
+            "v1_western_astrocartography_parans",
+            Method::POST,
+            "/api/v1/western/astrocartography/parans",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1425,8 +1764,9 @@ impl<'a> WesternAstrocartography<'a> {
     pub async fn recommendations(
         &self,
         body: &types::AstrocartographyRecommendationsRequest,
-    ) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(
+    ) -> Result<types::AstrocartographyRecommendationsResponse> {
+        let request = RequestSpec::operation(
+            "v1_western_astrocartography_recommendations",
             Method::POST,
             "/api/v1/western/astrocartography/recommendations",
         )
@@ -1442,9 +1782,13 @@ impl<'a> WesternAstrocartography<'a> {
     pub async fn relocation(
         &self,
         body: &types::AstrocartographyRelocationRequest,
-    ) -> Result<serde_json::Value> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/western/astrocartography/relocation")
-            .json(body)?;
+    ) -> Result<types::AstrocartographyRelocationResponse> {
+        let request = RequestSpec::operation(
+            "v1_western_astrocartography_relocation",
+            Method::POST,
+            "/api/v1/western/astrocartography/relocation",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 }
@@ -1463,7 +1807,8 @@ impl<'a> WesternChartSimilarity<'a> {
         &self,
         body: &types::FamousPeopleChartSimilarityRequest,
     ) -> Result<types::ChartSimilarityResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v2_western_chart_similarity_famous_people",
             Method::POST,
             "/api/v2/western/chart-similarity/famous-people",
         )
@@ -1491,8 +1836,12 @@ impl<'a> WesternDirections<'a> {
         &self,
         body: &types::PrimaryDirectionsRequest,
     ) -> Result<types::PrimaryDirectionsResponse> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/western/directions/primary").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_western_directions_primary",
+            Method::POST,
+            "/api/v1/western/directions/primary",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1503,8 +1852,12 @@ impl<'a> WesternDirections<'a> {
         &self,
         body: &types::PrimaryDirectionsRequest,
     ) -> Result<types::PrimaryDirectionsCalendarResponse> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/western/directions/primary/calendar")
-            .json(body)?;
+        let request = RequestSpec::operation(
+            "v1_western_directions_primary_calendar",
+            Method::POST,
+            "/api/v1/western/directions/primary/calendar",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1515,7 +1868,8 @@ impl<'a> WesternDirections<'a> {
         &self,
         body: &types::PrimaryDirectionsRequest,
     ) -> Result<types::PrimaryDirectionsResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_directions_primary_exact_aspects",
             Method::POST,
             "/api/v1/western/directions/primary/exact-aspects",
         )
@@ -1530,8 +1884,12 @@ impl<'a> WesternDirections<'a> {
         &self,
         body: &types::PrimaryDirectionsRequest,
     ) -> Result<types::PrimaryDirectionsResponse> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/western/directions/primary/search")
-            .json(body)?;
+        let request = RequestSpec::operation(
+            "v1_western_directions_primary_search",
+            Method::POST,
+            "/api/v1/western/directions/primary/search",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 }
@@ -1550,7 +1908,8 @@ impl<'a> WesternElectional<'a> {
         &self,
         body: &types::InvestMoneyElectionSearchRequest,
     ) -> Result<types::InvestMoneyElectionSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v2_western_electional_invest_money_search",
             Method::POST,
             "/api/v2/western/electional/invest-money/search",
         )
@@ -1565,7 +1924,8 @@ impl<'a> WesternElectional<'a> {
         &self,
         body: &types::JobAuditionElectionSearchRequest,
     ) -> Result<types::JobAuditionElectionSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v2_western_electional_job_audition_search",
             Method::POST,
             "/api/v2/western/electional/job-audition/search",
         )
@@ -1580,7 +1940,8 @@ impl<'a> WesternElectional<'a> {
         &self,
         body: &types::LegalProceedingsElectionSearchRequest,
     ) -> Result<types::LegalProceedingsElectionSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v2_western_electional_legal_proceedings_search",
             Method::POST,
             "/api/v2/western/electional/legal-proceedings/search",
         )
@@ -1595,7 +1956,8 @@ impl<'a> WesternElectional<'a> {
         &self,
         body: &types::MakingContractsElectionSearchRequest,
     ) -> Result<types::MakingContractsElectionSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v2_western_electional_making_contracts_search",
             Method::POST,
             "/api/v2/western/electional/making-contracts/search",
         )
@@ -1610,7 +1972,8 @@ impl<'a> WesternElectional<'a> {
         &self,
         body: &types::MoveIntoNewHomeElectionSearchRequest,
     ) -> Result<types::MoveIntoNewHomeElectionSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v2_western_electional_move_into_new_home_search",
             Method::POST,
             "/api/v2/western/electional/move-into-new-home/search",
         )
@@ -1625,7 +1988,8 @@ impl<'a> WesternElectional<'a> {
         &self,
         body: &types::PhysicalExaminationElectionSearchRequest,
     ) -> Result<types::PhysicalExaminationElectionSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v2_western_electional_physical_examination_search",
             Method::POST,
             "/api/v2/western/electional/physical-examination/search",
         )
@@ -1640,7 +2004,8 @@ impl<'a> WesternElectional<'a> {
         &self,
         body: &types::PurchaseCarElectionSearchRequest,
     ) -> Result<types::PurchaseCarElectionSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v2_western_electional_purchase_car_search",
             Method::POST,
             "/api/v2/western/electional/purchase-car/search",
         )
@@ -1655,7 +2020,8 @@ impl<'a> WesternElectional<'a> {
         &self,
         body: &types::PurchasePropertyElectionSearchRequest,
     ) -> Result<types::PurchasePropertyElectionSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v2_western_electional_purchase_property_search",
             Method::POST,
             "/api/v2/western/electional/purchase-property/search",
         )
@@ -1670,7 +2036,8 @@ impl<'a> WesternElectional<'a> {
         &self,
         body: &types::StartingJourneyElectionSearchRequest,
     ) -> Result<types::StartingJourneyElectionSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v2_western_electional_starting_journey_search",
             Method::POST,
             "/api/v2/western/electional/starting-journey/search",
         )
@@ -1685,8 +2052,12 @@ impl<'a> WesternElectional<'a> {
         &self,
         body: &types::WeddingElectionSearchRequest,
     ) -> Result<types::WeddingElectionSearchResponse> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/western/electional/wedding/search")
-            .json(body)?;
+        let request = RequestSpec::operation(
+            "v2_western_electional_wedding_search",
+            Method::POST,
+            "/api/v2/western/electional/wedding/search",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 }
@@ -1707,8 +2078,12 @@ impl<'a> WesternNatal<'a> {
         &self,
         body: &types::NatalInsightsRequest,
     ) -> Result<types::NatalInsightsResponse> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/western/natal/insights").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_western_natal_insights",
+            Method::POST,
+            "/api/v1/western/natal/insights",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -1721,7 +2096,8 @@ impl<'a> WesternNatal<'a> {
         &self,
         body: &types::NatalInsightsRequest,
     ) -> Result<types::NatalInsightsIndexDocumentsResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_natal_insights_index_documents",
             Method::POST,
             "/api/v1/western/natal/insights/index-documents",
         )
@@ -1747,8 +2123,12 @@ impl<'a> WesternProfections<'a> {
         body: &types::AnnualProfectionRequest,
         params: Option<&params::WesternProfectionsAnnualParams>,
     ) -> Result<types::AnnualProfectionResponse> {
-        let mut request =
-            RequestSpec::new(Method::POST, "/api/v1/western/profections/annual").json(body)?;
+        let mut request = RequestSpec::operation(
+            "v1_western_profections_annual",
+            Method::POST,
+            "/api/v1/western/profections/annual",
+        )
+        .json(body)?;
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -1771,7 +2151,8 @@ impl<'a> WesternProgressions<'a> {
         body: &types::ConverseSecondaryProgressionsRequest,
         params: Option<&params::WesternProgressionsConverseSecondaryParams>,
     ) -> Result<types::WesternProgressionsConverseSecondaryResponse> {
-        let mut request = RequestSpec::new(
+        let mut request = RequestSpec::operation(
+            "v1_western_progressions_converse_secondary",
             Method::POST,
             "/api/v1/western/progressions/converse-secondary",
         )
@@ -1789,7 +2170,8 @@ impl<'a> WesternProgressions<'a> {
         &self,
         body: &types::ProgressionCalendarRequest,
     ) -> Result<types::ProgressionCalendarResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_progressions_converse_secondary_calendar",
             Method::POST,
             "/api/v1/western/progressions/converse-secondary/calendar",
         )
@@ -1804,7 +2186,8 @@ impl<'a> WesternProgressions<'a> {
         &self,
         body: &types::ExactAspectSearchRequest,
     ) -> Result<types::ExactAspectSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_progressions_converse_secondary_exact_aspects",
             Method::POST,
             "/api/v1/western/progressions/converse-secondary/exact-aspects",
         )
@@ -1819,7 +2202,8 @@ impl<'a> WesternProgressions<'a> {
         &self,
         body: &types::ExactIngressSearchRequest,
     ) -> Result<types::ExactIngressSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_progressions_converse_secondary_exact_ingresses",
             Method::POST,
             "/api/v1/western/progressions/converse-secondary/exact-ingresses",
         )
@@ -1835,8 +2219,12 @@ impl<'a> WesternProgressions<'a> {
         body: &types::QuaternaryProgressionsRequest,
         params: Option<&params::WesternProgressionsQuaternaryParams>,
     ) -> Result<types::WesternProgressionsQuaternaryResponse> {
-        let mut request =
-            RequestSpec::new(Method::POST, "/api/v1/western/progressions/quaternary").json(body)?;
+        let mut request = RequestSpec::operation(
+            "v1_western_progressions_quaternary",
+            Method::POST,
+            "/api/v1/western/progressions/quaternary",
+        )
+        .json(body)?;
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -1850,7 +2238,8 @@ impl<'a> WesternProgressions<'a> {
         &self,
         body: &types::ProgressionCalendarRequest,
     ) -> Result<types::ProgressionCalendarResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_progressions_quaternary_calendar",
             Method::POST,
             "/api/v1/western/progressions/quaternary/calendar",
         )
@@ -1865,7 +2254,8 @@ impl<'a> WesternProgressions<'a> {
         &self,
         body: &types::ExactAspectSearchRequest,
     ) -> Result<types::ExactAspectSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_progressions_quaternary_exact_aspects",
             Method::POST,
             "/api/v1/western/progressions/quaternary/exact-aspects",
         )
@@ -1880,7 +2270,8 @@ impl<'a> WesternProgressions<'a> {
         &self,
         body: &types::ExactIngressSearchRequest,
     ) -> Result<types::ExactIngressSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_progressions_quaternary_exact_ingresses",
             Method::POST,
             "/api/v1/western/progressions/quaternary/exact-ingresses",
         )
@@ -1896,8 +2287,12 @@ impl<'a> WesternProgressions<'a> {
         body: &types::QuotidianProgressionsRequest,
         params: Option<&params::WesternProgressionsQuotidianParams>,
     ) -> Result<types::WesternProgressionsQuotidianResponse> {
-        let mut request =
-            RequestSpec::new(Method::POST, "/api/v1/western/progressions/quotidian").json(body)?;
+        let mut request = RequestSpec::operation(
+            "v1_western_progressions_quotidian",
+            Method::POST,
+            "/api/v1/western/progressions/quotidian",
+        )
+        .json(body)?;
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -1911,7 +2306,8 @@ impl<'a> WesternProgressions<'a> {
         &self,
         body: &types::ProgressionCalendarRequest,
     ) -> Result<types::ProgressionCalendarResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_progressions_quotidian_calendar",
             Method::POST,
             "/api/v1/western/progressions/quotidian/calendar",
         )
@@ -1926,7 +2322,8 @@ impl<'a> WesternProgressions<'a> {
         &self,
         body: &types::ExactAspectSearchRequest,
     ) -> Result<types::ExactAspectSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_progressions_quotidian_exact_aspects",
             Method::POST,
             "/api/v1/western/progressions/quotidian/exact-aspects",
         )
@@ -1941,7 +2338,8 @@ impl<'a> WesternProgressions<'a> {
         &self,
         body: &types::ExactIngressSearchRequest,
     ) -> Result<types::ExactIngressSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_progressions_quotidian_exact_ingresses",
             Method::POST,
             "/api/v1/western/progressions/quotidian/exact-ingresses",
         )
@@ -1968,8 +2366,12 @@ impl<'a> WesternProgressions<'a> {
         body: &types::SecondaryProgressionsRequest,
         params: Option<&params::WesternProgressionsSecondaryParams>,
     ) -> Result<types::WesternProgressionsSecondaryResponse> {
-        let mut request =
-            RequestSpec::new(Method::POST, "/api/v1/western/progressions/secondary").json(body)?;
+        let mut request = RequestSpec::operation(
+            "v1_western_progressions_secondary",
+            Method::POST,
+            "/api/v1/western/progressions/secondary",
+        )
+        .json(body)?;
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -1983,7 +2385,8 @@ impl<'a> WesternProgressions<'a> {
         &self,
         body: &types::ProgressionCalendarRequest,
     ) -> Result<types::ProgressionCalendarResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_progressions_secondary_calendar",
             Method::POST,
             "/api/v1/western/progressions/secondary/calendar",
         )
@@ -1998,7 +2401,8 @@ impl<'a> WesternProgressions<'a> {
         &self,
         body: &types::ExactAspectSearchRequest,
     ) -> Result<types::ExactAspectSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_progressions_secondary_exact_aspects",
             Method::POST,
             "/api/v1/western/progressions/secondary/exact-aspects",
         )
@@ -2013,7 +2417,8 @@ impl<'a> WesternProgressions<'a> {
         &self,
         body: &types::ExactIngressSearchRequest,
     ) -> Result<types::ExactIngressSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_progressions_secondary_exact_ingresses",
             Method::POST,
             "/api/v1/western/progressions/secondary/exact-ingresses",
         )
@@ -2029,8 +2434,12 @@ impl<'a> WesternProgressions<'a> {
         body: &types::TertiaryProgressionsRequest,
         params: Option<&params::WesternProgressionsTertiaryParams>,
     ) -> Result<types::WesternProgressionsTertiaryResponse> {
-        let mut request =
-            RequestSpec::new(Method::POST, "/api/v1/western/progressions/tertiary").json(body)?;
+        let mut request = RequestSpec::operation(
+            "v1_western_progressions_tertiary",
+            Method::POST,
+            "/api/v1/western/progressions/tertiary",
+        )
+        .json(body)?;
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -2044,7 +2453,8 @@ impl<'a> WesternProgressions<'a> {
         &self,
         body: &types::ProgressionCalendarRequest,
     ) -> Result<types::ProgressionCalendarResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_progressions_tertiary_calendar",
             Method::POST,
             "/api/v1/western/progressions/tertiary/calendar",
         )
@@ -2059,7 +2469,8 @@ impl<'a> WesternProgressions<'a> {
         &self,
         body: &types::ExactAspectSearchRequest,
     ) -> Result<types::ExactAspectSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_progressions_tertiary_exact_aspects",
             Method::POST,
             "/api/v1/western/progressions/tertiary/exact-aspects",
         )
@@ -2074,7 +2485,8 @@ impl<'a> WesternProgressions<'a> {
         &self,
         body: &types::ExactIngressSearchRequest,
     ) -> Result<types::ExactIngressSearchResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_progressions_tertiary_exact_ingresses",
             Method::POST,
             "/api/v1/western/progressions/tertiary/exact-ingresses",
         )
@@ -2100,8 +2512,12 @@ impl<'a> WesternReturns<'a> {
         &self,
         body: &types::PlanetReturnRequest,
     ) -> Result<types::PlanetReturnResponse> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/western/returns/calculate").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_western_returns_calculate",
+            Method::POST,
+            "/api/v1/western/returns/calculate",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 }
@@ -2119,8 +2535,12 @@ impl<'a> WesternSigns<'a> {
     ///
     /// `POST /api/v1/western/signs/midheaven` (operation `v1_western_signs_midheaven`).
     pub async fn midheaven(&self, body: &types::NatalChartRequest) -> Result<types::SignResponse> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/western/signs/midheaven").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_western_signs_midheaven",
+            Method::POST,
+            "/api/v1/western/signs/midheaven",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -2130,7 +2550,12 @@ impl<'a> WesternSigns<'a> {
     ///
     /// `POST /api/v1/western/signs/moon` (operation `v1_western_signs_moon`).
     pub async fn moon(&self, body: &types::NatalChartRequest) -> Result<types::SignResponse> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/western/signs/moon").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_western_signs_moon",
+            Method::POST,
+            "/api/v1/western/signs/moon",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -2140,7 +2565,12 @@ impl<'a> WesternSigns<'a> {
     ///
     /// `POST /api/v1/western/signs/rising` (operation `v1_western_signs_rising`).
     pub async fn rising(&self, body: &types::NatalChartRequest) -> Result<types::SignResponse> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/western/signs/rising").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_western_signs_rising",
+            Method::POST,
+            "/api/v1/western/signs/rising",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -2150,7 +2580,12 @@ impl<'a> WesternSigns<'a> {
     ///
     /// `POST /api/v1/western/signs/sun` (operation `v1_western_signs_sun`).
     pub async fn sun(&self, body: &types::NatalChartRequest) -> Result<types::SignResponse> {
-        let request = RequestSpec::new(Method::POST, "/api/v1/western/signs/sun").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_western_signs_sun",
+            Method::POST,
+            "/api/v1/western/signs/sun",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 }
@@ -2173,8 +2608,12 @@ impl<'a> WesternSolar<'a> {
         &self,
         body: &types::SolarReturnRequest,
     ) -> Result<types::SolarReturnResponse> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/western/solar/calculate").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_western_solar_calculate",
+            Method::POST,
+            "/api/v1/western/solar/calculate",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 }
@@ -2191,12 +2630,19 @@ impl<'a> WesternTransits<'a> {
     /// Compute derived transit insight windows from the transit timeline engine.
     ///
     /// `POST /api/v1/western/transits/insights` (operation `v1_western_transits_insights`).
+    ///
+    /// Has side effects: retried on 429, but on server errors, timeouts and network failures only
+    /// with an idempotency key or [`RequestOptions::retry_side_effects`](crate::RequestOptions::retry_side_effects).
     pub async fn insights(
         &self,
         body: &types::TransitTimelineRequest,
     ) -> Result<types::TransitInsightsResponse> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/western/transits/insights").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_western_transits_insights",
+            Method::POST,
+            "/api/v1/western/transits/insights",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -2209,8 +2655,12 @@ impl<'a> WesternTransits<'a> {
         &self,
         body: &types::TransitSearchRequest,
     ) -> Result<types::TransitSearchResponse> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/western/transits/search").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_western_transits_search",
+            Method::POST,
+            "/api/v1/western/transits/search",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -2219,12 +2669,19 @@ impl<'a> WesternTransits<'a> {
     /// Compute transit-to-natal interval passes across a date range for calendar and timeline rendering.
     ///
     /// `POST /api/v1/western/transits/timeline` (operation `v1_western_transits_timeline`).
+    ///
+    /// Has side effects: retried on 429, but on server errors, timeouts and network failures only
+    /// with an idempotency key or [`RequestOptions::retry_side_effects`](crate::RequestOptions::retry_side_effects).
     pub async fn timeline(
         &self,
         body: &types::TransitTimelineRequest,
     ) -> Result<types::TransitTimelineResponse> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/western/transits/timeline").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_western_transits_timeline",
+            Method::POST,
+            "/api/v1/western/transits/timeline",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -2237,7 +2694,8 @@ impl<'a> WesternTransits<'a> {
         &self,
         body: &types::TransitTimelineRequest,
     ) -> Result<types::TransitTimelineIndexDocumentsResponse> {
-        let request = RequestSpec::new(
+        let request = RequestSpec::operation(
+            "v1_western_transits_timeline_index_documents",
             Method::POST,
             "/api/v1/western/transits/timeline/index-documents",
         )
@@ -2342,7 +2800,12 @@ impl<'a> Western<'a> {
         body: &types::SynastryRequest,
         params: Option<&params::WesternSynastryV1Params>,
     ) -> Result<types::SynastryResponse> {
-        let mut request = RequestSpec::new(Method::POST, "/api/v1/western/synastry").json(body)?;
+        let mut request = RequestSpec::operation(
+            "v1_western_synastry",
+            Method::POST,
+            "/api/v1/western/synastry",
+        )
+        .json(body)?;
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -2363,8 +2826,12 @@ impl<'a> Western<'a> {
         body: &types::CouplesHoroscopeRequest,
         params: Option<&params::WesternSynastryHoroscopeV1Params>,
     ) -> Result<types::CouplesHoroscopeResponse> {
-        let mut request =
-            RequestSpec::new(Method::POST, "/api/v1/western/synastry/horoscope").json(body)?;
+        let mut request = RequestSpec::operation(
+            "v1_western_synastry_horoscope",
+            Method::POST,
+            "/api/v1/western/synastry/horoscope",
+        )
+        .json(body)?;
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -2381,8 +2848,12 @@ impl<'a> Western<'a> {
         &self,
         body: &types::SynastryRequest,
     ) -> Result<types::SynastrySimplifiedResponse> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/western/synastry/simplified").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_western_synastry_simplified",
+            Method::POST,
+            "/api/v1/western/synastry/simplified",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -2395,8 +2866,12 @@ impl<'a> Western<'a> {
         &self,
         body: &types::SynastryRequest,
     ) -> Result<types::SynastrySummaryResponse> {
-        let request =
-            RequestSpec::new(Method::POST, "/api/v1/western/synastry/summary").json(body)?;
+        let request = RequestSpec::operation(
+            "v1_western_synastry_summary",
+            Method::POST,
+            "/api/v1/western/synastry/summary",
+        )
+        .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -2415,8 +2890,12 @@ impl<'a> Western<'a> {
         body: &types::SynastryRequest,
         params: Option<&params::WesternSynastrycardsV1Params>,
     ) -> Result<types::SynastryCardsResponse> {
-        let mut request =
-            RequestSpec::new(Method::POST, "/api/v1/western/synastrycards").json(body)?;
+        let mut request = RequestSpec::operation(
+            "v1_western_synastrycards",
+            Method::POST,
+            "/api/v1/western/synastrycards",
+        )
+        .json(body)?;
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -2428,13 +2907,16 @@ impl<'a> Western<'a> {
     /// Generate a grounded Western astrology answer from the scoped Western MCP tools.
     ///
     /// `POST /api/v2/western/chat` (operation `v2_western_chat`).
+    ///
+    /// Has side effects: retried on 429, but on server errors, timeouts and network failures only
+    /// with an idempotency key or [`RequestOptions::retry_side_effects`](crate::RequestOptions::retry_side_effects).
     pub async fn chat(
         &self,
         body: &types::WesternChatRequest,
     ) -> Result<types::WesternChatResponse> {
-        let request = RequestSpec::new(Method::POST, "/api/v2/western/chat")
-            .json(body)?
-            .not_replay_safe();
+        let request =
+            RequestSpec::operation("v2_western_chat", Method::POST, "/api/v2/western/chat")
+                .json(body)?;
         self.client.send_json(request).await
     }
 
@@ -2446,7 +2928,12 @@ impl<'a> Western<'a> {
         body: &types::SynastryRequest,
         params: Option<&params::WesternSynastryParams>,
     ) -> Result<types::SynastryResponse> {
-        let mut request = RequestSpec::new(Method::POST, "/api/v2/western/synastry").json(body)?;
+        let mut request = RequestSpec::operation(
+            "v2_western_synastry",
+            Method::POST,
+            "/api/v2/western/synastry",
+        )
+        .json(body)?;
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -2461,8 +2948,12 @@ impl<'a> Western<'a> {
         body: &types::CouplesHoroscopeV2Request,
         params: Option<&params::WesternSynastryHoroscopeParams>,
     ) -> Result<types::CouplesHoroscopeV2Response> {
-        let mut request =
-            RequestSpec::new(Method::POST, "/api/v2/western/synastry/horoscope").json(body)?;
+        let mut request = RequestSpec::operation(
+            "v2_western_synastry_horoscope",
+            Method::POST,
+            "/api/v2/western/synastry/horoscope",
+        )
+        .json(body)?;
         if let Some(params) = params {
             request = request.query(params)?;
         }
@@ -2477,8 +2968,12 @@ impl<'a> Western<'a> {
         body: &types::SynastryRequest,
         params: Option<&params::WesternSynastrycardsParams>,
     ) -> Result<types::SynastryCardsResponse> {
-        let mut request =
-            RequestSpec::new(Method::POST, "/api/v2/western/synastrycards").json(body)?;
+        let mut request = RequestSpec::operation(
+            "v2_western_synastrycards",
+            Method::POST,
+            "/api/v2/western/synastrycards",
+        )
+        .json(body)?;
         if let Some(params) = params {
             request = request.query(params)?;
         }

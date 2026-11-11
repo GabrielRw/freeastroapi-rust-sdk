@@ -23,12 +23,10 @@ async fn main() -> freeastroapi::Result<()> {
     };
     let chart = client.natal().calculate(&birth, Some(&options)).await?;
 
-    // This response is not typed in the spec yet, so it is a `serde_json::Value`.
-    for planet in chart["planets"].as_array().into_iter().flatten() {
-        println!("{:<10} {}", planet["name"], planet["sign"]);
+    for planet in chart.planets.iter().flatten() {
+        println!("{:<10} {} {:.2}°", planet.name, planet.sign, planet.pos);
     }
 
-    // The sun sign has a typed response.
     let sun = client.western().signs().sun(&birth).await?;
     println!("Sun in {} at {:.2}°", sun.sign, sun.degree);
     Ok(())

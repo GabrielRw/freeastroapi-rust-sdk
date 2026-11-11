@@ -10,6 +10,7 @@ use serde::de::DeserializeOwned;
 
 use crate::body::{Binary, Content};
 use crate::error::{ApiError, Error, Result};
+use crate::generated::operations::{OPERATIONS, SIDE_EFFECT_OPERATIONS};
 
 /// The production API.
 pub const DEFAULT_BASE_URL: &str = "https://api.freeastroapi.com";
@@ -19,9 +20,16 @@ pub const API_KEY_ENV: &str = "FREEASTRO_API_KEY";
 pub const DEFAULT_TIMEOUT: Duration = Duration::from_secs(30);
 /// Default number of retries after the first attempt.
 pub const DEFAULT_MAX_RETRIES: u32 = 2;
+/// Default first backoff delay; it doubles on each retry.
+pub const DEFAULT_RETRY_BASE_DELAY: Duration = Duration::from_millis(500);
+/// Default cap on the exponential backoff delay.
+pub const DEFAULT_MAX_RETRY_DELAY: Duration = Duration::from_secs(8);
+/// Default longest `Retry-After` the client waits for; a longer one is returned as an error.
+pub const DEFAULT_MAX_RETRY_AFTER: Duration = Duration::from_secs(30);
 
 const USER_AGENT: &str = concat!("freeastroapi-rust/", env!("CARGO_PKG_VERSION"));
-const RETRY_STATUSES: [u16; 6] = [408, 429, 500, 502, 503, 504];
+/// Statuses retried for operations without side effects (429 is retried for every operation).
+const TRANSIENT_STATUSES: [u16; 5] = [408, 500, 502, 503, 504];
 const MAX_ERROR_BODY: usize = 4096;
 
 /// FreeAstroAPI client.
@@ -57,6 +65,7 @@ struct Inner {
     max_retries: u32,
     retry_base_delay: Duration,
     max_retry_delay: Duration,
+    max_retry_after: Duration,
 }
 
 impl fmt::Debug for Client {
@@ -123,6 +132,7 @@ impl Client {
         body: Option<&serde_json::Value>,
     ) -> Result<T> {
         let mut spec = RequestSpec::new(method, path);
+        spec.operation_id = operation_for(&spec.method, path);
         spec.query = query
             .iter()
             .map(|(k, v)| ((*k).to_owned(), (*v).to_owned()))
@@ -207,9 +217,12 @@ impl Client {
 
         let timeout = options.timeout.unwrap_or(inner.timeout);
         let max_retries = options.max_retries.unwrap_or(inner.max_retries);
-        let replay_safe = spec.replay_safe
+        // 429 is always retried (the request was rejected before it ran). Other transient
+        // failures are retried unless the operation has side effects and the caller neither
+        // supplied an idempotency key nor opted in.
+        let replay_safe = !spec.operation_id.is_some_and(is_side_effect)
             || options.idempotency_key.is_some()
-            || matches!(spec.method, Method::GET | Method::HEAD | Method::OPTIONS);
+            || options.retry_side_effects == Some(true);
 
         let mut attempt = 0u32;
         loop {
@@ -221,65 +234,113 @@ impl Client {
             if let Some(body) = &spec.body {
                 request = request.body(body.clone());
             }
+            let can_retry = attempt < max_retries;
 
-            let retry_in = match request.send().await {
-                Ok(response) => {
-                    let status = response.status();
-                    let response_headers = response.headers().clone();
-                    let body = response.bytes().await?;
-                    if status.is_success() {
-                        return Ok(RawResponse {
-                            content_type: response_headers
-                                .get(header::CONTENT_TYPE)
-                                .and_then(|v| v.to_str().ok())
-                                .map(str::to_owned),
-                            body,
-                        });
-                    }
-                    let retry_after = retry_after(&response_headers);
-                    let retryable = RETRY_STATUSES.contains(&status.as_u16())
-                        && (replay_safe || status == StatusCode::TOO_MANY_REQUESTS);
-                    let delay = retry_after.unwrap_or_else(|| self.backoff(attempt));
-                    if retryable && attempt < max_retries && delay <= inner.max_retry_delay {
-                        delay
-                    } else {
-                        let request_id = response_headers
-                            .get("x-request-id")
-                            .and_then(|v| v.to_str().ok())
-                            .map(str::to_owned);
-                        let error = ApiError::new(
-                            status.as_u16(),
-                            status.canonical_reason(),
-                            request_id,
-                            &body,
-                        );
-                        return Err(Error::from_response(error, retry_after));
-                    }
-                }
+            let response = match request.send().await {
+                Ok(response) => response,
                 Err(error) => {
-                    let transient = error.is_timeout() || error.is_connect() || error.is_request();
-                    if transient && replay_safe && attempt < max_retries {
-                        self.backoff(attempt)
-                    } else {
-                        return Err(Error::Http(error));
+                    if can_retry && replay_safe && is_transient(&error) {
+                        self.wait(attempt).await;
+                        attempt += 1;
+                        continue;
                     }
+                    return Err(Error::Http(error));
                 }
             };
-            attempt += 1;
-            tokio::time::sleep(retry_in).await;
+            let status = response.status();
+            let response_headers = response.headers().clone();
+            let body = match response.bytes().await {
+                Ok(body) => body,
+                Err(error) => {
+                    if can_retry && replay_safe && is_transient(&error) {
+                        self.wait(attempt).await;
+                        attempt += 1;
+                        continue;
+                    }
+                    return Err(Error::Http(error));
+                }
+            };
+            if status.is_success() {
+                return Ok(RawResponse {
+                    content_type: response_headers
+                        .get(header::CONTENT_TYPE)
+                        .and_then(|v| v.to_str().ok())
+                        .map(str::to_owned),
+                    body,
+                });
+            }
+
+            let retry_after = retry_after(&response_headers, &body);
+            let retryable = status == StatusCode::TOO_MANY_REQUESTS
+                || (replay_safe && TRANSIENT_STATUSES.contains(&status.as_u16()));
+            if retryable && can_retry {
+                match retry_after {
+                    Some(delay) if delay > inner.max_retry_after => {}
+                    Some(delay) => {
+                        tokio::time::sleep(delay).await;
+                        attempt += 1;
+                        continue;
+                    }
+                    None => {
+                        self.wait(attempt).await;
+                        attempt += 1;
+                        continue;
+                    }
+                }
+            }
+            let request_id = response_headers
+                .get("x-request-id")
+                .and_then(|v| v.to_str().ok())
+                .map(str::to_owned);
+            let error = ApiError::new(
+                status.as_u16(),
+                status.canonical_reason(),
+                request_id,
+                &body,
+            );
+            return Err(Error::from_response(error, retry_after));
         }
     }
 
-    /// Exponential backoff with jitter: `base * 2^attempt`, scaled by a random factor in
-    /// [0.5, 1.0) and capped at the maximum retry delay.
+    async fn wait(&self, attempt: u32) {
+        tokio::time::sleep(self.backoff(attempt)).await;
+    }
+
+    /// Exponential backoff with full jitter: a random delay in
+    /// `[0, min(max_retry_delay, retry_base_delay * 2^attempt))`.
     fn backoff(&self, attempt: u32) -> Duration {
-        let base = self
+        let ceiling = self
             .inner
             .retry_base_delay
-            .saturating_mul(1u32 << attempt.min(16));
-        let capped = base.min(self.inner.max_retry_delay);
-        capped.mul_f64(0.5 + jitter() / 2.0)
+            .saturating_mul(1u32 << attempt.min(16))
+            .min(self.inner.max_retry_delay);
+        ceiling.mul_f64(jitter())
     }
+}
+
+fn is_side_effect(operation_id: &str) -> bool {
+    SIDE_EFFECT_OPERATIONS.contains(&operation_id)
+}
+
+fn is_transient(error: &reqwest::Error) -> bool {
+    error.is_timeout() || error.is_connect() || error.is_request() || error.is_body()
+}
+
+/// The operation a raw [`Client::request`] call targets, so the side-effect rule applies to it.
+fn operation_for(method: &Method, path: &str) -> Option<&'static str> {
+    let path = path.split('?').next().unwrap_or_default();
+    let segments: Vec<&str> = path.trim_matches('/').split('/').collect();
+    OPERATIONS
+        .iter()
+        .find(|op| {
+            let template: Vec<&str> = op.path.trim_matches('/').split('/').collect();
+            op.method.eq_ignore_ascii_case(method.as_str())
+                && template.len() == segments.len()
+                && template.iter().zip(&segments).all(|(t, s)| {
+                    (t.starts_with('{') && t.ends_with('}') && !s.is_empty()) || t == s
+                })
+        })
+        .map(|op| op.operation_id)
 }
 
 fn jitter() -> f64 {
@@ -293,13 +354,28 @@ fn jitter() -> f64 {
     (hasher.finish() >> 11) as f64 / (1u64 << 53) as f64
 }
 
-fn retry_after(headers: &HeaderMap) -> Option<Duration> {
+/// How long the server asked to wait: the `Retry-After` header (seconds or an HTTP date), else
+/// `retry_after_ms` in the JSON error body.
+fn retry_after(headers: &HeaderMap, body: &[u8]) -> Option<Duration> {
+    retry_after_header(headers).or_else(|| retry_after_ms(body))
+}
+
+fn retry_after_header(headers: &HeaderMap) -> Option<Duration> {
     let value = headers.get(header::RETRY_AFTER)?.to_str().ok()?.trim();
     if let Ok(seconds) = value.parse::<f64>() {
         return (seconds.is_finite() && seconds >= 0.0).then(|| Duration::from_secs_f64(seconds));
     }
     let at = httpdate::parse_http_date(value).ok()?;
     Some(at.duration_since(SystemTime::now()).unwrap_or_default())
+}
+
+fn retry_after_ms(body: &[u8]) -> Option<Duration> {
+    let value: serde_json::Value = serde_json::from_slice(body).ok()?;
+    let ms = value
+        .get("retry_after_ms")
+        .or_else(|| value.get("detail").and_then(|d| d.get("retry_after_ms")))?;
+    let ms = ms.as_f64()?;
+    (ms.is_finite() && ms >= 0.0).then(|| Duration::from_secs_f64(ms / 1000.0))
 }
 
 fn decode<T: DeserializeOwned>(body: &[u8]) -> Result<T> {
@@ -354,6 +430,7 @@ pub struct ClientBuilder {
     max_retries: u32,
     retry_base_delay: Duration,
     max_retry_delay: Duration,
+    max_retry_after: Duration,
     headers: Vec<(String, String)>,
     user_agent: Option<String>,
     http_client: Option<reqwest::Client>,
@@ -367,8 +444,9 @@ impl Default for ClientBuilder {
             timeout: DEFAULT_TIMEOUT,
             connect_timeout: Some(Duration::from_secs(10)),
             max_retries: DEFAULT_MAX_RETRIES,
-            retry_base_delay: Duration::from_millis(500),
-            max_retry_delay: Duration::from_secs(60),
+            retry_base_delay: DEFAULT_RETRY_BASE_DELAY,
+            max_retry_delay: DEFAULT_MAX_RETRY_DELAY,
+            max_retry_after: DEFAULT_MAX_RETRY_AFTER,
             headers: Vec::new(),
             user_agent: None,
             http_client: None,
@@ -404,26 +482,40 @@ impl ClientBuilder {
 
     /// How many times a failed request is retried (default [`DEFAULT_MAX_RETRIES`]; 0 disables).
     ///
-    /// 429 responses are always retried. Connection errors, timeouts and 408/500/502/503/504
-    /// responses are retried for operations that are safe to replay: every read-only
-    /// computation, and the others (chat, AI generation) when an idempotency key is set with
-    /// [`RequestOptions::idempotency_key`]. A `Retry-After` header is honoured; otherwise the
-    /// delay grows exponentially with jitter.
+    /// * 429 is retried for every operation (the request was rejected before it ran).
+    /// * 408, 500, 502, 503, 504, connection errors and timeouts are retried for every operation
+    ///   except those in [`SIDE_EFFECT_OPERATIONS`](crate::SIDE_EFFECT_OPERATIONS), which are
+    ///   retried only with [`RequestOptions::idempotency_key`] or
+    ///   [`RequestOptions::retry_side_effects`].
+    /// * Other 4xx responses are never retried.
+    ///
+    /// The wait is the server's `Retry-After` (seconds or HTTP date) or `retry_after_ms`, else
+    /// exponential backoff with full jitter (see [`Self::retry_base_delay`]). A requested wait
+    /// longer than [`Self::max_retry_after`] is not waited for: the error is returned with its
+    /// `retry_after`.
     pub fn max_retries(mut self, max_retries: u32) -> Self {
         self.max_retries = max_retries;
         self
     }
 
-    /// The first backoff delay, doubled on each retry (default 500 ms).
+    /// The first backoff delay, doubled on each retry (default
+    /// [`DEFAULT_RETRY_BASE_DELAY`], 500 ms). Each wait is a random duration up to that value.
     pub fn retry_base_delay(mut self, delay: Duration) -> Self {
         self.retry_base_delay = delay;
         self
     }
 
-    /// The longest the client waits between attempts (default 60 s). A `Retry-After` longer
-    /// than this is not waited for: the error is returned with its `retry_after` instead.
+    /// The cap on the exponential backoff delay (default [`DEFAULT_MAX_RETRY_DELAY`], 8 s).
     pub fn max_retry_delay(mut self, delay: Duration) -> Self {
         self.max_retry_delay = delay;
+        self
+    }
+
+    /// The longest `Retry-After` the client waits for (default [`DEFAULT_MAX_RETRY_AFTER`],
+    /// 30 s). A longer one is returned at once as [`Error::RateLimit`] (or the status's error)
+    /// carrying the requested `retry_after`.
+    pub fn max_retry_after(mut self, delay: Duration) -> Self {
+        self.max_retry_after = delay;
         self
     }
 
@@ -506,6 +598,7 @@ impl ClientBuilder {
                 max_retries: self.max_retries,
                 retry_base_delay: self.retry_base_delay,
                 max_retry_delay: self.max_retry_delay,
+                max_retry_after: self.max_retry_after,
             }),
             options: RequestOptions::default(),
         })
@@ -520,9 +613,13 @@ pub struct RequestOptions {
     pub timeout: Option<Duration>,
     /// Overrides the client's retry count.
     pub max_retries: Option<u32>,
-    /// Sent as `Idempotency-Key`; makes every operation safe to retry and lets the API
-    /// deduplicate chat and generation requests.
+    /// Sent as `Idempotency-Key`; makes the operations in
+    /// [`SIDE_EFFECT_OPERATIONS`](crate::SIDE_EFFECT_OPERATIONS) safe to retry and lets the API
+    /// deduplicate them.
     pub idempotency_key: Option<String>,
+    /// `Some(true)` retries operations with side effects on server errors, timeouts and network
+    /// failures even without an idempotency key (they may then run twice).
+    pub retry_side_effects: Option<bool>,
     /// Extra headers.
     pub headers: Vec<(String, String)>,
 }
@@ -551,6 +648,14 @@ impl RequestOptions {
         self
     }
 
+    /// Retry operations with side effects ([`SIDE_EFFECT_OPERATIONS`](crate::SIDE_EFFECT_OPERATIONS))
+    /// on server errors, timeouts and network failures without an idempotency key. They may
+    /// then run more than once.
+    pub fn retry_side_effects(mut self, retry: bool) -> Self {
+        self.retry_side_effects = Some(retry);
+        self
+    }
+
     /// Add a header.
     pub fn header(mut self, name: impl Into<String>, value: impl Into<String>) -> Self {
         self.headers.push((name.into(), value.into()));
@@ -561,6 +666,7 @@ impl RequestOptions {
         self.timeout = other.timeout.or(self.timeout);
         self.max_retries = other.max_retries.or(self.max_retries);
         self.idempotency_key = other.idempotency_key.or(self.idempotency_key);
+        self.retry_side_effects = other.retry_side_effects.or(self.retry_side_effects);
         self.headers.extend(other.headers);
         self
     }
@@ -576,7 +682,7 @@ pub(crate) struct RequestSpec {
     query: Vec<(String, String)>,
     body: Option<Bytes>,
     accept: Option<&'static str>,
-    replay_safe: bool,
+    operation_id: Option<&'static str>,
 }
 
 #[allow(dead_code)]
@@ -588,7 +694,19 @@ impl RequestSpec {
             query: Vec::new(),
             body: None,
             accept: None,
-            replay_safe: true,
+            operation_id: None,
+        }
+    }
+
+    /// A request for a known operation (used by the generated resource methods).
+    pub(crate) fn operation(
+        operation_id: &'static str,
+        method: Method,
+        path: impl Into<String>,
+    ) -> Self {
+        RequestSpec {
+            operation_id: Some(operation_id),
+            ..RequestSpec::new(method, path)
         }
     }
 
@@ -626,11 +744,6 @@ impl RequestSpec {
 
     pub(crate) fn accept(mut self, accept: &'static str) -> Self {
         self.accept = Some(accept);
-        self
-    }
-
-    pub(crate) fn not_replay_safe(mut self) -> Self {
-        self.replay_safe = false;
         self
     }
 }
@@ -672,14 +785,65 @@ mod tests {
     fn parses_retry_after_seconds_and_dates() {
         let mut headers = HeaderMap::new();
         headers.insert(header::RETRY_AFTER, HeaderValue::from_static("2"));
-        assert_eq!(retry_after(&headers), Some(Duration::from_secs(2)));
+        assert_eq!(retry_after(&headers, b""), Some(Duration::from_secs(2)));
         headers.insert(
             header::RETRY_AFTER,
             HeaderValue::from_static("Wed, 21 Oct 2015 07:28:00 GMT"),
         );
-        assert_eq!(retry_after(&headers), Some(Duration::ZERO));
+        assert_eq!(retry_after(&headers, b""), Some(Duration::ZERO));
         headers.insert(header::RETRY_AFTER, HeaderValue::from_static("soon"));
-        assert_eq!(retry_after(&headers), None);
+        assert_eq!(retry_after(&headers, b""), None);
+    }
+
+    #[test]
+    fn reads_retry_after_ms_from_the_error_body() {
+        let headers = HeaderMap::new();
+        let body = br#"{"error": "rate_limited", "retry_after_ms": 1500}"#;
+        assert_eq!(
+            retry_after(&headers, body),
+            Some(Duration::from_millis(1500))
+        );
+        assert_eq!(retry_after(&headers, b"not json"), None);
+        let mut headers = HeaderMap::new();
+        headers.insert(header::RETRY_AFTER, HeaderValue::from_static("4"));
+        assert_eq!(retry_after(&headers, body), Some(Duration::from_secs(4)));
+    }
+
+    #[test]
+    fn backoff_is_full_jitter_capped_at_eight_seconds() {
+        let client = Client::new("k").unwrap();
+        for attempt in 0..20 {
+            let ceiling = DEFAULT_RETRY_BASE_DELAY
+                .saturating_mul(1 << attempt.min(16))
+                .min(DEFAULT_MAX_RETRY_DELAY);
+            let delay = client.backoff(attempt);
+            assert!(delay < ceiling || ceiling.is_zero(), "{attempt}: {delay:?}");
+        }
+        assert_eq!(DEFAULT_MAX_RETRY_DELAY, Duration::from_secs(8));
+        assert_eq!(DEFAULT_MAX_RETRY_AFTER, Duration::from_secs(30));
+    }
+
+    #[test]
+    fn raw_requests_resolve_their_operation() {
+        for op in OPERATIONS {
+            let path: Vec<String> = op
+                .path
+                .split('/')
+                .map(|s| {
+                    if s.starts_with('{') {
+                        "x".into()
+                    } else {
+                        s.into()
+                    }
+                })
+                .collect();
+            let method = Method::from_bytes(op.method.as_bytes()).unwrap();
+            assert_eq!(
+                operation_for(&method, &path.join("/")),
+                Some(op.operation_id)
+            );
+        }
+        assert_eq!(operation_for(&Method::POST, "/api/v9/new/thing"), None);
     }
 
     #[test]

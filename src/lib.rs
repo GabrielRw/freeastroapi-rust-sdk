@@ -42,8 +42,13 @@
 //!   [`Error::NotFound`], [`Error::Validation`], [`Error::Api`], [`Error::Http`] and
 //!   [`Error::Decode`].
 //!
-//! Failed requests are retried with exponential backoff (honouring `Retry-After`) on 429 and
-//! on transient failures; see [`ClientBuilder::max_retries`].
+//! Failed requests are retried (twice by default) with exponential backoff and full jitter,
+//! honouring `Retry-After`: 429 for every operation, 408/5xx, timeouts and network errors for
+//! every operation except [`SIDE_EFFECT_OPERATIONS`] without an idempotency key; see
+//! [`ClientBuilder::max_retries`].
+//!
+//! Response types decode leniently: a missing field, a `null` in a non-null field, an unknown
+//! field or an unknown enum value (kept as `Other(String)`) never fails decoding.
 //!
 //! # Features
 //!
@@ -54,16 +59,18 @@
 
 mod body;
 mod client;
+mod de;
 mod error;
 mod generated;
 
 pub use body::{Binary, Content};
 pub use client::{
-    API_KEY_ENV, Client, ClientBuilder, DEFAULT_BASE_URL, DEFAULT_MAX_RETRIES, DEFAULT_TIMEOUT,
+    API_KEY_ENV, Client, ClientBuilder, DEFAULT_BASE_URL, DEFAULT_MAX_RETRIES,
+    DEFAULT_MAX_RETRY_AFTER, DEFAULT_MAX_RETRY_DELAY, DEFAULT_RETRY_BASE_DELAY, DEFAULT_TIMEOUT,
     RequestOptions,
 };
 pub use error::{ApiError, Error, Result};
-pub use generated::operations::OPERATIONS;
+pub use generated::operations::{OPERATIONS, SIDE_EFFECT_OPERATIONS};
 pub use generated::{params, resources, types};
 
 /// Re-export of the HTTP client crate, for [`ClientBuilder::http_client`] and

@@ -90,7 +90,7 @@ async fn body_call_sends_json_and_omits_unset_fields() {
         .and(body_json(json!({
             "year": 2026, "month": 1, "day": 14, "hour": 6, "minute": 0, "city": "Delhi"
         })))
-        .respond_with(json_response(200, r#"{"anything": "goes"}"#))
+        .respond_with(json_response(200, r#"{"date": 20260114}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -103,7 +103,8 @@ async fn body_call_sends_json_and_omits_unset_fields() {
         city: Some("Delhi".into()),
         ..Default::default()
     };
-    // The mocked body is not a valid panchang, so decoding fails after the request matched.
+    // Decoding is lenient about missing fields, but a number where a string belongs still fails
+    // after the request matched.
     let error = client.vedic().panchang(&body).await.unwrap_err();
     assert!(matches!(error, Error::Decode { .. }), "{error:?}");
 }
@@ -245,7 +246,7 @@ async fn retries_429_honouring_retry_after() {
         .sun(&types::NatalChartRequest::default())
         .await
         .unwrap();
-    assert_eq!(sign.sign_id, "gemini");
+    assert_eq!(sign.sign_id, types::SignId::Gemini);
 }
 
 #[tokio::test]
@@ -286,53 +287,185 @@ async fn does_not_wait_for_a_retry_after_beyond_the_cap() {
 }
 
 #[tokio::test]
-async fn retries_server_errors_for_replay_safe_operations() {
+async fn does_not_wait_for_a_retry_after_ms_beyond_thirty_seconds() {
     let server = MockServer::start().await;
     Mock::given(method("POST"))
+        .respond_with(json_response(
+            429,
+            r#"{"error": "rate_limited", "retry_after_ms": 31000}"#,
+        ))
+        .expect(1)
+        .mount(&server)
+        .await;
+    let error = client_for(&server, 2)
+        .ephemeris()
+        .calculate(&types::EphemerisRequest::default())
+        .await
+        .unwrap_err();
+    match error {
+        Error::RateLimit { retry_after, .. } => {
+            assert_eq!(retry_after, Some(Duration::from_secs(31)))
+        }
+        other => panic!("expected RateLimit, got {other:?}"),
+    }
+}
+
+#[tokio::test]
+async fn retries_429_on_a_side_effect_post_and_honours_retry_after_ms() {
+    let server = MockServer::start().await;
+    Mock::given(method("POST"))
+        .and(path("/api/v2/vedic/chat"))
+        .respond_with(json_response(
+            429,
+            r#"{"error": "rate_limited", "retry_after_ms": 1}"#,
+        ))
+        .up_to_n_times(1)
+        .expect(1)
+        .mount(&server)
+        .await;
+    Mock::given(method("POST"))
+        .and(path("/api/v2/vedic/chat"))
+        .respond_with(json_response(200, "{}"))
+        .expect(1)
+        .mount(&server)
+        .await;
+    client_for(&server, 2)
+        .vedic()
+        .chat(&types::VedicChatRequest::default())
+        .await
+        .unwrap();
+}
+
+#[tokio::test]
+async fn retries_503_on_a_calculation_post() {
+    let server = MockServer::start().await;
+    Mock::given(method("POST"))
+        .and(path("/api/v1/ephemeris/calculate"))
         .respond_with(json_response(503, "{}"))
         .up_to_n_times(1)
         .expect(1)
         .mount(&server)
         .await;
     Mock::given(method("POST"))
+        .and(path("/api/v1/ephemeris/calculate"))
         .respond_with(json_response(200, "{}"))
         .expect(1)
         .mount(&server)
         .await;
-    let result = client_for(&server, 1)
+    client_for(&server, 1)
         .ephemeris()
         .calculate(&types::EphemerisRequest::default())
         .await
         .unwrap();
-    assert_eq!(result, json!({}));
 }
 
 #[tokio::test]
-async fn chat_is_not_retried_on_server_errors_without_an_idempotency_key() {
+async fn does_not_retry_other_client_errors() {
     let server = MockServer::start().await;
     Mock::given(method("POST"))
-        .and(path("/api/v2/vedic/chat"))
-        .respond_with(json_response(500, "{}"))
+        .respond_with(json_response(400, r#"{"detail": "bad"}"#))
         .expect(1)
         .mount(&server)
         .await;
     let error = client_for(&server, 3)
+        .ephemeris()
+        .calculate(&types::EphemerisRequest::default())
+        .await
+        .unwrap_err();
+    assert!(matches!(error, Error::Validation(_)));
+}
+
+#[tokio::test]
+async fn does_not_retry_a_server_error_asking_for_a_long_wait() {
+    let server = MockServer::start().await;
+    Mock::given(method("POST"))
+        .respond_with(json_response(503, "{}").insert_header("retry-after", "120"))
+        .expect(1)
+        .mount(&server)
+        .await;
+    let error = client_for(&server, 3)
+        .ephemeris()
+        .calculate(&types::EphemerisRequest::default())
+        .await
+        .unwrap_err();
+    assert_eq!(error.status(), Some(503));
+}
+
+#[test]
+fn side_effect_operations_match_the_shared_list() {
+    assert_eq!(
+        freeastroapi::SIDE_EFFECT_OPERATIONS,
+        [
+            "v1_natal_calculate",
+            "v1_ai_generate",
+            "v2_vedic_chat",
+            "v2_western_chat",
+            "v2_vedic_qa",
+            "v1_western_transits_timeline",
+            "v1_western_transits_insights",
+        ]
+    );
+    for id in freeastroapi::SIDE_EFFECT_OPERATIONS {
+        assert!(
+            freeastroapi::OPERATIONS
+                .iter()
+                .any(|op| op.operation_id == *id),
+            "{id} is not in the spec"
+        );
+    }
+}
+
+#[tokio::test]
+async fn side_effect_operations_are_not_retried_on_503_without_a_key() {
+    let server = MockServer::start().await;
+    Mock::given(method("POST"))
+        .respond_with(json_response(503, "{}"))
+        .expect(3)
+        .mount(&server)
+        .await;
+    let client = client_for(&server, 3);
+    let error = client
         .vedic()
         .chat(&types::VedicChatRequest::default())
         .await
         .unwrap_err();
-    assert_eq!(error.status(), Some(500));
+    assert_eq!(error.status(), Some(503));
+    let error = client
+        .natal()
+        .calculate(&types::NatalChartRequest::default(), None)
+        .await
+        .unwrap_err();
+    assert_eq!(error.status(), Some(503));
+    // The raw escape hatch applies the same rule to a known path.
+    let error = client
+        .request::<serde_json::Value>(
+            freeastroapi::reqwest::Method::POST,
+            "/api/v2/vedic/chat",
+            &[],
+            Some(&json!({})),
+        )
+        .await
+        .unwrap_err();
+    assert_eq!(error.status(), Some(503));
 }
 
 #[tokio::test]
-async fn idempotency_key_is_sent_and_enables_retries() {
+async fn idempotency_key_is_sent_and_enables_retries_on_503() {
     let server = MockServer::start().await;
     Mock::given(method("POST"))
         .and(path("/api/v2/vedic/chat"))
         .and(header("idempotency-key", "chat-1"))
         .and(header("x-trace", "abc"))
-        .respond_with(json_response(500, "{}"))
-        .expect(2)
+        .respond_with(json_response(503, "{}"))
+        .up_to_n_times(1)
+        .expect(1)
+        .mount(&server)
+        .await;
+    Mock::given(method("POST"))
+        .and(path("/api/v2/vedic/chat"))
+        .and(header("idempotency-key", "chat-1"))
+        .respond_with(json_response(200, "{}"))
+        .expect(1)
         .mount(&server)
         .await;
     let client = client_for(&server, 1).with_options(
@@ -340,12 +473,60 @@ async fn idempotency_key_is_sent_and_enables_retries() {
             .idempotency_key("chat-1")
             .header("x-trace", "abc"),
     );
-    let error = client
+    client
+        .vedic()
+        .chat(&types::VedicChatRequest::default())
+        .await
+        .unwrap();
+}
+
+#[tokio::test]
+async fn opting_in_retries_side_effect_operations_without_a_key() {
+    let server = MockServer::start().await;
+    Mock::given(method("POST"))
+        .and(path("/api/v2/vedic/chat"))
+        .respond_with(json_response(503, "{}"))
+        .expect(3)
+        .mount(&server)
+        .await;
+    let error = client_for(&server, 2)
+        .with_options(RequestOptions::new().retry_side_effects(true))
         .vedic()
         .chat(&types::VedicChatRequest::default())
         .await
         .unwrap_err();
     assert!(matches!(error, Error::Api(_)));
+    let request = &server.received_requests().await.unwrap()[0];
+    assert!(!request.headers.contains_key("idempotency-key"));
+}
+
+#[tokio::test]
+async fn lenient_decoding_tolerates_schema_drift() {
+    let (server, client) = setup().await;
+    // `count` (required) is missing, `name` (required, non-null) is null, there is an unknown
+    // field, and `phase.name` carries a value the enum does not know.
+    Mock::given(method("GET"))
+        .and(path("/api/v2/geo/search"))
+        .respond_with(json_response(
+            200,
+            r#"{"results": [{"name": null, "country": "FR", "lat": 48.85, "lng": 2.35, "timezone": "Europe/Paris", "brand_new": {"x": 1}}], "added_later": true}"#,
+        ))
+        .mount(&server)
+        .await;
+    let cities = client.geo().search(&paris()).await.unwrap();
+    assert_eq!(cities.count, 0);
+    assert_eq!(cities.results[0].name, "");
+    assert_eq!(cities.results[0].country, "FR");
+
+    let moon: types::MoonPhaseResponse = serde_json::from_value(json!({
+        "phase": {"name": "Super Blue Blood Moon", "illumination": null},
+        "unknown": [1, 2, 3]
+    }))
+    .unwrap();
+    assert_eq!(
+        moon.phase.name,
+        types::Name::Other("Super Blue Blood Moon".into())
+    );
 }
 
 #[tokio::test]
@@ -413,4 +594,37 @@ fn operations_table_lists_unique_accessors() {
             op.operation_id
         );
     }
+}
+
+#[test]
+fn lenient_unions_still_pick_the_matching_variant() {
+    // Required keys decide between two lenient object variants.
+    let table: types::WesternProgressionsQuaternaryResponse = serde_json::from_value(json!({
+        "meta": {}, "input": {}, "progression_basis": {}, "tables": {}
+    }))
+    .unwrap();
+    assert!(matches!(
+        table,
+        types::WesternProgressionsQuaternaryResponse::ProgressionTableResponse(_)
+    ));
+    let unavailable: types::NatalCalculateResponseInterpretation =
+        serde_json::from_value(json!({"error": "interpretation_unavailable"})).unwrap();
+    assert!(matches!(
+        unavailable,
+        types::NatalCalculateResponseInterpretation::InterpretationUnavailable(_)
+    ));
+    // `const` discriminators decide even when required fields are missing.
+    let kabbalah: types::NumerologyProfileResponseData =
+        serde_json::from_value(json!({"kind": "kabbalah"})).unwrap();
+    assert!(matches!(
+        kabbalah,
+        types::NumerologyProfileResponseData::KabbalahData(_)
+    ));
+    // An unknown discriminator still decodes (into the first variant, with `Other`).
+    let future: types::NumerologyProfileResponseData =
+        serde_json::from_value(json!({"kind": "vedic_new", "extra": 1})).unwrap();
+    assert!(matches!(
+        future,
+        types::NumerologyProfileResponseData::PythagoreanData(_)
+    ));
 }

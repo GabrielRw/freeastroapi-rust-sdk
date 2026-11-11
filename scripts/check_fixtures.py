@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-HAND_WRITTEN = ["lib.rs", "client.rs", "error.rs", "body.rs"]
+HAND_WRITTEN = ["lib.rs", "client.rs", "de.rs", "error.rs", "body.rs"]
 
 
 def run(command: list[str], cwd: Path = ROOT) -> None:

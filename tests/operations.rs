@@ -18,7 +18,7 @@ async fn v1_ai_generate() {
     Mock::given(method("POST"))
         .and(path("/api/v1/ai/generate"))
         .and(loose_json(r#"{"city": "x", "day": 1, "hour": 1, "minute": 1, "month": 1, "name": "x", "year": 1}"#))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"index": {"aspects": [], "placements": []}, "metadata": {"found_count": 1, "key_count": 1, "missing_keys": []}, "sections": {"core_self": [], "karmic_healing": [], "love_relating": [], "mind": [], "social_collective": [], "work_path": []}}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -36,7 +36,7 @@ async fn v1_chinese_bazi() {
     Mock::given(method("POST"))
         .and(path("/api/v1/chinese/bazi"))
         .and(loose_json(r#"{"day": 1, "month": 1, "year": 1}"#))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"day_master": {"info": {"element": "x", "name": "x", "polarity": "x"}, "stem": "x"}, "elements": {"dominant": "x", "percentages": {"Earth": 1, "Fire": 1, "Metal": 1, "Water": 1, "Wood": 1}, "points": {"Earth": 1, "Fire": 1, "Metal": 1, "Water": 1, "Wood": 1}, "scoring_model": "x", "weights": {"branch": 1, "hidden_stem": 1, "stem": 1}}, "interpretation_ruleset": "x", "luck_cycle": {"is_forward": false, "pillars": [], "start_age_years": 1}, "metadata": {"engine_version": "x", "life_stage_method": "x", "ruleset": "x", "solar_term_source": "x"}, "pillars": [], "summary": {"lunar_date": "x", "zodiac": "x"}}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -71,7 +71,7 @@ async fn v1_chinese_bazi_flow() {
     Mock::given(method("POST"))
         .and(path("/api/v1/chinese/bazi/flow"))
         .and(loose_json(r#"{"day": 1, "month": 1, "year": 1}"#))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"years": []}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -91,7 +91,7 @@ async fn v1_chinese_bazi_health() {
     Mock::given(method("POST"))
         .and(path("/api/v1/chinese/bazi/health"))
         .and(loose_json(r#"{"day": 1, "month": 1, "year": 1}"#))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"bazi_context": {"balance_strategy": {"priority_elements": [], "reason": []}, "day_master": "x", "day_master_element": "x", "day_master_strength": "x", "favorable_elements": [], "rationale": [], "unfavorable_elements": []}, "constitution": {"moisture": "x", "moisture_components": {"Earth": 1, "Fire": 1, "Metal": 1, "Water": 1, "Wood": 1}, "moisture_confidence": 1, "moisture_scale": "x", "moisture_score": 1, "temperature": "x", "temperature_components": {"Earth": 1, "Fire": 1, "Metal": 1, "Water": 1, "Wood": 1}, "temperature_confidence": 1, "temperature_scale": "x", "temperature_score": 1, "yang_ratio": 1, "yin_yang_skew": "x"}, "data_quality": {"hidden_stems_weighting": "x", "rooting_model": "x", "transformations": "x"}, "disclaimer": "x", "element_balance": {"dominant_elements": [], "effective_distribution": {"Earth": 1, "Fire": 1, "Metal": 1, "Water": 1, "Wood": 1}, "effective_method": "x", "effective_pre_normalized": {"Earth": 1, "Fire": 1, "Metal": 1, "Water": 1, "Wood": 1}, "raw_absolute": {"Earth": 1, "Fire": 1, "Metal": 1, "Water": 1, "Wood": 1}, "raw_distribution": {"Earth": 1, "Fire": 1, "Metal": 1, "Water": 1, "Wood": 1}, "raw_total": 1, "rooting_raw": {"Earth": 1, "Fire": 1, "Metal": 1, "Water": 1, "Wood": 1}, "rooting_scores": {"Earth": 1, "Fire": 1, "Metal": 1, "Water": 1, "Wood": 1}, "seasonal_adjustments": {"month_branch": "x", "multipliers": {"Earth": 1, "Fire": 1, "Metal": 1, "Water": 1, "Wood": 1}}, "weak_elements": []}, "instability_markers": {"instability_index": 1, "level": "x", "markers": {"clashes": [], "harms": [], "punishments": [], "self_punishments": []}, "total_clashes": 1, "total_harms": 1, "total_punishments": 1}, "metadata": {"birth_year": 1, "day_master": "x", "framework": "x", "month_branch": "x", "version": "x"}, "stress_patterns": {"dm_strength_context": "x", "overall_stress_index": 1, "patterns": {"depletion_risk": {"description": "x", "drivers": [], "level": "x", "score": 1}, "overwork_risk": {"description": "x", "drivers": [], "level": "x", "score": 1}, "pressure_load": {"description": "x", "drivers": [], "level": "x", "score": 1}, "recovery_capacity": {"description": "x", "drivers": [], "level": "x", "score": 1}}, "ten_god_distribution": {"7 Killings": 1, "Direct Officer": 1, "Direct Resource": 1, "Direct Wealth": 1, "Eating God": 1, "Friend": 1, "Hurting Officer": 1, "Indirect Resource": 1, "Indirect Wealth": 1, "Rob Wealth": 1}}, "susceptibility_themes": [], "tcm_correspondences": []}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -112,7 +112,7 @@ async fn v1_chinese_bazi_lifespan() {
     Mock::given(method("POST"))
         .and(path("/api/v1/chinese/bazi/lifespan"))
         .and(loose_json(r#"{"day": 1, "month": 1, "year": 1}"#))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"curve": [], "metadata": {"algorithm": "x", "cultivation_level": 1, "max_age": 1, "sex": "x"}}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -133,7 +133,7 @@ async fn v1_chinese_bazi_synastry() {
     Mock::given(method("POST"))
         .and(path("/api/v1/chinese/bazi/synastry"))
         .and(loose_json(r#"{"person_a": {"day": 1, "month": 1, "year": 1}, "person_b": {"day": 1, "month": 1, "year": 1}}"#))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"conflict_scan": {"clashes": 1, "destructions": 1, "harms": 1, "punishments": 1}, "conflict_summary": "x", "day_master_analysis": {"description": "x", "dm_a": "x", "dm_b": "x", "dynamic": "x", "relation": "x", "score": 1}, "element_analysis": {"a_needs": "x", "b_needs": "x", "details": [], "score": 1}, "hidden_interactions": {"connections": [], "count": 1}, "overall_compatibility": "x", "pillar_interactions": [], "score": 1, "score_breakdown": {"day_master": 1, "elements": 1, "hidden_bonus": 1, "pillars": 1, "spouse_palace": 1}, "spouse_palace_analysis": {"branch_a": "x", "branch_b": "x", "description": "x", "interaction": "x", "score": 1, "type": "x"}}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -153,7 +153,7 @@ async fn v1_chinese_bazi_time_correction() {
     Mock::given(method("POST"))
         .and(path("/api/v1/chinese/bazi/time-correction"))
         .and(loose_json(r#"{"day": 1, "month": 1, "year": 1}"#))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"civil_time": "x", "dst_offset_hours": 1, "equation_of_time_minutes": 1, "lmt": "x", "longitude_correction_minutes": 1, "modalities": {"civil": "x", "true_solar": "x", "true_solar_absolute": "x"}, "resolved_timezone": "x", "standard_meridian": 1, "true_solar_absolute": "x", "true_solar_relative": "x"}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -192,7 +192,7 @@ async fn v1_chinese_today() {
     let (server, client) = setup().await;
     Mock::given(method("GET"))
         .and(path("/api/v1/chinese/today"))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"pillars": [], "timestamp": "x"}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -212,7 +212,7 @@ async fn v1_ephemeris() {
     Mock::given(method("GET"))
         .and(path("/api/v1/ephemeris"))
         .and(query_param("start", "x"))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"meta": {"bodies": [], "format": "x", "rows": 1, "start": "x", "timezone": "x", "zodiac_type": "x"}}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -232,7 +232,7 @@ async fn v1_ephemeris_calculate() {
     Mock::given(method("POST"))
         .and(path("/api/v1/ephemeris/calculate"))
         .and(loose_json(r#"{"start": "x"}"#))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"meta": {"bodies": [], "format": "x", "rows": 1, "start": "x", "timezone": "x", "zodiac_type": "x"}}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -270,7 +270,7 @@ async fn v1_horoscope_daily_bulk() {
     let (server, client) = setup().await;
     Mock::given(method("GET"))
         .and(path("/api/v1/horoscope/daily/bulk"))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"data": {}, "meta": {"cache": {"hit": false, "ttl_seconds": 1}, "engine": {"name": "x", "version": "x"}, "generated_at": "x", "request_id": "x", "settings": {"date_resolved": "x", "locale": "x", "orb_policy": "x", "timezone": "x"}}}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -290,10 +290,8 @@ async fn v1_horoscope_daily_personal() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v1/horoscope/daily/personal"))
-        .and(loose_json(
-            r#"{"birth": {"city": "x", "day": 1, "month": 1, "year": 1}}"#,
-        ))
-        .respond_with(json_response(200, r#"{}"#))
+        .and(loose_json(r#"{"birth": {"city": "x", "day": 1, "month": 1, "year": 1}}"#))
+        .respond_with(json_response(200, r#"{"data": {"astro": {"highlights": [], "moon_phase": {"key": "x", "label": "x"}, "moon_sign": {"key": "x", "label": "x"}}, "content": {"keywords": [], "supporting_insights": [], "text": "x", "theme": "x"}, "date": "x", "lucky": {"color": {"key": "x", "label": "x"}, "number": 1, "time_window": {"display": "x", "end": "x", "start": "x", "tz": "x"}}, "personal": {"confidence_score": 1, "focus_areas": [], "transits_top": []}, "score_factors": [], "scores": {"career": 1, "health": 1, "love": 1, "money": 1, "overall": 1}, "sign": "x", "sign_label": "x"}, "meta": {"cache": {"hit": false, "ttl_seconds": 1}, "engine": {"name": "x", "version": "x"}, "generated_at": "x", "request_id": "x", "settings": {"date_resolved": "x", "locale": "x", "orb_policy": "x", "timezone": "x"}}}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -315,7 +313,7 @@ async fn v1_horoscope_daily_sign() {
     Mock::given(method("GET"))
         .and(path("/api/v1/horoscope/daily/sign"))
         .and(query_param("sign", "x"))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"data": {"astro": {"highlights": [], "moon_phase": {"key": "x", "label": "x"}, "moon_sign": {"key": "x", "label": "x"}}, "content": {"keywords": [], "supporting_insights": [], "text": "x", "theme": "x"}, "date": "x", "lucky": {"color": {"key": "x", "label": "x"}, "number": 1, "time_window": {"display": "x", "end": "x", "start": "x", "tz": "x"}}, "score_factors": [], "scores": {"career": 1, "health": 1, "love": 1, "money": 1, "overall": 1}, "sign": "x", "sign_label": "x"}, "meta": {"cache": {"hit": false, "ttl_seconds": 1}, "engine": {"name": "x", "version": "x"}, "generated_at": "x", "request_id": "x", "settings": {"date_resolved": "x", "lang": "x", "locale": "x", "orb_policy": "x", "timezone": "x"}}}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -352,7 +350,7 @@ async fn v1_moon_phase() {
     let (server, client) = setup().await;
     Mock::given(method("GET"))
         .and(path("/api/v1/moon/phase"))
-        .respond_with(json_response(200, r#"{"next_phases": {}, "phase": {"age_days": 1, "distance_km": 1, "illumination": 1, "is_waxing": false, "name": "x", "phase_angle_deg": 1}, "timestamp": "x"}"#))
+        .respond_with(json_response(200, r#"{"next_phases": {"first_quarter": "2026-01-15T12:00:00Z", "full_moon": "2026-01-15T12:00:00Z", "last_quarter": "2026-01-15T12:00:00Z", "new_moon": "2026-01-15T12:00:00Z"}, "phase": {"age_days": 1, "distance_km": 1, "illumination": 1, "is_waxing": false, "name": "New Moon", "phase_angle_deg": 1}, "timestamp": "x"}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -399,7 +397,7 @@ async fn v1_natal_chart() {
         .and(loose_json(
             r#"{"city": "x", "day": 1, "month": 1, "year": 1}"#,
         ))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(raw_response(200, "image/png", b"\x89PNG\x0d\x0a\x1a\x0a"))
         .expect(1)
         .mount(&server)
         .await;
@@ -407,7 +405,7 @@ async fn v1_natal_chart() {
         serde_json::from_str(r#"{"city": "x", "day": 1, "month": 1, "year": 1}"#)
             .expect("sample request decodes");
     let result = client.natal().chart(&body).await.expect("call succeeds");
-    let _ = result;
+    assert_eq!(result.content_type.as_deref(), Some("image/png"));
 }
 
 #[tokio::test]
@@ -416,7 +414,7 @@ async fn v1_natal_chart_composite() {
     Mock::given(method("POST"))
         .and(path("/api/v1/natal/chart/composite"))
         .and(loose_json(r#"{"person_a": {"city": "x", "day": 1, "month": 1, "year": 1}, "person_b": {"city": "x", "day": 1, "month": 1, "year": 1}}"#))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(raw_response(200, "image/png", b"\x89PNG\x0d\x0a\x1a\x0a"))
         .expect(1)
         .mount(&server)
         .await;
@@ -427,7 +425,7 @@ async fn v1_natal_chart_composite() {
         .chart_composite(&body)
         .await
         .expect("call succeeds");
-    let _ = result;
+    assert_eq!(result.content_type.as_deref(), Some("image/png"));
 }
 
 #[tokio::test]
@@ -438,7 +436,7 @@ async fn v1_natal_chart_progressions() {
         .and(loose_json(
             r#"{"natal": {"city": "x", "day": 1, "month": 1, "year": 1}}"#,
         ))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(raw_response(200, "image/png", b"\x89PNG\x0d\x0a\x1a\x0a"))
         .expect(1)
         .mount(&server)
         .await;
@@ -450,7 +448,7 @@ async fn v1_natal_chart_progressions() {
         .chart_progressions(&body)
         .await
         .expect("call succeeds");
-    let _ = result;
+    assert_eq!(result.content_type.as_deref(), Some("image/png"));
 }
 
 #[tokio::test]
@@ -461,7 +459,7 @@ async fn v1_natal_chart_secondary_progressions() {
         .and(loose_json(
             r#"{"natal": {"city": "x", "day": 1, "month": 1, "year": 1}}"#,
         ))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(raw_response(200, "image/png", b"\x89PNG\x0d\x0a\x1a\x0a"))
         .expect(1)
         .mount(&server)
         .await;
@@ -473,7 +471,7 @@ async fn v1_natal_chart_secondary_progressions() {
         .chart_secondary_progressions(&body)
         .await
         .expect("call succeeds");
-    let _ = result;
+    assert_eq!(result.content_type.as_deref(), Some("image/png"));
 }
 
 #[tokio::test]
@@ -484,7 +482,7 @@ async fn v1_natal_chart_solar_return() {
         .and(loose_json(
             r#"{"natal": {"city": "x", "day": 1, "month": 1, "year": 1}, "solar_return_year": 1}"#,
         ))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(raw_response(200, "image/png", b"\x89PNG\x0d\x0a\x1a\x0a"))
         .expect(1)
         .mount(&server)
         .await;
@@ -497,7 +495,7 @@ async fn v1_natal_chart_solar_return() {
         .chart_solar_return(&body)
         .await
         .expect("call succeeds");
-    let _ = result;
+    assert_eq!(result.content_type.as_deref(), Some("image/png"));
 }
 
 #[tokio::test]
@@ -506,7 +504,7 @@ async fn v1_natal_chart_synastry() {
     Mock::given(method("POST"))
         .and(path("/api/v1/natal/chart/synastry"))
         .and(loose_json(r#"{"person_a": {"city": "x", "day": 1, "month": 1, "year": 1}, "person_b": {"city": "x", "day": 1, "month": 1, "year": 1}}"#))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(raw_response(200, "image/png", b"\x89PNG\x0d\x0a\x1a\x0a"))
         .expect(1)
         .mount(&server)
         .await;
@@ -517,7 +515,7 @@ async fn v1_natal_chart_synastry() {
         .chart_synastry(&body)
         .await
         .expect("call succeeds");
-    let _ = result;
+    assert_eq!(result.content_type.as_deref(), Some("image/png"));
 }
 
 #[tokio::test]
@@ -528,7 +526,7 @@ async fn v1_natal_chart_transits() {
         .and(loose_json(
             r#"{"natal": {"city": "x", "day": 1, "month": 1, "year": 1}}"#,
         ))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(raw_response(200, "image/png", b"\x89PNG\x0d\x0a\x1a\x0a"))
         .expect(1)
         .mount(&server)
         .await;
@@ -540,7 +538,7 @@ async fn v1_natal_chart_transits() {
         .chart_transits(&body)
         .await
         .expect("call succeeds");
-    let _ = result;
+    assert_eq!(result.content_type.as_deref(), Some("image/png"));
 }
 
 #[tokio::test]
@@ -551,7 +549,7 @@ async fn v1_natal_experimental_solar_return() {
         .and(loose_json(
             r#"{"natal": {"city": "x", "day": 1, "month": 1, "year": 1}, "solar_return_year": 1}"#,
         ))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(raw_response(200, "image/png", b"\x89PNG\x0d\x0a\x1a\x0a"))
         .expect(1)
         .mount(&server)
         .await;
@@ -565,7 +563,7 @@ async fn v1_natal_experimental_solar_return() {
         .solar_return(&body)
         .await
         .expect("call succeeds");
-    let _ = result;
+    assert_eq!(result.content_type.as_deref(), Some("image/png"));
 }
 
 #[tokio::test]
@@ -576,7 +574,7 @@ async fn v1_natal_experimental_transits() {
         .and(loose_json(
             r#"{"natal": {"city": "x", "day": 1, "month": 1, "year": 1}}"#,
         ))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(raw_response(200, "image/png", b"\x89PNG\x0d\x0a\x1a\x0a"))
         .expect(1)
         .mount(&server)
         .await;
@@ -589,7 +587,7 @@ async fn v1_natal_experimental_transits() {
         .transits(&body)
         .await
         .expect("call succeeds");
-    let _ = result;
+    assert_eq!(result.content_type.as_deref(), Some("image/png"));
 }
 
 #[tokio::test]
@@ -597,7 +595,7 @@ async fn v1_natal_report_credits() {
     let (server, client) = setup().await;
     Mock::given(method("GET"))
         .and(path("/api/v1/natal/report-credits"))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"auto_recharge_enabled": false, "auto_recharge_threshold": 1, "report_credits_remaining": 1, "user_id": "x"}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -614,7 +612,7 @@ async fn v1_natal_report_job_id() {
     let (server, client) = setup().await;
     Mock::given(method("GET"))
         .and(path("/api/v1/natal/report/x"))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"job_id": "x", "status": "x"}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -711,7 +709,7 @@ async fn v1_space_chart() {
     Mock::given(method("POST"))
         .and(path("/api/v1/space/chart"))
         .and(loose_json(r#"{}"#))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"engine": {"extension": "x", "name": "x"}, "house_system": "x", "houses": {"asc": {"lon": 1, "sign": "x", "sign_degree": 1}, "cusps": [], "mc": {"lon": 1, "sign": "x", "sign_degree": 1}, "obliquity": 1}, "instant": {"jd_tt": 1, "jd_ut": 1, "time_basis": "x", "utc": "x"}, "planets": [], "site": {"key": "x", "lat": 1, "lon": 1, "name": "x", "world": "x"}, "zodiac": "x"}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -727,7 +725,11 @@ async fn v1_space_chart_svg() {
     Mock::given(method("POST"))
         .and(path("/api/v1/space/chart/svg"))
         .and(loose_json(r#"{}"#))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(raw_response(
+            200,
+            "image/svg+xml",
+            b"<svg xmlns=\x22http://www.w3.org/2000/svg\x22/>",
+        ))
         .expect(1)
         .mount(&server)
         .await;
@@ -738,7 +740,7 @@ async fn v1_space_chart_svg() {
         .chart_svg(&body)
         .await
         .expect("call succeeds");
-    let _ = result;
+    assert!(!result.is_empty());
 }
 
 #[tokio::test]
@@ -746,10 +748,8 @@ async fn v1_transits_calculate() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v1/transits/calculate"))
-        .and(loose_json(
-            r#"{"current_city": "x", "natal": {"city": "x", "day": 1, "month": 1, "year": 1}}"#,
-        ))
-        .respond_with(json_response(200, r#"{}"#))
+        .and(loose_json(r#"{"current_city": "x", "natal": {"city": "x", "day": 1, "month": 1, "year": 1}}"#))
+        .respond_with(json_response(200, r#"{"aspects": [], "aspects_summary": {"applying": 1, "by_type": {"conjunction": 1, "opposition": 1, "sextile": 1, "square": 1, "trine": 1}, "exact": 1, "major": 1, "minor": 1, "separating": 1, "total": 1}, "interpretation": {"index": {"aspects": [], "placements": []}, "metadata": {"found_count": 1, "key_count": 1, "missing_keys": []}, "sections": {"core_self": [], "karmic_healing": [], "love_relating": [], "mind": [], "social_collective": [], "work_path": []}}, "mode": "x", "natal": {"house_system": "x", "julian_day": 1, "zodiac_type": "x"}, "natal_planets": [], "transit_date": "x", "transit_planets": []}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -775,7 +775,7 @@ async fn v1_vedic_batch() {
         .and(loose_json(
             r#"{"items": [{"endpoint": "chart", "payload": {}}]}"#,
         ))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"count": 1, "items": []}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -791,10 +791,8 @@ async fn v1_vedic_calculate() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v1/vedic/calculate"))
-        .and(loose_json(
-            r#"{"day": 1, "hour": 1, "minute": 1, "month": 1, "year": 1}"#,
-        ))
-        .respond_with(json_response(200, r#"{}"#))
+        .and(loose_json(r#"{"day": 1, "hour": 1, "minute": 1, "month": 1, "year": 1}"#))
+        .respond_with(json_response(200, r#"{"ascendant": {"degree": 1, "nakshatra": {"id": 1, "lord": "x", "name": "x", "pada": 1}, "sign": "x"}, "ayanamsha": "x", "house_system": "x", "houses": [], "node_type": "x", "planets": [], "sade_sati": {"active": false, "description": "x", "moon_sign": "x", "moon_sign_id": 1, "reference_date": "x", "saturn_absolute_degree": 1, "saturn_degree_in_sign": 1, "saturn_is_retrograde": false, "saturn_sign": "x", "saturn_sign_id": 1, "timezone": "x"}, "timezone_used": "x", "vimshottari_dasha": []}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -814,10 +812,8 @@ async fn v1_vedic_chart() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v1/vedic/chart"))
-        .and(loose_json(
-            r#"{"day": 1, "hour": 1, "minute": 1, "month": 1, "year": 1}"#,
-        ))
-        .respond_with(json_response(200, r#"{}"#))
+        .and(loose_json(r#"{"day": 1, "hour": 1, "minute": 1, "month": 1, "year": 1}"#))
+        .respond_with(json_response(200, r#"{"ascendant": {"degree": 1, "nakshatra": {"id": 1, "lord": "x", "name": "x", "pada": 1}, "sign": "x"}, "ayanamsha": "x", "houses": [], "planets": [], "timezone_used": "x"}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -834,7 +830,7 @@ async fn v1_vedic_compatibility() {
     Mock::given(method("POST"))
         .and(path("/api/v1/vedic/compatibility"))
         .and(loose_json(r#"{"person1_moon_nakshatra": 1, "person1_moon_sign": 1, "person2_moon_nakshatra": 1, "person2_moon_sign": 1}"#))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"max_score": 1, "percentage": 1, "recommendation": "x", "scores": {}, "total_score": 1}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -856,7 +852,10 @@ async fn v1_vedic_dasha() {
         .and(loose_json(
             r#"{"day": 1, "hour": 1, "minute": 1, "month": 1, "year": 1}"#,
         ))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(
+            200,
+            r#"{"moon_nakshatra": "x", "vimshottari_dasha": []}"#,
+        ))
         .expect(1)
         .mount(&server)
         .await;
@@ -936,7 +935,7 @@ async fn v1_vedic_match() {
     Mock::given(method("POST"))
         .and(path("/api/v1/vedic/match"))
         .and(loose_json(r#"{"p1": {"day": 1, "hour": 1, "minute": 1, "month": 1, "year": 1}, "p2": {"day": 1, "hour": 1, "minute": 1, "month": 1, "year": 1}}"#))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"max_score": 1, "p1_details": {"moon_nakshatra": "x", "moon_sign": "x"}, "p2_details": {"moon_nakshatra": "x", "moon_sign": "x"}, "percentage": 1, "recommendation": "x", "scores": {}, "total_score": 1}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -952,7 +951,7 @@ async fn v1_vedic_panchang() {
     Mock::given(method("POST"))
         .and(path("/api/v1/vedic/panchang"))
         .and(loose_json(r#"{"day": 1, "month": 1, "year": 1}"#))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"karana": {"name": "x", "number": 1}, "nakshatra": {"id": 1, "lord": "x", "name": "x", "pada": 1}, "rahu_kalam": {"end": "x", "start": "x"}, "tithi": {"name": "x", "number": 1, "paksha": "x"}, "weekday": "x", "yoga": {"name": "x", "number": 1}}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -972,10 +971,8 @@ async fn v1_vedic_strength() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v1/vedic/strength"))
-        .and(loose_json(
-            r#"{"day": 1, "hour": 1, "minute": 1, "month": 1, "year": 1}"#,
-        ))
-        .respond_with(json_response(200, r#"{}"#))
+        .and(loose_json(r#"{"day": 1, "hour": 1, "minute": 1, "month": 1, "year": 1}"#))
+        .respond_with(json_response(200, r#"{"ashtakavarga": {"bhinnashtakavarga": {"Jupiter": [], "Mars": [], "Mercury": [], "Moon": [], "Saturn": [], "Sun": [], "Venus": []}, "sarvashtakavarga": [], "total_points": 1}, "shadbala": {}}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -1019,7 +1016,7 @@ async fn v1_vedic_vargas() {
         .and(loose_json(
             r#"{"day": 1, "hour": 1, "minute": 1, "month": 1, "year": 1}"#,
         ))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"vargas": {}}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -1039,10 +1036,8 @@ async fn v1_vedic_yogas() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v1/vedic/yogas"))
-        .and(loose_json(
-            r#"{"day": 1, "hour": 1, "minute": 1, "month": 1, "year": 1}"#,
-        ))
-        .respond_with(json_response(200, r#"{}"#))
+        .and(loose_json(r#"{"day": 1, "hour": 1, "minute": 1, "month": 1, "year": 1}"#))
+        .respond_with(json_response(200, r#"{"sade_sati": {"active": false, "description": "x", "moon_sign": "x", "moon_sign_id": 1, "reference_date": "x", "saturn_absolute_degree": 1, "saturn_degree_in_sign": 1, "saturn_is_retrograde": false, "saturn_sign": "x", "saturn_sign_id": 1, "timezone": "x"}, "yogas": []}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -1058,10 +1053,8 @@ async fn v1_western_astrocartography_city_check() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v1/western/astrocartography/city-check"))
-        .and(loose_json(
-            r#"{"city": "xx", "natal": {"city": "x", "day": 1, "month": 1, "year": 1}}"#,
-        ))
-        .respond_with(json_response(200, r#"{}"#))
+        .and(loose_json(r#"{"city": "xx", "natal": {"city": "x", "day": 1, "month": 1, "year": 1}}"#))
+        .respond_with(json_response(200, r#"{"city": {"country": "x", "lat": 1, "lng": 1, "name": "x", "population": 1, "state": "x", "timezone": "x"}, "city_visual_explanation": {"explanation_mode": "x", "map_line_ids": [], "nearest_lines": [], "primary_lines": [], "primary_parans": [], "relevant_crossings": []}, "focus_scores": {"career": {"line_score": 1, "nearest_challenging_distance_km": 1, "nearest_challenging_line": {"angle": "x", "body": "x", "distance_km": 1}, "nearest_favorable_distance_km": 1, "nearest_favorable_line": {"angle": "x", "body": "x", "distance_km": 1}, "paran_score": 1, "relocation_score": 1, "score": 1, "summary": "x", "top_factors": [], "top_parans": []}, "health": {"line_score": 1, "nearest_challenging_distance_km": 1, "nearest_challenging_line": {"angle": "x", "body": "x", "distance_km": 1}, "nearest_favorable_distance_km": 1, "nearest_favorable_line": {"angle": "x", "body": "x", "distance_km": 1}, "paran_score": 1, "relocation_score": 1, "score": 1, "summary": "x", "top_factors": [], "top_parans": []}, "home": {"line_score": 1, "nearest_challenging_distance_km": 1, "nearest_challenging_line": {"angle": "x", "body": "x", "distance_km": 1}, "nearest_favorable_distance_km": 1, "nearest_favorable_line": {"angle": "x", "body": "x", "distance_km": 1}, "paran_score": 1, "relocation_score": 1, "score": 1, "summary": "x", "top_factors": [], "top_parans": []}, "romance": {"line_score": 1, "nearest_challenging_distance_km": 1, "nearest_challenging_line": {"angle": "x", "body": "x", "distance_km": 1}, "nearest_favorable_distance_km": 1, "nearest_favorable_line": {"angle": "x", "body": "x", "distance_km": 1}, "paran_score": 1, "relocation_score": 1, "score": 1, "summary": "x", "top_factors": [], "top_parans": []}, "spiritual": {"line_score": 1, "nearest_challenging_distance_km": 1, "nearest_challenging_line": {"angle": "x", "body": "x", "distance_km": 1}, "nearest_favorable_distance_km": 1, "nearest_favorable_line": {"angle": "x", "body": "x", "distance_km": 1}, "paran_score": 1, "relocation_score": 1, "score": 1, "summary": "x", "top_factors": [], "top_parans": []}}, "meta": {"angles": [], "bodies": [], "mode": "x", "timezone": "x"}, "overall_score": 1, "warnings": []}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -1083,10 +1076,8 @@ async fn v1_western_astrocartography_lines() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v1/western/astrocartography/lines"))
-        .and(loose_json(
-            r#"{"natal": {"city": "x", "day": 1, "month": 1, "year": 1}}"#,
-        ))
-        .respond_with(json_response(200, r#"{}"#))
+        .and(loose_json(r#"{"natal": {"city": "x", "day": 1, "month": 1, "year": 1}}"#))
+        .respond_with(json_response(200, r#"{"chart_families": [], "crossings": [], "lines": [], "meta": {"angles": [], "bodies": [], "chart_family_count": 1, "coordinate_order": "x", "coordinate_reference_system": "x", "crossing_count": 1, "geometry_format": "x", "line_sample_step_degrees": 1, "mode": "x", "sample_step_degrees": 1, "timezone": "x"}, "warnings": []}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -1107,10 +1098,8 @@ async fn v1_western_astrocartography_parans() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v1/western/astrocartography/parans"))
-        .and(loose_json(
-            r#"{"natal": {"city": "x", "day": 1, "month": 1, "year": 1}}"#,
-        ))
-        .respond_with(json_response(200, r#"{}"#))
+        .and(loose_json(r#"{"natal": {"city": "x", "day": 1, "month": 1, "year": 1}}"#))
+        .respond_with(json_response(200, r#"{"meta": {"bodies": [], "count": 1, "events": [], "mode": "x", "paran_orb_deg": 1, "paran_tail_deg": 1, "timezone": "x"}, "parans": [], "warnings": []}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -1131,10 +1120,8 @@ async fn v1_western_astrocartography_recommendations() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v1/western/astrocartography/recommendations"))
-        .and(loose_json(
-            r#"{"natal": {"city": "x", "day": 1, "month": 1, "year": 1}}"#,
-        ))
-        .respond_with(json_response(200, r#"{}"#))
+        .and(loose_json(r#"{"natal": {"city": "x", "day": 1, "month": 1, "year": 1}}"#))
+        .respond_with(json_response(200, r#"{"meta": {"angles": [], "bodies": [], "candidate_count": 1, "confidence": "x", "country_scope": "x", "focus": "x", "match_tier": "x", "mode": "x", "no_strong_matches": false, "scored_count": 1, "signal_strength": "x", "timezone": "x"}, "results": [], "warnings": []}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -1155,10 +1142,8 @@ async fn v1_western_astrocartography_relocation() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v1/western/astrocartography/relocation"))
-        .and(loose_json(
-            r#"{"city": "xx", "natal": {"city": "x", "day": 1, "month": 1, "year": 1}}"#,
-        ))
-        .respond_with(json_response(200, r#"{}"#))
+        .and(loose_json(r#"{"city": "xx", "natal": {"city": "x", "day": 1, "month": 1, "year": 1}}"#))
+        .respond_with(json_response(200, r#"{"chart": {"angles": {"asc": 1, "dc": 1, "ic": 1, "mc": 1, "vertex": 1}, "angles_details": {}, "aspects": [], "aspects_summary": {"by_type": {"conjunction": 1, "sextile": 1, "square": 1, "trine": 1}, "major": 1, "minor": 1, "total": 1}, "confidence": {"angles": "x", "houses": "x", "overall": "x"}, "houses": [], "planets": [], "subject": {"datetime": "x", "location": {"city": "x", "lat": 1, "lng": 1, "timezone": "x"}, "name": "x", "settings": {"delta_t_days": 1, "delta_t_seconds": 1, "house_system": "x", "julian_day": 1, "julian_day_tt": 1, "time_known": false, "zodiac_type": "x"}}}, "city": {"country": "x", "lat": 1, "lng": 1, "name": "x", "population": 1, "state": "x", "timezone": "x"}, "meta": {"house_system": "x", "mode": "x", "timezone": "x"}, "relocation_summary": {"angles": {"asc": 1, "dc": 1, "ic": 1, "mc": 1}, "angles_details": {}, "angular_planets": [], "dominant_themes": [], "resolved_timezone": "x", "summary_caution": "x", "summary_short": "x"}, "warnings": []}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -1784,13 +1769,8 @@ async fn v1_western_signs_midheaven() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v1/western/signs/midheaven"))
-        .and(loose_json(
-            r#"{"city": "x", "day": 1, "month": 1, "year": 1}"#,
-        ))
-        .respond_with(json_response(
-            200,
-            r#"{"abs_pos": 1, "degree": 1, "house": 1, "point": "x", "sign": "x", "sign_id": "x"}"#,
-        ))
+        .and(loose_json(r#"{"city": "x", "day": 1, "month": 1, "year": 1}"#))
+        .respond_with(json_response(200, r#"{"abs_pos": 1, "degree": 1, "house": 1, "point": "x", "sign": "x", "sign_id": "aries"}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -1811,13 +1791,8 @@ async fn v1_western_signs_moon() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v1/western/signs/moon"))
-        .and(loose_json(
-            r#"{"city": "x", "day": 1, "month": 1, "year": 1}"#,
-        ))
-        .respond_with(json_response(
-            200,
-            r#"{"abs_pos": 1, "degree": 1, "house": 1, "point": "x", "sign": "x", "sign_id": "x"}"#,
-        ))
+        .and(loose_json(r#"{"city": "x", "day": 1, "month": 1, "year": 1}"#))
+        .respond_with(json_response(200, r#"{"abs_pos": 1, "degree": 1, "house": 1, "point": "x", "sign": "x", "sign_id": "aries"}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -1838,13 +1813,8 @@ async fn v1_western_signs_rising() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v1/western/signs/rising"))
-        .and(loose_json(
-            r#"{"city": "x", "day": 1, "month": 1, "year": 1}"#,
-        ))
-        .respond_with(json_response(
-            200,
-            r#"{"abs_pos": 1, "degree": 1, "house": 1, "point": "x", "sign": "x", "sign_id": "x"}"#,
-        ))
+        .and(loose_json(r#"{"city": "x", "day": 1, "month": 1, "year": 1}"#))
+        .respond_with(json_response(200, r#"{"abs_pos": 1, "degree": 1, "house": 1, "point": "x", "sign": "x", "sign_id": "aries"}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -1865,13 +1835,8 @@ async fn v1_western_signs_sun() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v1/western/signs/sun"))
-        .and(loose_json(
-            r#"{"city": "x", "day": 1, "month": 1, "year": 1}"#,
-        ))
-        .respond_with(json_response(
-            200,
-            r#"{"abs_pos": 1, "degree": 1, "house": 1, "point": "x", "sign": "x", "sign_id": "x"}"#,
-        ))
+        .and(loose_json(r#"{"city": "x", "day": 1, "month": 1, "year": 1}"#))
+        .respond_with(json_response(200, r#"{"abs_pos": 1, "degree": 1, "house": 1, "point": "x", "sign": "x", "sign_id": "aries"}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -2121,10 +2086,8 @@ async fn v2_horoscope_daily_personal() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v2/horoscope/daily/personal"))
-        .and(loose_json(
-            r#"{"birth": {"city": "x", "day": 1, "month": 1, "year": 1}}"#,
-        ))
-        .respond_with(json_response(200, r#"{}"#))
+        .and(loose_json(r#"{"birth": {"city": "x", "day": 1, "month": 1, "year": 1}}"#))
+        .respond_with(json_response(200, r#"{"data": {"astro": {"highlights": [], "moon_phase": {"key": "x", "label": "x"}, "moon_sign": {"key": "x", "label": "x"}}, "content": {"keywords": [], "supporting_insights": [], "text": "x", "theme": "x"}, "date": "x", "lucky": {"color": {"key": "x", "label": "x"}, "number": 1, "time_window": {"display": "x", "end": "x", "start": "x", "tz": "x"}}, "personal": {"confidence_score": 1, "focus_areas": [], "transits_top": []}, "score_factors": [], "scores": {"career": 1, "health": 1, "love": 1, "money": 1, "overall": 1}, "scores_meta": {"overall_method": "x", "rounding": "x", "weights": {"career": 1, "health": 1, "love": 1, "money": 1}}, "sign": "x", "sign_label": "x"}, "meta": {"engine": {"name": "x", "version": "x"}, "generated_at": "x", "request_id": "x", "settings": {"date_resolved": "x", "version": "x"}}}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -2146,7 +2109,7 @@ async fn v2_horoscope_daily_sign() {
     Mock::given(method("GET"))
         .and(path("/api/v2/horoscope/daily/sign"))
         .and(query_param("sign", "x"))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"data": {"astro": {"highlights": [], "moon_phase": {"key": "x", "label": "x"}, "moon_sign": {"key": "x", "label": "x"}}, "content": {"keywords": [], "supporting_insights": [], "text": "x", "theme": "x"}, "date": "x", "lucky": {"color": {"key": "x", "label": "x"}, "number": 1, "time_window": {"display": "x", "end": "x", "start": "x", "tz": "x"}}, "score_factors": [], "scores": {"career": 1, "health": 1, "love": 1, "money": 1, "overall": 1}, "sign": "x", "sign_label": "x"}, "meta": {"engine": {"name": "x", "version": "x"}, "generated_at": "x", "request_id": "x", "settings": {"date_resolved": "x", "lang": "x", "locale": "x", "version": "x"}}}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -2916,10 +2879,8 @@ async fn v3_horoscope_daily_personal() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v3/horoscope/daily/personal"))
-        .and(loose_json(
-            r#"{"birth": {"city": "x", "day": 1, "month": 1, "year": 1}}"#,
-        ))
-        .respond_with(json_response(200, r#"{}"#))
+        .and(loose_json(r#"{"birth": {"city": "x", "day": 1, "month": 1, "year": 1}}"#))
+        .respond_with(json_response(200, r#"{"data": {"astro": {"highlights": [], "moon_phase": {"key": "x", "label": "x"}, "moon_sign": {"key": "x", "label": "x"}}, "content": {"keywords": [], "theme": "x"}, "date": "x", "lucky": {"color": {"key": "x", "label": "x"}, "number": 1, "time_window": {"display": "x", "end": "x", "start": "x", "tz": "x"}}, "personal": {"active_windows": [], "confidence_score": 1, "day_context": {"active_windows": [], "dominant_topics": [], "exact_hits": [], "next_shift": {"label": "x", "timestamp": "x", "type": "x"}, "supportive_vs_challenging": {"challenging": 1, "supportive": 1}}, "dominant_topics": [], "exact_hits": [], "focus_areas": [], "insights_meta": {"generated_fact_count": 1, "insights_enabled": false, "interpretation_blocks_enabled": false, "range_end": "x", "range_start": "x", "source": "x", "timeline_enabled": false, "timeline_pass_count": 1}, "next_shift": {"label": "x", "timestamp": "x", "type": "x"}, "supportive_vs_challenging": {"challenging": 1, "supportive": 1}, "transits_top": []}, "score_factors": [], "scores": {"career": 1, "health": 1, "love": 1, "money": 1, "overall": 1}, "scores_meta": {"overall_method": "x", "rounding": "x", "weights": {"career": 1, "health": 1, "love": 1, "money": 1}}, "sign": "x", "sign_label": "x"}, "meta": {"engine": {"name": "x", "version": "x"}, "generated_at": "x", "request_id": "x", "settings": {"date_resolved": "x", "include_interpretation_blocks": false, "version": "x"}}}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -2941,7 +2902,7 @@ async fn v3_horoscope_daily_sign() {
     Mock::given(method("GET"))
         .and(path("/api/v3/horoscope/daily/sign"))
         .and(query_param("sign", "x"))
-        .respond_with(json_response(200, r#"{}"#))
+        .respond_with(json_response(200, r#"{"data": {"astro": {"highlights": [], "moon_phase": {"key": "x", "label": "x"}, "moon_sign": {"key": "x", "label": "x"}}, "content": {"keywords": [], "supporting_insights": [], "text": "x", "theme": "x"}, "date": "x", "lucky": {"color": {"key": "x", "label": "x"}, "number": 1, "time_window": {"display": "x", "end": "x", "start": "x", "tz": "x"}}, "score_factors": [], "scores": {"career": 1, "health": 1, "love": 1, "money": 1, "overall": 1}, "sign": "x", "sign_label": "x"}, "meta": {"engine": {"name": "x", "version": "x"}, "generated_at": "x", "request_id": "x", "settings": {"compatibility_source": "x", "date_resolved": "x", "lang": "x", "locale": "x", "style": "x", "timezone": "x", "type": "x", "version": "x"}}}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -2961,10 +2922,8 @@ async fn v3_horoscope_weekly_personal() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/api/v3/horoscope/weekly/personal"))
-        .and(loose_json(
-            r#"{"birth": {"city": "x", "day": 1, "month": 1, "year": 1}}"#,
-        ))
-        .respond_with(json_response(200, r#"{}"#))
+        .and(loose_json(r#"{"birth": {"city": "x", "day": 1, "month": 1, "year": 1}}"#))
+        .respond_with(json_response(200, r#"{"data": {"astro": {"highlights": [], "moon_phase": {"key": "x", "label": "x"}, "moon_sign": {"key": "x", "label": "x"}}, "content": {"keywords": [], "supporting_insights": [], "text": "x", "theme": "x", "weekly_summary": "x"}, "lucky": {"color": {"key": "x", "label": "x"}, "number": 1, "time_window": {"display": "x", "end": "x", "start": "x", "tz": "x"}}, "period": {"days": 1, "end": "x", "start": "x"}, "personal": {"active_windows": [], "confidence_score": 1, "days": [], "dominant_topics": [], "exact_hits": [], "focus_areas": [], "insights_meta": {"generated_fact_count": 1, "insights_enabled": false, "interpretation_blocks_enabled": false, "period": "x", "range_end": "x", "range_start": "x", "source": "x", "timeline_enabled": false, "timeline_pass_count": 1, "timeline_segment_count": 1}, "next_shift": {"label": "x", "timestamp": "x", "type": "x"}, "supportive_vs_challenging": {"challenging": 1, "supportive": 1}, "transits_top": [], "week_context": {"active_windows": [], "dominant_topics": [], "exact_hits": [], "next_shift": {"label": "x", "timestamp": "x", "type": "x"}, "range_end": "x", "range_start": "x", "supportive_vs_challenging": {"challenging": 1, "supportive": 1}}}, "score_factors": [], "scores": {"career": 1, "health": 1, "love": 1, "money": 1, "overall": 1}, "scores_meta": {"daily_sample_count": 1, "overall_method": "x", "rounding": "x", "weights": {"career": 1, "health": 1, "love": 1, "money": 1}}, "sign": "x", "sign_label": "x"}, "meta": {"engine": {"name": "x", "version": "x"}, "generated_at": "x", "request_id": "x", "settings": {"include_interpretation_blocks": false, "start_week_on": "x", "version": "x", "week_end": "x", "week_start": "x"}}}"#))
         .expect(1)
         .mount(&server)
         .await;
@@ -2985,10 +2944,8 @@ async fn simple_natal() {
     let (server, client) = setup().await;
     Mock::given(method("POST"))
         .and(path("/natal"))
-        .and(loose_json(
-            r#"{"city": "x", "day": 1, "month": 1, "year": 1}"#,
-        ))
-        .respond_with(json_response(200, r#"{}"#))
+        .and(loose_json(r#"{"city": "x", "day": 1, "month": 1, "year": 1}"#))
+        .respond_with(json_response(200, r#"{"angles": {}, "houses": [], "houses_by_number": {}, "meta": {"endpoint": "x", "house_count": 1, "house_system": "x", "planet_count": 1, "zodiac_type": "x"}, "planets": [], "planets_by_name": {}, "subject": {"datetime": "x", "location": {"city": "x", "lat": 1, "lng": 1, "timezone": "x"}, "name": "x", "time_known": false}, "summary": {"moon_sign": "x", "sun_sign": "x"}}"#))
         .expect(1)
         .mount(&server)
         .await;
