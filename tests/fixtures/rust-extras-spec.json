@@ -1,0 +1,293 @@
+{
+  "components": {
+    "schemas": {
+      "Chart": {
+        "description": "A chart that is either JSON data or an image, with a recursive tree and a discriminated union.",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "match": {
+            "description": "Rust keyword as a field name.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "self": {
+            "type": "boolean"
+          },
+          "1st_house": {
+            "type": "integer"
+          },
+          "root": {
+            "$ref": "#/components/schemas/Node"
+          },
+          "method": {
+            "discriminator": {
+              "mapping": {
+                "a": "#/components/schemas/MethodA",
+                "b": "#/components/schemas/MethodB"
+              },
+              "propertyName": "kind"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/MethodA"
+              },
+              {
+                "$ref": "#/components/schemas/MethodB"
+              }
+            ]
+          },
+          "mode": {
+            "enum": [
+              "Other",
+              "fast",
+              "FAST",
+              null
+            ]
+          },
+          "weights": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "root",
+          "method"
+        ],
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "trace_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "detail"
+        ],
+        "type": "object"
+      },
+      "MethodA": {
+        "properties": {
+          "kind": {
+            "const": "a"
+          },
+          "depth": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "type": "object"
+      },
+      "MethodB": {
+        "properties": {
+          "kind": {
+            "const": "b"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "type": "object"
+      },
+      "Node": {
+        "properties": {
+          "children": {
+            "items": {
+              "$ref": "#/components/schemas/Node"
+            },
+            "type": "array"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parent": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Node"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "Option": {
+        "description": "A schema whose name shadows a Rust prelude type.",
+        "enum": [
+          "x",
+          "y"
+        ],
+        "type": "string"
+      }
+    }
+  },
+  "info": {
+    "title": "Rust generator extras",
+    "version": "0.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/charts/match": {
+      "post": {
+        "deprecated": true,
+        "operationId": "v1_charts_match",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "left": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "left"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Text"
+          }
+        },
+        "summary": "Keyword method name, inline body, text response"
+      }
+    },
+    "/api/v1/charts/options": {
+      "get": {
+        "operationId": "v1_charts_options",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "option",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Option"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tags",
+            "required": false,
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": [
+                "array",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          }
+        },
+        "summary": "Options with no response body"
+      }
+    },
+    "/api/v1/charts/render": {
+      "post": {
+        "operationId": "v1_charts_render",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Chart"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Chart"
+                }
+              },
+              "image/svg+xml": {}
+            },
+            "description": "JSON or SVG"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Render a chart"
+      }
+    }
+  }
+}

@@ -1,0 +1,102 @@
+name: Sync spec
+
+# Pulls the production OpenAPI document daily. When it differs from spec/freeastro.json, the
+# SDK is regenerated and fully checked here (pull requests opened with GITHUB_TOKEN do not
+# trigger CI), then a pull request is opened or updated from the spec-sync/auto branch.
+# A failing generator or check fails this workflow instead of opening a broken PR.
+
+on:
+  schedule:
+    - cron: "53 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sync-spec
+  cancel-in-progress: false
+
+env:
+  SPEC_URL: https://api.freeastroapi.com/openapi.json
+  CARGO_TERM_COLOR: always
+  RUSTDOCFLAGS: -D warnings
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1 (master)
+        with:
+          toolchain: stable
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@2201cc584a476d1b508be977bbe4b7d1c7a52e9c # v2.9.3
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      - name: Fetch the production spec
+        run: |
+          cp spec/freeastro.json "$RUNNER_TEMP/previous-spec.json"
+          python3 scripts/spec_sync.py fetch "$SPEC_URL" --out spec/freeastro.json
+
+      - name: Diff against the vendored spec
+        id: diff
+        run: |
+          python3 scripts/spec_sync.py diff "$RUNNER_TEMP/previous-spec.json" spec/freeastro.json \
+            --markdown "$RUNNER_TEMP/spec-diff.md" --github-output "$GITHUB_OUTPUT" > /dev/null
+          cat "$RUNNER_TEMP/spec-diff.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Regenerate
+        if: steps.diff.outputs.changed == 'true'
+        run: python3 scripts/generate.py
+
+      - name: Check (generated files, fmt, clippy, tests, docs, package)
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          python3 scripts/generate.py --check
+          cargo fmt --all --check
+          cargo clippy --all-targets --locked -- -D warnings
+          cargo test --locked
+          cargo doc --no-deps --locked
+          cargo publish --dry-run --locked --allow-dirty
+
+      - name: Contract tests
+        if: steps.diff.outputs.changed == 'true'
+        run: python3 scripts/with_prism.py -- cargo test --locked --test contract -- --ignored
+
+      - name: Prism log
+        if: failure() && steps.diff.outputs.changed == 'true'
+        run: tail -n 300 prism.log || true
+
+      - name: Pull request body
+        run: |
+          {
+            cat "$RUNNER_TEMP/spec-diff.md"
+            echo
+            echo "---"
+            echo "Opened by [sync-spec.yml]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID) from \`$SPEC_URL\`."
+            echo "Generation, rustfmt, clippy, cargo test, cargo doc, the package dry run and the Prism contract tests passed in that run."
+            echo
+            echo "To release after merging: bump \`version\` in \`Cargo.toml\` (minor for breaking changes or new"
+            echo "operations while the crate is 0.x, patch otherwise), update \`CHANGELOG.md\`, then push a matching \`v*\` tag."
+          } > "$RUNNER_TEMP/pr-body.md"
+
+      # With no changes against main this closes a stale spec-sync PR (delete-branch).
+      - name: Open or update the pull request
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          branch: spec-sync/auto
+          delete-branch: true
+          add-paths: |
+            spec/freeastro.json
+            src/generated/**
+            tests/operations.rs
+            tests/contract.rs
+          commit-message: ${{ steps.diff.outputs.title }}
+          title: ${{ steps.diff.outputs.title }}
+          body-path: ${{ runner.temp }}/pr-body.md
+          labels: spec-sync

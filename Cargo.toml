@@ -1,0 +1,46 @@
+[package]
+name = "freeastroapi"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Official Rust SDK for FreeAstroAPI: western, Vedic and Chinese astrology, numerology, moon phases and more."
+license = "Apache-2.0"
+repository = "https://github.com/GabrielRw/freeastroapi-rust-sdk"
+homepage = "https://www.freeastroapi.com/docs/utilities/sdk"
+documentation = "https://docs.rs/freeastroapi"
+readme = "README.md"
+keywords = ["astrology", "api", "sdk", "horoscope", "vedic"]
+categories = ["api-bindings", "web-programming::http-client"]
+include = [
+    "/src/**/*.rs",
+    "/examples/**/*.rs",
+    "/README.md",
+    "/CHANGELOG.md",
+    "/LICENSE",
+    "/Cargo.toml",
+]
+
+[features]
+default = ["rustls-tls"]
+## TLS through rustls (the default).
+rustls-tls = ["reqwest/rustls"]
+## TLS through the platform's native library (OpenSSL, Secure Transport, SChannel).
+native-tls = ["reqwest/native-tls"]
+
+[dependencies]
+bytes = "1.6"
+httpdate = "1.0"
+reqwest = { version = "0.13.1", default-features = false, features = ["http2"] }
+serde = { version = "1.0.190", features = ["derive"] }
+serde_json = "1.0.100"
+thiserror = "2.0"
+tokio = { version = "1.38", default-features = false, features = ["time"] }
+
+[dev-dependencies]
+tokio = { version = "1.38", features = ["macros", "rt-multi-thread"] }
+wiremock = "0.6"
+
+[package.metadata.docs.rs]
+all-features = false
+features = ["rustls-tls"]
+rustdoc-args = ["--cfg", "docsrs"]
